@@ -19,6 +19,11 @@ public enum ErrorCode {
     INVALID_TOKEN_STRUCTURE(HttpStatus.UNAUTHORIZED, "로그인 정보가 올바르지 않습니다."),
     MODIFIED_TOKEN_DETECTED(HttpStatus.UNAUTHORIZED, "로그인 정보가 변경되었습니다."),
 
+    /* CHATROOM */
+    PASSWORD_EMPTY(HttpStatus.BAD_REQUEST, "비밀번호를 입력하세요."),
+    CAPACITY_WRONG(HttpStatus.BAD_REQUEST, "정원은 최소 5명 이상 10명 이하 입니다."),
+    TITLE_EMPTY(HttpStatus.BAD_REQUEST, "방 제목을 입력해주세요."),
+
     /* MEMBER */
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "등록되지 않은 회원입니다."),
     WRONG_LOGIN_REQUEST(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
