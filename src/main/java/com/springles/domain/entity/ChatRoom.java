@@ -26,7 +26,6 @@ public class ChatRoom {
     private String title;
 
     // 채팅방 PW
-    @Column(nullable = false)
     private String password;
 
     // 방장
