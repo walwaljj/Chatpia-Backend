@@ -1,36 +1,36 @@
 package com.springles.controller;
 
-import com.springles.domain.dto.Chat.ChatRoom;
-import com.springles.service.ChatService;
-import java.util.List;
+import com.springles.domain.constants.ResponseCode;
+import com.springles.domain.dto.request.ChatRoomReqDTO;
+import com.springles.domain.dto.response.ResResult;
+import com.springles.service.ChatRoomService;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/room")
+@RequestMapping("v1")
+@Slf4j
 public class ChatRoomController {
 
-    private final ChatService chatService;
+    private final ChatRoomService chatRoomService;
 
-    @GetMapping("/all")
-    public List<ChatRoom> room() {
-        return chatService.findAllRoom();
-    }
-
-    @PostMapping
-    public ChatRoom createRoom(@RequestParam String name) {
-        return chatService.createChatRoom(name);
-    }
-
-    @GetMapping("/roomId/{roomId}")
-    public ChatRoom roomInfo(@PathVariable String roomId) {
-        return chatService.findRoomById(roomId);
+    // 채팅방 생성
+    @Operation(summary = "채팅방 생성", description = "채팅방 생성")
+    @PostMapping(value = "/chatrooms", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<ResResult> createChatRoom(@Valid @RequestBody ChatRoomReqDTO chatRoomReqDTO){
+        // 응답 메시지 return
+        ResponseCode responseCode = ResponseCode.CHATROOM_CREATE;
+        return new ResponseEntity<>(ResResult.builder()
+                .responseCode(responseCode)
+                .code(responseCode.getCode())
+                .message(responseCode.getMessage())
+                .data(chatRoomService.createChatRoom(chatRoomReqDTO))
+                .build(), HttpStatus.OK);
     }
 }
