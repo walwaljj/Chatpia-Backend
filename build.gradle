@@ -28,6 +28,7 @@ dependencies {
     // WEB
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.jetbrains:annotations:24.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
@@ -47,6 +48,11 @@ dependencies {
 
     // Valid
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // WEBSOCKET
+    implementation 'org.webjars:webjars-locator-core'
+    implementation 'org.webjars:sockjs-client:1.0.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3'
 }
 
 tasks.named('test') {
