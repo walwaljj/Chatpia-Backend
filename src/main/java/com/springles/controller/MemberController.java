@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final MemberDetailsManagerImpl userDetailsManager;
+    private final MemberDetailsManagerImpl memberDetailsManager;
 
     @PostMapping("/signup")
     public ResponseEntity<ResResult> signup(
@@ -27,7 +27,7 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(userDetailsManager.signUp(memberDetails))
+                        .data(memberDetailsManager.signUp(memberDetails))
                         .build());
     }
 
@@ -44,7 +44,7 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(userDetailsManager.updateInfo(memberDetails, memberId))
+                        .data(memberDetailsManager.updateInfo(memberDetails, memberId))
                         .build());
     }
 
@@ -61,7 +61,7 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(userDetailsManager.signOut(memberDetail, memberId))
+                        .data(memberDetailsManager.signOut(memberDetail, memberId))
                         .build());
     }
 }

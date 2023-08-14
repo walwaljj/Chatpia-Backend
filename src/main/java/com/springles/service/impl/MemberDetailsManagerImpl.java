@@ -1,14 +1,10 @@
 package com.springles.service.impl;
 
-import com.springles.domain.constants.Role;
 import com.springles.domain.dto.member.MemberDetails;
 import com.springles.domain.entity.Member;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.repository.MemberJpaRepository;
-import com.springles.repository.MemberRepository;
-//import com.springles.repository.impl.MemberRepositoryImpl;
-import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
-import com.springles.domain.dto.member.MemberDetails.*;
 
 import java.util.Optional;
 
