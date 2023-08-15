@@ -20,7 +20,10 @@ public enum ResponseCode {
     MEMBER_DETAIL(HttpStatus.OK, "200", "회원정보 불러오기 성공"),
     MEMBER_UPDATE(HttpStatus.OK, "200", "회원정보 수정 성공"),
     MEMBER_DELETE(HttpStatus.NO_CONTENT, "204", "회원정보 삭제 성공"),
-    MEMBER_EXISTS(HttpStatus.OK,"200","회원존재 여부 조회 성공");
+    MEMBER_EXISTS(HttpStatus.OK,"200","회원존재 여부 조회 성공"),
+
+    /* CHATROOM */
+    CHATROOM_SEARCH(HttpStatus.OK,"200","채팅방 목록 조회 성공");
 
     private final HttpStatus httpStatus;
     private final String code;
