@@ -1,9 +1,9 @@
 package com.springles.controller;
 
 import com.springles.domain.constants.ResponseCode;
-import com.springles.domain.dto.member.MemberDetails;
+import com.springles.domain.dto.member.MemberResponse;
 import com.springles.domain.dto.response.ResResult;
-import com.springles.service.impl.MemberDetailsManagerImpl;
+import com.springles.service.impl.MemberServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final MemberDetailsManagerImpl memberDetailsManager;
+    private final MemberServiceImpl memberService;
 
     @PostMapping("/signup")
     public ResponseEntity<ResResult> signup(
-            @Valid @RequestBody MemberDetails memberDetails
+            @Valid @RequestBody MemberResponse member
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_SAVE;
 
@@ -27,14 +27,14 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberDetailsManager.signUp(memberDetails))
+                        .data(memberService.signUp(member))
                         .build());
     }
 
     /* 로그인 구현 후 memberId 인증 -> 헤더 인증으로 변경 예정 */
     @PatchMapping("/info/{memberId}")
     public ResponseEntity<ResResult> updateInfo(
-            @Valid @RequestBody MemberDetails memberDetails,
+            @Valid @RequestBody MemberResponse memberDetails,
             @PathVariable("memberId") Long memberId
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_UPDATE;
@@ -44,14 +44,14 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberDetailsManager.updateInfo(memberDetails, memberId))
+                        .data(memberService.updateInfo(memberDetails, memberId))
                         .build());
     }
 
     /* 로그인 구현 후 memberId 인증 -> 헤더 인증으로 변경 예정 */
     @DeleteMapping("/{memberId}")
     public ResponseEntity<ResResult> signOut(
-            @RequestBody MemberDetails memberDetail,
+            @RequestBody MemberResponse memberDetail,
             @PathVariable("memberId") Long memberId
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_DELETE;
@@ -61,7 +61,7 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberDetailsManager.signOut(memberDetail, memberId))
+                        .data(memberService.signOut(memberDetail, memberId))
                         .build());
     }
 }

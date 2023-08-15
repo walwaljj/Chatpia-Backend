@@ -1,6 +1,6 @@
 package com.springles.jwt;
 
-import com.springles.domain.dto.member.MemberDetails;
+import com.springles.domain.dto.member.MemberResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 
 @Slf4j
 @Component
@@ -43,7 +41,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 String memberName = jwtTokenUtils.parseClaims(token).getSubject();
 
                 AbstractAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        MemberDetails.builder()
+                        MemberResponse.builder()
                                 .memberName(memberName)
                                 .build(),
                         token, new ArrayList<>()
