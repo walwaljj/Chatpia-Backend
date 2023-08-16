@@ -10,6 +10,8 @@ import com.springles.repository.MemberJpaRepository;
 import com.springles.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -153,7 +155,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String signOut(MemberCreateResponse memberDetails, Long memberId) {
+    public String signOut(MemberCreateResponse member, Long memberId) {
         Optional<Member> optionalMember = memberRepository.findById(memberId);
         if (optionalMember.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
@@ -165,15 +167,13 @@ public class MemberServiceImpl implements MemberService {
 //        }
 
         // 입력한 비밀번호와 기존 비밀번호 일치 여부 체크
-        if (!(passwordEncoder.matches(memberDetails.getPassword(), optionalMember.get().getPassword()))) {
+        if (!(passwordEncoder.matches(member.getPassword(), optionalMember.get().getPassword()))) {
             throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
 
-        Member deleteMember = optionalMember.get();
-        deleteMember.setIsDeleted(true);
-        memberRepository.save(deleteMember);
+        memberRepository.deleteById(memberId);
 
-        return deleteMember.toString();
+        return optionalMember.get().getMemberName() + "회원 탈퇴 완료";
     }
 
     public boolean memberExists(String memberName) {

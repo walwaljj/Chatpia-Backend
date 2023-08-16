@@ -3,13 +3,17 @@ package com.springles.domain.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Setter
 @Builder
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "member")
+@SQLDelete(sql = "UPDATE member SET is_deleted = true WHERE member_id = ?")
 public class Member {
 
     @Id
