@@ -1,39 +1,49 @@
 package com.springles.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Getter
+@Setter
 @Builder
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "member")
+@SQLDelete(sql = "UPDATE member SET is_deleted = true WHERE member_id = ?")
 public class Member {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="member_id")
     private Long id;
 
-    // 이메일
-    @Column(nullable = false)
-    private String email;
-
     // 게임 아이디
-    @Column(nullable = false, unique = true)
     private String memberName;
 
     // 비밃번호
-    @Column(nullable = false)
     private String password;
 
-    // 유저 역할 (Admin, User) 관리자와 일반유저
-    @Column(nullable = false)
+    // 이메일
+    private String email;
+
+    // 유저 역할 - Admin(관리자), User(일반유저)
+    @NotNull
     private String role;
 
-    // 삭제 여부
-    @Column(nullable = false)
+    // 탈퇴 여부
+    @NotNull
     private Boolean isDeleted;
+
+    @Override
+    public String toString() {
+        return  ", memberName : " + memberName
+                + ", password : " + password
+                + ", email : " + email
+                + ", role : " + role
+                + ", isDeleted : " + isDeleted;
+    }
 }
