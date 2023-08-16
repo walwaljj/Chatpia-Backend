@@ -19,7 +19,7 @@ public class MemberController {
 
     @PostMapping("/signup")
     public ResponseEntity<ResResult> signup(
-            @Valid @RequestBody MemberCreateResponse member
+            @Valid @RequestBody MemberCreateResponse memberDto
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_SAVE;
 
@@ -28,14 +28,14 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.signUp(member))
+                        .data(memberService.signUp(memberDto))
                         .build());
     }
 
     /* 로그인 구현 후 memberId 인증 -> 헤더 인증으로 변경 예정 */
     @PatchMapping("/info/{memberId}")
     public ResponseEntity<ResResult> updateInfo(
-            @Valid @RequestBody MemberUpdateResponse memberDetails,
+            @Valid @RequestBody MemberUpdateResponse memberDto,
             @PathVariable("memberId") Long memberId
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_UPDATE;
@@ -45,14 +45,14 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.updateInfo(memberDetails, memberId))
+                        .data(memberService.updateInfo(memberDto, memberId))
                         .build());
     }
 
     /* 로그인 구현 후 memberId 인증 -> 헤더 인증으로 변경 예정 */
     @DeleteMapping("/{memberId}")
     public ResponseEntity<ResResult> signOut(
-            @RequestBody MemberCreateResponse memberDetail,
+            @RequestBody MemberCreateResponse memberDto,
             @PathVariable("memberId") Long memberId
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_DELETE;
@@ -62,7 +62,7 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.signOut(memberDetail, memberId))
+                        .data(memberService.signOut(memberDto, memberId))
                         .build());
     }
 }
