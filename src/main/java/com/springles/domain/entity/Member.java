@@ -1,12 +1,10 @@
 package com.springles.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
+@Setter
 @Builder
 @Entity
 @NoArgsConstructor
@@ -18,7 +16,6 @@ public class Member {
     private Long id;
 
     // 이메일
-    @Column(nullable = false)
     private String email;
 
     // 게임 아이디
@@ -29,11 +26,21 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
-    // 유저 역할 (Admin, User) 관리자와 일반유저
+    // 유저 역할 - Admin(관리자), User(일반유저)
     @Column(nullable = false)
     private String role;
 
-    // 삭제 여부
+    // 탈퇴 여부
     @Column(nullable = false)
     private Boolean isDeleted;
+
+    @Override
+    public String toString() {
+        return "id : " + id
+                + ", memberName : " + memberName
+                + ", password : " + password
+                + ", email : " + email
+                + ", role : " + role
+                + ", isDeleted : " + isDeleted;
+    }
 }
