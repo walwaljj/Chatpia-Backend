@@ -1,7 +1,7 @@
 package com.springles.repository.impl;
 
 
-import com.springles.repository.MemberRepository;
+import com.springles.repository.custom.MemberCustomRepository;
 
-public class MemberRepositoryImpl implements MemberRepository {
+public class MemberRepositoryImpl implements MemberCustomRepository {
 }

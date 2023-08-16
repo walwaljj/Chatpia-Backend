@@ -33,4 +33,38 @@ public class ChatRoomController {
                 .data(chatRoomService.createChatRoom(chatRoomReqDTO))
                 .build(), HttpStatus.OK);
     }
+
+    /**
+     /chatrooms?page={page}&size={size}
+     /chatrooms?title={title}
+     /chatrooms?nickname={nickname}
+     */
+    @GetMapping(value = "/chatrooms")
+    public ResponseEntity<ResResult> searchChatRooms(@RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                                                     @RequestParam(value = "size", defaultValue = "10", required = false) Integer size,
+                                                     @RequestParam(value = "title", required = false) String title,
+                                                     @RequestParam(value = "nickname", required = false) String nickname) {
+
+
+        Object chatRooms = null;
+
+        // title 로 검색
+        if (title != null) { chatRooms = chatRoomService.findChatRoomByTitle(title);}
+
+        // 방장 이름으로 검색
+        else if (nickname != null) { chatRooms = chatRoomService.findChatRoomByNickname(nickname); }
+
+        // 대기중인 모든 채팅방
+        else { chatRooms = chatRoomService.findAllChatRooms(page, size); }
+
+        ResponseCode responseCode = ResponseCode.CHATROOM_SEARCH;
+
+        return new ResponseEntity<>(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(chatRooms)
+                        .build(), HttpStatus.OK);
+    }
 }
