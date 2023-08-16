@@ -2,6 +2,7 @@ package com.springles.service.impl;
 
 
 import com.springles.domain.dto.member.MemberCreateResponse;
+import com.springles.domain.dto.member.MemberDeleteResponse;
 import com.springles.domain.dto.member.MemberUpdateResponse;
 import com.springles.domain.entity.Member;
 import com.springles.exception.CustomException;
@@ -76,10 +77,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String signOut(MemberCreateResponse memberDto, Long memberId) {
+    public void signOut(MemberDeleteResponse memberDto, Long memberId) {
         Optional<Member> optionalMember = memberRepository.findById(memberId);
         if (optionalMember.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        // 탈퇴한 회원인지 체크
+        if (optionalMember.get().getIsDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
         }
 
         // 입력한 비밀번호와 기존 비밀번호 일치 여부 체크
@@ -88,8 +94,6 @@ public class MemberServiceImpl implements MemberService {
         }
 
         memberRepository.deleteById(memberId);
-
-        return optionalMember.get().getMemberName() + " 회원 탈퇴 완료";
     }
 
     public boolean memberExists(String memberName) {

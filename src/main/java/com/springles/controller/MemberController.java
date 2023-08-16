@@ -2,6 +2,7 @@ package com.springles.controller;
 
 import com.springles.domain.constants.ResponseCode;
 import com.springles.domain.dto.member.MemberCreateResponse;
+import com.springles.domain.dto.member.MemberDeleteResponse;
 import com.springles.domain.dto.member.MemberUpdateResponse;
 import com.springles.domain.dto.response.ResResult;
 import com.springles.service.impl.MemberServiceImpl;
@@ -52,9 +53,10 @@ public class MemberController {
     /* 로그인 구현 후 memberId 인증 -> 헤더 인증으로 변경 예정 */
     @DeleteMapping("/{memberId}")
     public ResponseEntity<ResResult> signOut(
-            @RequestBody MemberCreateResponse memberDto,
+            @Valid @RequestBody MemberDeleteResponse memberDto,
             @PathVariable("memberId") Long memberId
     ) {
+        memberService.signOut(memberDto, memberId);
         ResponseCode responseCode = ResponseCode.MEMBER_DELETE;
 
         return ResponseEntity.ok(
@@ -62,7 +64,6 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.signOut(memberDto, memberId))
                         .build());
     }
 }
