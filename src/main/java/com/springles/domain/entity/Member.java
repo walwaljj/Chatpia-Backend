@@ -40,8 +40,7 @@ public class Member {
 
     @Override
     public String toString() {
-        return "id : " + id
-                + ", memberName : " + memberName
+        return  ", memberName : " + memberName
                 + ", password : " + password
                 + ", email : " + email
                 + ", role : " + role

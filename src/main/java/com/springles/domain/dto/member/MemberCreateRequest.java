@@ -57,4 +57,13 @@ public class MemberCreateRequest {
                 .isDeleted(false)
                 .build();
     }
+
+    @Override
+    public String toString() {
+        return  ", memberName : " + memberName
+                + ", password : " + password
+                + ", email : " + email
+                + ", role : " + role
+                + ", isDeleted : " + isDeleted;
+    }
 }

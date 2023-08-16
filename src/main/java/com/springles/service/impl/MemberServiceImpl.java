@@ -37,7 +37,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         memberRepository.save(memberDto.newMember(passwordEncoder));
-        return memberDto.newMember(passwordEncoder).toString();
+        return MemberCreateRequest.fromEntity(memberDto.newMember(passwordEncoder)).toString();
     }
 
     @Override
