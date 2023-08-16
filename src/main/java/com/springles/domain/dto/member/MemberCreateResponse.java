@@ -3,16 +3,14 @@ package com.springles.domain.dto.member;
 import com.springles.domain.entity.Member;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Builder
 @Getter
-public class MemberResponse {
+public class MemberCreateResponse {
 
     // 게임 아이디
     @NotBlank(message = "아이디를 입력해주세요.")
@@ -40,8 +38,8 @@ public class MemberResponse {
     // 탈퇴 여부
     private Boolean isDeleted;
 
-    public static MemberResponse fromEntity(Member entity) {
-        return MemberResponse.builder()
+    public static MemberCreateResponse fromEntity(Member entity) {
+        return MemberCreateResponse.builder()
                 .memberName(entity.getMemberName())
                 .password(entity.getPassword())
                 .email(entity.getEmail())

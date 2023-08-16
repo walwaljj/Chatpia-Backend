@@ -1,6 +1,6 @@
 package com.springles.jwt;
 
-import com.springles.domain.dto.member.MemberResponse;
+import com.springles.domain.dto.member.MemberCreateResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,7 +41,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 String memberName = jwtTokenUtils.parseClaims(token).getSubject();
 
                 AbstractAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        MemberResponse.builder()
+                        MemberCreateResponse.builder()
                                 .memberName(memberName)
                                 .build(),
                         token, new ArrayList<>()

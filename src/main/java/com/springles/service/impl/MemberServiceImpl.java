@@ -1,7 +1,8 @@
 package com.springles.service.impl;
 
 
-import com.springles.domain.dto.member.MemberResponse;
+import com.springles.domain.dto.member.MemberCreateResponse;
+import com.springles.domain.dto.member.MemberUpdateResponse;
 import com.springles.domain.entity.Member;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
@@ -22,7 +23,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public String signUp(MemberResponse member) {
+    public String signUp(MemberCreateResponse member) {
 
 //        // 아이디 입력 여부 체크
 //        if (member.getMemberName() == null) {
@@ -77,7 +78,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String updateInfo(MemberResponse memberDetails, Long memberId) {
+    public String updateInfo(MemberUpdateResponse member, Long memberId) {
 
         Optional<Member> optionalMember = memberRepository.findById(memberId);
         if (optionalMember.isEmpty()) {
@@ -91,11 +92,12 @@ public class MemberServiceImpl implements MemberService {
 
         Member updateMember = optionalMember.get();
 
+
         try {
             // 이메일이 변경되었는지 체크
             // 기존 이메일이 null이 아니면서
-            if (!updateMember.getEmail().equals(memberDetails.getEmail())) {
-                updateMember.setEmail(memberDetails.getEmail());
+            if (!updateMember.getEmail().equals(member.getEmail())) {
+                updateMember.setEmail(member.getEmail());
 //
 //                // 변경하고자 하는 이메일 값이 null이 아닌 경우
 //                if (memberDetails.getEmail() != null) {
@@ -121,7 +123,7 @@ public class MemberServiceImpl implements MemberService {
 //            }
 //            // 변경하고자 하는 이메일 값이 null이면 변경 없음
 
-            updateMember.setEmail(memberDetails.getEmail());
+//            updateMember.setEmail(member.getEmail()); /* 주석 해제 필요 */
         }
 
 //        // 비밀번호 입력 여부 체크
@@ -140,18 +142,18 @@ public class MemberServiceImpl implements MemberService {
 //        }
 
         // 비밀번호와 비밀번호 확인 값 일치여부 체크
-        if (!memberDetails.getPassword().equals(memberDetails.getPasswordConfirm())) {
+        if (!member.getPassword().equals(member.getPasswordConfirm())) {
             throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
 
-        updateMember.setPassword(passwordEncoder.encode(memberDetails.getPassword()));
+        updateMember.setPassword(passwordEncoder.encode(member.getPassword()));
         memberRepository.save(updateMember);
 
         return updateMember.toString();
     }
 
     @Override
-    public String signOut(MemberResponse memberDetails, Long memberId) {
+    public String signOut(MemberCreateResponse memberDetails, Long memberId) {
         Optional<Member> optionalMember = memberRepository.findById(memberId);
         if (optionalMember.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
