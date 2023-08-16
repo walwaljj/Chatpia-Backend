@@ -1,7 +1,7 @@
 package com.springles.controller;
 
 import com.springles.domain.constants.ResponseCode;
-import com.springles.domain.dto.request.ChatRoomReqDTO;
+import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.dto.response.ResResult;
 import com.springles.service.ChatRoomService;
 import io.swagger.v3.oas.annotations.Operation;

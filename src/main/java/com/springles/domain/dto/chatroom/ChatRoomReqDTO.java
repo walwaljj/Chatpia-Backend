@@ -1,4 +1,4 @@
-package com.springles.domain.dto.request;
+package com.springles.domain.dto.chatroom;
 
 
 import com.springles.domain.constants.ChatRoomCode;
