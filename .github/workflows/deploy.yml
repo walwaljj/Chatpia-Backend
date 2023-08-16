@@ -31,7 +31,7 @@ jobs:
 
       - name: Get current time
         uses: 1466587594/get-current-time@v2
-        id: current-time
+        id: current-time-build
         with:
           format: YYYY-MM-DDTHH-mm-ss
           utcOffset: "+09:00" # (8).build 시점의 시간 확보
@@ -45,7 +45,7 @@ jobs:
 
       - name: Get current time
         uses: 1466587594/get-current-time@v2
-        id: current-time
+        id: current-time-test
         with:
           format: YYYY-MM-DDTHH-mm-ss
           utcOffset: "+09:00" # (11).test 시점의 시간 확보
