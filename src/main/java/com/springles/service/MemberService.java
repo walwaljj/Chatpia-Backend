@@ -6,11 +6,11 @@ import com.springles.domain.dto.member.MemberUpdateResponse;
 
 public interface MemberService {
 
-    public String signUp(MemberCreateResponse member);
+    String signUp(MemberCreateResponse memberDto);
 
-    public String updateInfo(MemberUpdateResponse memberDetails, Long memberId);
+    String updateInfo(MemberUpdateResponse memberDto, Long memberId);
 
-    public void signOut(MemberDeleteResponse memberDetails, Long memberId);
+    void signOut(MemberDeleteResponse memberDto, Long memberId);
 
-    public boolean memberExists(String memberName);
+    boolean memberExists(String memberName);
 }
