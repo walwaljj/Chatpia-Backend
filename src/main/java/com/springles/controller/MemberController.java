@@ -1,10 +1,11 @@
 package com.springles.controller;
 
 import com.springles.domain.constants.ResponseCode;
-import com.springles.domain.dto.member.MemberCreateResponse;
-import com.springles.domain.dto.member.MemberDeleteResponse;
-import com.springles.domain.dto.member.MemberUpdateResponse;
+import com.springles.domain.dto.member.MemberCreateRequest;
+import com.springles.domain.dto.member.MemberDeleteRequest;
+import com.springles.domain.dto.member.MemberUpdateRequest;
 import com.springles.domain.dto.response.ResResult;
+import com.springles.service.MemberService;
 import com.springles.service.impl.MemberServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class MemberController {
 
     @PostMapping("/signup")
     public ResponseEntity<ResResult> signup(
-            @Valid @RequestBody MemberCreateResponse memberDto
+            @Valid @RequestBody MemberCreateRequest memberDto
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_SAVE;
 
@@ -36,7 +37,7 @@ public class MemberController {
     /* 로그인 구현 후 memberId 인증 -> 헤더 인증으로 변경 예정 */
     @PatchMapping("/info/{memberId}")
     public ResponseEntity<ResResult> updateInfo(
-            @Valid @RequestBody MemberUpdateResponse memberDto,
+            @Valid @RequestBody MemberUpdateRequest memberDto,
             @PathVariable("memberId") Long memberId
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_UPDATE;
@@ -53,7 +54,7 @@ public class MemberController {
     /* 로그인 구현 후 memberId 인증 -> 헤더 인증으로 변경 예정 */
     @DeleteMapping("/{memberId}")
     public ResponseEntity<ResResult> signOut(
-            @Valid @RequestBody MemberDeleteResponse memberDto,
+            @Valid @RequestBody MemberDeleteRequest memberDto,
             @PathVariable("memberId") Long memberId
     ) {
         memberService.signOut(memberDto, memberId);

@@ -1,18 +1,16 @@
 package com.springles.domain.dto.member;
 
 import com.springles.domain.entity.Member;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Builder
 @Getter
-public class MemberUpdateResponse {
+public class MemberUpdateRequest {
 
     // 게임 아이디
     private String memberName;
@@ -30,8 +28,8 @@ public class MemberUpdateResponse {
     @Email(message = "이메일 형식이 올바르지 않습니다.")
     private String email;
 
-    public static MemberUpdateResponse fromEntity(Member entity) {
-        return MemberUpdateResponse.builder()
+    public static MemberUpdateRequest fromEntity(Member entity) {
+        return MemberUpdateRequest.builder()
                 .memberName(entity.getMemberName())
                 .password(entity.getPassword())
                 .email(entity.getEmail())

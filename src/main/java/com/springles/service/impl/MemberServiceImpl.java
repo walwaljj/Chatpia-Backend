@@ -1,9 +1,9 @@
 package com.springles.service.impl;
 
 
-import com.springles.domain.dto.member.MemberCreateResponse;
-import com.springles.domain.dto.member.MemberDeleteResponse;
-import com.springles.domain.dto.member.MemberUpdateResponse;
+import com.springles.domain.dto.member.MemberCreateRequest;
+import com.springles.domain.dto.member.MemberDeleteRequest;
+import com.springles.domain.dto.member.MemberUpdateRequest;
 import com.springles.domain.entity.Member;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
@@ -24,7 +24,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public String signUp(MemberCreateResponse memberDto) {
+    public String signUp(MemberCreateRequest memberDto) {
 
         // 아이디 기 사용 여부 체크
         if (memberExists(memberDto.getMemberName())) {
@@ -41,7 +41,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String updateInfo(MemberUpdateResponse memberDto, Long memberId) {
+    public String updateInfo(MemberUpdateRequest memberDto, Long memberId) {
 
         Optional<Member> optionalMember = memberRepository.findById(memberId);
         if (optionalMember.isEmpty()) {
@@ -77,7 +77,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void signOut(MemberDeleteResponse memberDto, Long memberId) {
+    public void signOut(MemberDeleteRequest memberDto, Long memberId) {
         Optional<Member> optionalMember = memberRepository.findById(memberId);
         if (optionalMember.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);

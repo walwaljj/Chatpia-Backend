@@ -10,7 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Builder
 @Getter
-public class MemberCreateResponse {
+public class MemberCreateRequest {
 
     // 게임 아이디
     @NotBlank(message = "아이디를 입력해주세요.")
@@ -38,8 +38,8 @@ public class MemberCreateResponse {
     // 탈퇴 여부
     private Boolean isDeleted;
 
-    public static MemberCreateResponse fromEntity(Member entity) {
-        return MemberCreateResponse.builder()
+    public static MemberCreateRequest fromEntity(Member entity) {
+        return MemberCreateRequest.builder()
                 .memberName(entity.getMemberName())
                 .password(entity.getPassword())
                 .email(entity.getEmail())
