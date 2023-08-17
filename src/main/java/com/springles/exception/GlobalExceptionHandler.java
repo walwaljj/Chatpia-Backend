@@ -1,13 +1,12 @@
-package com.springles.exception;
-
-
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.springles.exception.ErrorResponse;
 import com.springles.exception.constants.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -15,13 +14,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
 import java.io.IOException;
 
-@RestControllerAdvice
+
+/**
+ * Controller 내에서 발생하는 Exception 대해서 Catch 하여 응답값(Response)을 보내주는 기능을 수행함.
+ */
 @Slf4j
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+@RestControllerAdvice
+public class GlobalExceptionHandler {
 
     private final HttpStatus HTTP_STATUS_OK = HttpStatus.OK;
 
@@ -33,7 +34,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        final ErrorResponse response = new ErrorResponse(ErrorCode.NOT_VALID_ERROR);
+        log.error("handleMethodArgumentNotValidException", ex);
+        BindingResult bindingResult = ex.getBindingResult();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (FieldError fieldError : bindingResult.getFieldErrors()) {
+            stringBuilder.append(fieldError.getField()).append(":");
+            stringBuilder.append(fieldError.getDefaultMessage());
+            stringBuilder.append(", ");
+        }
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_VALID_ERROR, String.valueOf(stringBuilder));
         return new ResponseEntity<>(response, HTTP_STATUS_OK);
     }
 
@@ -45,7 +54,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(MissingRequestHeaderException.class)
     protected ResponseEntity<ErrorResponse> handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
-        final ErrorResponse response = new ErrorResponse(ErrorCode.REQUEST_BODY_MISSING_ERROR);
+        log.error("MissingRequestHeaderException", ex);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.REQUEST_BODY_MISSING_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HTTP_STATUS_OK);
     }
 
@@ -59,7 +69,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex) {
         log.error("HttpMessageNotReadableException", ex);
-        final ErrorResponse response = new ErrorResponse(ErrorCode.REQUEST_BODY_MISSING_ERROR);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.REQUEST_BODY_MISSING_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -72,7 +82,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     protected ResponseEntity<ErrorResponse> handleMissingRequestHeaderExceptionException(
             MissingServletRequestParameterException ex) {
-        final ErrorResponse response = new ErrorResponse(ErrorCode.MISSING_REQUEST_PARAMETER_ERROR);
+        log.error("handleMissingServletRequestParameterException", ex);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.MISSING_REQUEST_PARAMETER_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -86,7 +97,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(HttpClientErrorException.BadRequest.class)
     protected ResponseEntity<ErrorResponse> handleBadRequestException(HttpClientErrorException e) {
         log.error("HttpClientErrorException.BadRequest", e);
-        final ErrorResponse response = new ErrorResponse(ErrorCode.BAD_REQUEST_ERROR);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.BAD_REQUEST_ERROR, e.getMessage());
         return new ResponseEntity<>(response, HTTP_STATUS_OK);
     }
 
@@ -100,7 +111,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     protected ResponseEntity<ErrorResponse> handleNoHandlerFoundExceptionException(NoHandlerFoundException e) {
         log.error("handleNoHandlerFoundExceptionException", e);
-        final ErrorResponse response = new ErrorResponse(ErrorCode.NOT_FOUND_ERROR);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_FOUND_ERROR, e.getMessage());
         return new ResponseEntity<>(response, HTTP_STATUS_OK);
     }
 
@@ -114,7 +125,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     protected ResponseEntity<ErrorResponse> handleNullPointerException(NullPointerException e) {
         log.error("handleNullPointerException", e);
-        final ErrorResponse response = new ErrorResponse(ErrorCode.NULL_POINT_ERROR);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.NULL_POINT_ERROR, e.getMessage());
         return new ResponseEntity<>(response, HTTP_STATUS_OK);
     }
 
@@ -127,21 +138,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IOException.class)
     protected ResponseEntity<ErrorResponse> handleIOException(IOException ex) {
         log.error("handleIOException", ex);
-        final ErrorResponse response = new ErrorResponse(ErrorCode.IO_ERROR);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.IO_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HTTP_STATUS_OK);
     }
-    /**
-     * com.google.gson 내에 Exception 발생하는 경우
-     *
-     * @param ex JsonParseException
-     * @return ResponseEntity<ErrorResponse>
-     */
-    @ExceptionHandler(JsonParseException.class)
-    protected ResponseEntity<ErrorResponse> handleJsonParseExceptionException(JsonParseException ex) {
-        log.error("handleJsonParseExceptionException", ex);
-        final ErrorResponse response = new ErrorResponse(ErrorCode.JSON_PARSE_ERROR);
-        return new ResponseEntity<>(response, HTTP_STATUS_OK);
-    }
+
 
     /**
      * com.fasterxml.jackson.core 내에 Exception 발생하는 경우
@@ -152,9 +152,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(JsonProcessingException.class)
     protected ResponseEntity<ErrorResponse> handleJsonProcessingException(JsonProcessingException ex) {
         log.error("handleJsonProcessingException", ex);
-        final ErrorResponse response = new ErrorResponse(ErrorCode.REQUEST_BODY_MISSING_ERROR);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.REQUEST_BODY_MISSING_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HTTP_STATUS_OK);
     }
+
+
+    // ==================================================================================================================
 
     /**
      * [Exception] 모든 Exception 경우 발생
@@ -165,19 +168,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     protected final ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
         log.error("Exception", ex);
-        final ErrorResponse response = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HTTP_STATUS_OK);
     }
-
-//    @ExceptionHandler(CustomException.class)
-//    protected ResponseEntity<?> handlerCustomException(CustomException e) {
-//        log.error("CustomException: " + e.getErrorCode().getMessage());
-//        return new ResponseEntity<>(new ErrorResponse(e.getErrorCode()), e.getErrorCode().getStatus());
-//    }
-//
-//    @ExceptionHandler(Exception.class)
-//    protected ResponseEntity<?> handlerException(Exception e) {
-//        log.error("Unexpected_Exception : " + e.getMessage());
-//        return ResponseEntity.status(500).body("UNEXPECTED_EXCEPTION: " + e);
-//    }
 }
