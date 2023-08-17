@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-
 class ChatRoomJpaRepositoryTest {
 
     @Autowired
@@ -35,7 +34,7 @@ class ChatRoomJpaRepositoryTest {
 
         for (int i = 1; i <= 2; i++) {
             chatRoomRepository.save(
-                    new ChatRoom(Long.valueOf(i),"gameRoom" + i,null,Long.valueOf(i), ChatRoomCode.WAITING,6L,Long.valueOf(i),true) // 오픈 , 대기중
+                    new ChatRoom(Long.valueOf(i), "gameRoom" + i, null, Long.valueOf(i), ChatRoomCode.WAITING, 6L, Long.valueOf(i), true) // 오픈방, 대기중
             );
         }
 
@@ -46,25 +45,25 @@ class ChatRoomJpaRepositoryTest {
     @DisplayName("전체 조회 테스트 ( 오픈된 방 이면서 대기 중인 방만 조회)")
     public void findAllByOpenTrueAndStateTest() {
 
-        //given
-        chatRoomRepository.save(new ChatRoom(3L,"gameRoom3","1111",3L,ChatRoomCode.WAITING,8L,7L,false));// 비밀방, 대기중
-        chatRoomRepository.save(new ChatRoom(4L,"gameRoom4",null,3L,ChatRoomCode.PLAYING,8L,8L,true));// 비밀방, 대기중
+        // given
+        chatRoomRepository.save(new ChatRoom(3L, "gameRoom3", "1111", 3L, ChatRoomCode.WAITING, 8L, 7L, false));// 비밀방, 대기중
+        chatRoomRepository.save(new ChatRoom(4L, "gameRoom4", null, 3L, ChatRoomCode.PLAYING, 8L, 8L, true));// 오픈방, 게임중
 
         // when
         Optional<List<ChatRoom>> allByOpenTrueAndState = chatRoomRepository.findAllByOpenTrueAndState(ChatRoomCode.WAITING);
 
-        //then
-        assertThat(allByOpenTrueAndState.get().size()).isEqualTo(2); // 오픈되지 않은 방은 조회 되지 않음.
+        // then
+        assertThat(allByOpenTrueAndState.get().size()).isEqualTo(2); // 오픈되지 않은 방, 게임중인 방은 조회 되지 않음.
     }
 
     @Test
     @DisplayName("방장 아이디로 조회")
     public void findAllByOwnerIdTest() {
 
-        //given
+        // given
         for (int i = 1; i <= 2; i++) {
-            memberService.signUp( MemberCreateRequest.builder()
-                    .memberName("testUser"+i)
+            memberService.signUp(MemberCreateRequest.builder()
+                    .memberName("testUser" + i)
                     .password("1")
                     .passwordConfirm("1")
                     .email("1@")
