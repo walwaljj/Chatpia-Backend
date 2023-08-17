@@ -30,10 +30,10 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authHttp -> authHttp
-                                /* 로그인 구현 후 권한 부여 예정 */
-                                // .requestMatchers(new AntPathRequestMatcher(("/member/*"))).authenticated()
-                                // .requestMatchers(new AntPathRequestMatcher(("/member/signup"))).permitAll()
-                                .anyRequest().permitAll()
+                                 .requestMatchers(new AntPathRequestMatcher(("/member/info"))).authenticated()
+                                .requestMatchers(new AntPathRequestMatcher("/member/login")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/member/signup")).permitAll()
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(
                         sessionManagement -> sessionManagement

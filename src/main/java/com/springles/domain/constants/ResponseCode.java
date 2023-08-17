@@ -23,7 +23,11 @@ public enum ResponseCode {
     MEMBER_EXISTS(HttpStatus.OK,"200","회원존재 여부 조회 성공"),
 
     /* CHATROOM */
-    CHATROOM_SEARCH(HttpStatus.OK,"200","채팅방 목록 조회 성공");
+    CHATROOM_SEARCH(HttpStatus.OK,"200","채팅방 목록 조회 성공"),
+
+    /* JWT */
+    ACCESS_TOKEN_REISSUE(HttpStatus.OK, "200", "Access Token 재발급 성공"),
+    TOKEN_INFO_CHECK(HttpStatus.OK, "200", "Token 정보 조회 성공");
 
     private final HttpStatus httpStatus;
     private final String code;

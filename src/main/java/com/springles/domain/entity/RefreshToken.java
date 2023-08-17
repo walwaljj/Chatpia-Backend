@@ -1,22 +1,24 @@
 package com.springles.domain.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import org.springframework.data.annotation.Id;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Data;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
+import org.springframework.data.redis.core.index.Indexed;
 
-@Entity
-@Getter
+@Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@RedisHash(value = "token")
 public class RefreshToken {
+
     @Id
-    @Column(name = "refresh_token_id")
-    private String email;
-
-    @Column(nullable = false)
-    private String refreshToken;
-
+    private String Id;
+    @Indexed
+    private String memberName;
+    private String refreshToken;    // UUID
+    @TimeToLive
+    private Long expiration;
 }

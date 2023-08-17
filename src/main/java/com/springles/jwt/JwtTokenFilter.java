@@ -17,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Slf4j
 @Component
@@ -46,12 +47,19 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                 .build(),
                         token, new ArrayList<>()
                 );
-
                 context.setAuthentication(authenticationToken);
                 SecurityContextHolder.setContext(context);
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    // filter를 거치지 않는 api
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String[] excludePath = {"/token/*"};
+        String path = request.getRequestURI();
+        return Arrays.stream(excludePath).anyMatch(path::startsWith);
     }
 
 }

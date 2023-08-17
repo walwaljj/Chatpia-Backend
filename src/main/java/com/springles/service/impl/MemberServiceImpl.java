@@ -1,18 +1,22 @@
 package com.springles.service.impl;
 
 
-import com.springles.domain.dto.member.MemberCreateRequest;
-import com.springles.domain.dto.member.MemberDeleteRequest;
-import com.springles.domain.dto.member.MemberUpdateRequest;
+import com.springles.domain.dto.member.*;
 import com.springles.domain.entity.Member;
+import com.springles.domain.entity.RefreshToken;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
+import com.springles.jwt.JwtTokenUtils;
 import com.springles.repository.MemberJpaRepository;
+import com.springles.repository.JwtTokenRedisRepository;
 import com.springles.service.MemberService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -21,7 +25,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberJpaRepository memberRepository;
+    private final JwtTokenRedisRepository memberRedisRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenUtils jwtTokenUtils;
 
     @Override
     public String signUp(MemberCreateRequest memberDto) {
@@ -41,9 +47,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String updateInfo(MemberUpdateRequest memberDto, Long memberId) {
+    public String updateInfo(MemberUpdateRequest memberDto, String authHeader) {
 
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
+        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+
+        // 헤더의 회원정보가 존재하는 회원정보인지 체크
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
         if (optionalMember.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
         }
@@ -54,7 +63,6 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member updateMember = optionalMember.get();
-
 
         try {
             // 이메일이 변경되었는지 체크 (기존 이메일의 null 여부에 따른 분기)
@@ -77,8 +85,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void signOut(MemberDeleteRequest memberDto, Long memberId) {
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
+    @Transactional
+    public void signOut(MemberDeleteRequest memberDto, String authHeader) {
+
+        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+
+        // 헤더의 회원정보가 존재하는 회원정보인지 체크
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
         if (optionalMember.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
         }
@@ -93,9 +106,53 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
 
-        memberRepository.deleteById(memberId);
+        memberRepository.deleteByMemberName(memberName);
     }
 
+
+    @Override
+    @Transactional
+    public String login(MemberLoginRequest memberDto) {
+        // 아이디에 해당하는 회원정보가 있는지 확인
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberDto.getMemberName());
+        if (optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        // 탈퇴한 회원인지 체크
+        if (optionalMember.get().getIsDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
+        }
+
+        // 회원정보를 가져와서 해당 비밀번호와 저장된 비밀번호가 일치하는지 확인
+        if (!passwordEncoder.matches(memberDto.getPassword(), optionalMember.get().getPassword())) {
+            throw new CustomException(ErrorCode.WRONG_PASSWORD);
+        }
+
+//        // 기존에 생성된 토큰 정보가 있을 경우 삭제(데이터 낭비 방지)
+//        Optional<RefreshToken> optionalRefreshToken = memberRedisRepository.findByMemberName(optionalMember.get().getMemberName());
+//        if (optionalRefreshToken.isPresent()) {
+//            memberRedisRepository.deleteByMemberName(optionalMember.get().getMemberName());
+//        }
+
+        // accessToken 생성
+        String accessToken = jwtTokenUtils.generatedToken(memberDto.getMemberName());
+
+        // refreshToken 생성
+        RefreshToken refreshToken = jwtTokenUtils.generaedRefreshToken(memberDto.getMemberName());
+
+        // refreshToken 저장
+        memberRedisRepository.save(refreshToken);
+
+        return MemberLoginResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .memberName(memberDto.getMemberName())
+                .build()
+                .toString();
+    }
+
+    @Override
     public boolean memberExists(String memberName) {
         return memberRepository.existsByMemberName(memberName);
     }
