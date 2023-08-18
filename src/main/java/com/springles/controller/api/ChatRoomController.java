@@ -67,4 +67,6 @@ public class ChatRoomController {
                         .data(chatRooms)
                         .build(), HttpStatus.OK);
     }
+
+
 }
