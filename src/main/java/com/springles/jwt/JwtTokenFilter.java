@@ -1,6 +1,8 @@
 package com.springles.jwt;
 
 import com.springles.domain.dto.member.MemberCreateRequest;
+import com.springles.exception.CustomException;
+import com.springles.exception.constants.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +36,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.split(" ")[1];
+            log.info("로그아웃이 안되어 있다. : " + jwtTokenUtils.isNotLogout(token));
             if (jwtTokenUtils.isNotLogout(token)) {
                 if (jwtTokenUtils.validate(token)) {
                     SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -48,7 +51,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     context.setAuthentication(authenticationToken);
                     SecurityContextHolder.setContext(context);
                 }
+            } else {
+                throw new CustomException(ErrorCode.NO_JWT_TOKEN);
             }
+            log.info("validation 건너 뜀");
         }
         filterChain.doFilter(request, response);
     }
