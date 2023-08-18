@@ -18,7 +18,7 @@ public class MemberLoginResponse {
                 + ", refreshToken : "
                 + "{ "
                 + "id : " + refreshToken.getId()
-                + ", secretKey : " + refreshToken.getRefreshToken()
+                + ", refreshToken : " + refreshToken.getRefreshToken()
                 + ", expiryDate : " + refreshToken.getExpiration()
                 + " }";
     }

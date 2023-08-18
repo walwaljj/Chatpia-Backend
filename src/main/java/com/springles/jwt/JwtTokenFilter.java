@@ -34,19 +34,21 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        // 헤더 정보 유효성 체크
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.split(" ")[1];
-            log.info("로그아웃이 안되어 있다. : " + jwtTokenUtils.isNotLogout(token));
-            if (jwtTokenUtils.isNotLogout(token)) {
-                if (jwtTokenUtils.validate(token)) {
+            String accessToken = authHeader.split(" ")[1];
+            // 로그아웃 여부 체크
+            if (jwtTokenUtils.isNotLogout(accessToken)) {
+                // accessToken 유효성 체크
+                if (jwtTokenUtils.validate(accessToken)) {
                     SecurityContext context = SecurityContextHolder.createEmptyContext();
-                    String memberName = jwtTokenUtils.parseClaims(token).getSubject();
+                    String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
 
                     AbstractAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             MemberCreateRequest.builder()
                                     .memberName(memberName)
                                     .build(),
-                            token, new ArrayList<>()
+                            accessToken, new ArrayList<>()
                     );
                     context.setAuthentication(authenticationToken);
                     SecurityContextHolder.setContext(context);
@@ -54,7 +56,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             } else {
                 throw new CustomException(ErrorCode.NO_JWT_TOKEN);
             }
-            log.info("validation 건너 뜀");
         }
         filterChain.doFilter(request, response);
     }

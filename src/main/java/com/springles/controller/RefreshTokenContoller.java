@@ -26,7 +26,7 @@ public class RefreshTokenContoller {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(refreshTokenService.reissue(refreshTokenId))
+                        .data("accessToken : " + refreshTokenService.reissue(refreshTokenId))
                         .build());
     }
 }
