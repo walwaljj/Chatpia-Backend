@@ -13,13 +13,12 @@ import com.springles.exception.constants.ErrorCode;
 import com.springles.redis.Redisroom;
 import com.springles.repository.ChatRoomJpaRepository;
 import com.springles.repository.ChatRoomRedisRepository;
-import com.springles.repository.MemberRepository;
+import com.springles.repository.MemberJpaRepository;
 import com.springles.service.ChatRoomService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,6 @@ import static com.springles.exception.constants.ErrorCode.OPEN_ROOM_ERROR;
 
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,7 +42,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomJpaRepository chatRoomJpaRepository;
     private final ChatRoomRedisRepository chatRoomRedisRepository;
-    private final MemberRepository memberRepository;
+    private final MemberJpaRepository memberRepository;
 
     @Transactional
     @Override
@@ -76,15 +74,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      */
     @Override
     public Page<ChatRoomListResponseDto> findAllChatRooms(int pageNumber, int size) {
+
         Pageable pageable = PageRequest.of(pageNumber, size);
-
-        List<ChatRoomListResponseDto> ChatRoomResponseDtoList = chatRoomJpaRepository.findAllByOpenTrueAndState(ChatRoomCode.WAITING)
-                .get()
-                .stream()
-                .sorted(Comparator.comparingLong(o -> (o.getCapacity() - o.getHead())))
-                .map(ChatRoomListResponseDto::fromEntity).collect(Collectors.toList());
-
-        return new PageImpl<>(ChatRoomResponseDtoList, pageable, ChatRoomResponseDtoList.size());
+        Page<ChatRoom> allByOpenTrueAndState = chatRoomJpaRepository.findAllByOpenTrueAndState(ChatRoomCode.WAITING, pageable);
+        return allByOpenTrueAndState.map(ChatRoomListResponseDto::fromEntity);
 
     }
 
@@ -116,9 +109,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         List<ChatRoomListResponseDto> chatRoomResponseDtoList = new ArrayList<>();
 
         for (Member member : members) {
-            Optional<ChatRoom> optionalChatRoom = chatRoomJpaRepository.findAllByOwnerId(member.getId());
-            if(optionalChatRoom.isPresent())
-                chatRoomResponseDtoList.add(ChatRoomListResponseDto.fromEntity(optionalChatRoom.get()));
+            Optional<List<ChatRoom>> optionalChatRoomList = chatRoomJpaRepository.findAllByOwnerId(member.getId());
+            if (optionalChatRoomList.isPresent()) {
+                for (ChatRoom chatRoom : optionalChatRoomList.get()) {
+                    chatRoomResponseDtoList.add(ChatRoomListResponseDto.fromEntity(chatRoom));
+                }
+            }
+
         }
 
         return chatRoomResponseDtoList;
