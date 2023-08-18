@@ -2,11 +2,13 @@ package com.springles.service.impl;
 
 
 import com.springles.domain.dto.member.*;
+import com.springles.domain.entity.BlackListToken;
 import com.springles.domain.entity.Member;
 import com.springles.domain.entity.RefreshToken;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.jwt.JwtTokenUtils;
+import com.springles.repository.BlackListTokenRedisRepository;
 import com.springles.repository.MemberJpaRepository;
 import com.springles.repository.JwtTokenRedisRepository;
 import com.springles.service.MemberService;
@@ -18,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 
 @Slf4j
@@ -26,6 +30,8 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
     private final MemberJpaRepository memberRepository;
     private final JwtTokenRedisRepository memberRedisRepository;
+    private final BlackListTokenRedisRepository blackListTokenRedisRepository;
+    private final JwtTokenRedisRepository jwtTokenRedisRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
 
@@ -150,6 +156,40 @@ public class MemberServiceImpl implements MemberService {
                 .memberName(memberDto.getMemberName())
                 .build()
                 .toString();
+    }
+
+    @Override
+    @Transactional
+    public void logout(String authHeader) {
+        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+        Date rawExpiration = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getExpiration();
+
+        // 헤더의 회원정보가 존재하는 회원정보인지 체크
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if (optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        // 탈퇴한 회원인지 체크
+        if (optionalMember.get().getIsDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
+        }
+        // refreshToken 삭제
+        Optional<RefreshToken> optionalRefreshToken = jwtTokenRedisRepository.findByMemberName(memberName);
+        if(optionalRefreshToken.isEmpty()) {
+            throw new CustomException(ErrorCode.NO_JWT_TOKEN);
+        }
+        jwtTokenRedisRepository.deleteById(optionalRefreshToken.get().getId());
+
+        // 블랙리스트에 저장
+        BlackListToken blackListToken = BlackListToken.builder()
+                .accessToken(authHeader.split(" ")[1])
+                // accessToken의 남은 유효시간만큼만 저장
+                .expiration((rawExpiration.getTime() - Date.from(Instant.now()).getTime())/1000)
+                .build();
+        log.info("token Expiration : " + rawExpiration);
+
+        blackListTokenRedisRepository.save(blackListToken);
     }
 
     @Override

@@ -2,6 +2,9 @@ package com.springles.jwt;
 
 import com.springles.domain.dto.member.MemberLoginRequest;
 import com.springles.domain.entity.RefreshToken;
+import com.springles.exception.CustomException;
+import com.springles.exception.constants.ErrorCode;
+import com.springles.repository.BlackListTokenRedisRepository;
 import com.springles.repository.JwtTokenRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -20,15 +23,18 @@ public class JwtTokenUtils {
 
     private final Key singleKey;
     private final JwtParser jwtParser;
+    private final BlackListTokenRedisRepository blackListTokenRedisRepository;
 
     public JwtTokenUtils(
             @Value("${jwt.secret}") String jwtSecret,
-            JwtTokenRedisRepository tokenRedisRepository
+            JwtTokenRedisRepository tokenRedisRepository,
+            BlackListTokenRedisRepository blackListTokenRedisRepository
     ) {
         this.singleKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
         this.jwtParser = Jwts.parserBuilder()
                 .setSigningKey(this.singleKey)
                 .build();
+        this.blackListTokenRedisRepository = blackListTokenRedisRepository;
     }
 
     // accessToken 발급
@@ -36,7 +42,7 @@ public class JwtTokenUtils {
         Claims jwtClaims = Jwts.claims()
                 .setSubject(memberName)
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plusSeconds(60 * 60 * 24))); // 1일(test용)
+                .setExpiration(Date.from(Instant.now().plusSeconds(60 * 3))); // 3분(test용)
         return Jwts.builder()
                 .setClaims(jwtClaims)
                 .signWith(singleKey)
@@ -73,5 +79,14 @@ public class JwtTokenUtils {
 
     public Claims parseClaims(String token) {
         return jwtParser.parseClaimsJws(token).getBody();
+    }
+
+    public boolean isNotLogout(String accessToken) {
+        if(!blackListTokenRedisRepository.existsByAccessToken(accessToken)) {
+            return true;
+        } else {
+            log.warn("로그아웃 된 토큰");
+            return false;
+        }
     }
 }

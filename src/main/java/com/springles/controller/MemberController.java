@@ -81,4 +81,19 @@ public class MemberController {
                         .build()
         );
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ResResult> logout(
+            @RequestHeader(value = "Authorization") String authHeader
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_LOGOUT;
+        memberService.logout(authHeader);
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .build()
+        );
+    }
 }
