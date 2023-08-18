@@ -1,11 +1,8 @@
 package com.springles.jwt;
 
-import com.springles.domain.dto.member.MemberLoginRequest;
 import com.springles.domain.entity.RefreshToken;
-import com.springles.exception.CustomException;
-import com.springles.exception.constants.ErrorCode;
 import com.springles.repository.BlackListTokenRedisRepository;
-import com.springles.repository.JwtTokenRedisRepository;
+import com.springles.repository.RefreshTokenRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +24,7 @@ public class JwtTokenUtils {
 
     public JwtTokenUtils(
             @Value("${jwt.secret}") String jwtSecret,
-            JwtTokenRedisRepository tokenRedisRepository,
+            RefreshTokenRedisRepository tokenRedisRepository,
             BlackListTokenRedisRepository blackListTokenRedisRepository
     ) {
         this.singleKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());

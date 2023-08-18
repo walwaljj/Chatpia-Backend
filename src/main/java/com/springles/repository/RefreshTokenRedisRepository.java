@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
-public interface JwtTokenRedisRepository extends CrudRepository<RefreshToken, String> {
+public interface RefreshTokenRedisRepository extends CrudRepository<RefreshToken, String> {
     Optional<RefreshToken> findByMemberName(String memberName);
 }

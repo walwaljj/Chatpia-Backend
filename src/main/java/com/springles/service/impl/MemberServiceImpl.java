@@ -10,15 +10,13 @@ import com.springles.exception.constants.ErrorCode;
 import com.springles.jwt.JwtTokenUtils;
 import com.springles.repository.BlackListTokenRedisRepository;
 import com.springles.repository.MemberJpaRepository;
-import com.springles.repository.JwtTokenRedisRepository;
+import com.springles.repository.RefreshTokenRedisRepository;
 import com.springles.service.MemberService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.Date;
@@ -29,9 +27,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberJpaRepository memberRepository;
-    private final JwtTokenRedisRepository memberRedisRepository;
+    private final RefreshTokenRedisRepository memberRedisRepository;
     private final BlackListTokenRedisRepository blackListTokenRedisRepository;
-    private final JwtTokenRedisRepository jwtTokenRedisRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
 
@@ -175,11 +173,11 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.DELETED_MEMBER);
         }
         // refreshToken 삭제
-        Optional<RefreshToken> optionalRefreshToken = jwtTokenRedisRepository.findByMemberName(memberName);
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRedisRepository.findByMemberName(memberName);
         if(optionalRefreshToken.isEmpty()) {
             throw new CustomException(ErrorCode.NO_JWT_TOKEN);
         }
-        jwtTokenRedisRepository.deleteById(optionalRefreshToken.get().getId());
+        refreshTokenRedisRepository.deleteById(optionalRefreshToken.get().getId());
 
         // 블랙리스트에 저장
         BlackListToken blackListToken = BlackListToken.builder()

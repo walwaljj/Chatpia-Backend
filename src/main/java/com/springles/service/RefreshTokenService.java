@@ -1,10 +1,9 @@
 package com.springles.service;
 
-import com.springles.domain.entity.Member;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface JwtTokenService {
+public interface RefreshTokenService {
 
     String reissue(String refreshTokenId);
 
