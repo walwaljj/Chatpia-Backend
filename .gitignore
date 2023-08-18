@@ -40,5 +40,5 @@ out/
 ### CUSTOM ###
 .DS_Store
 docker/
-src/main/resources/
-/resources/
+#src/main/resources/
+#/resources/
