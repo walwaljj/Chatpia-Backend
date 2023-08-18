@@ -20,12 +20,20 @@ public class Subscriber implements MessageListener {
 
     private String roomId;
 
-    public void onMessage(Message message, byte[] pattern) {
+    // 메시지를 받을 때 동작하는 로직
+    public void onMessage(Message message,
+                          byte[] pattern // 채널 매칭을 위한 패턴 정의 (여러 채널로부터 구독을 할 수 있다)
+    ) {
         try {
-        log.info("message 도착:"+message.toString());
-        String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-        ChatMessage chatMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
-        messagingTemplate.convertAndSend("/sub/chat/room/"+chatMessage.getRoomId(),chatMessage);
+            // 메시지가 도착했음을 log에 찍고 내용 확인
+            log.info("message 도착:" + message.toString());
+            String publishMessage = (String) redisTemplate
+                    .getStringSerializer()
+                    .deserialize(message.getBody());
+            ChatMessage chatMessage = objectMapper
+                    .readValue(publishMessage, ChatMessage.class);
+            messagingTemplate
+                    .convertAndSend("/sub/chat/room/" + chatMessage.getRoomId(), chatMessage);
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
         }

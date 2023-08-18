@@ -50,7 +50,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // request 자체가 빈 경우
         if (chatRoomReqDTO == null) throw new CustomException(ErrorCode.REQUEST_EMPTY);
         // 비밀방 선택 - 비밀번호 입력하지 않은 경우 오류 발생
-        if (!chatRoomReqDTO.getOpen() && chatRoomReqDTO.getPassword() == null) throw new CustomException(CLOSE_ROOM_ERROR);
+        if (!chatRoomReqDTO.getOpen() && (chatRoomReqDTO.getPassword().isEmpty())) throw new CustomException(CLOSE_ROOM_ERROR);
         // 공개방 선택 - 비밀번호 입력한 경우 오류 발생
         if (chatRoomReqDTO.getOpen() && (!chatRoomReqDTO.getPassword().isEmpty())) throw new CustomException(OPEN_ROOM_ERROR);
 
