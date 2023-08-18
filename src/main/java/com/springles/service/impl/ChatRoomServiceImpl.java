@@ -142,4 +142,17 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // 수정한 데이터 반환
         return ChatRoomResponseDto.of(findChatRoom);
     }
+
+    // 채팅방 삭제
+    @Transactional
+    @Override
+    public void deleteChatRoom(Long memberId, Long chatRoomId){
+        // 기존 채팅방 데이터 받기
+        ChatRoom findChatRoom = chatRoomJpaRepository.findById(chatRoomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+        // 삭제를 요청한 사용자와 방장이 일치하는지 확인
+        if(findChatRoom.getOwnerId() != memberId) throw new CustomException(ErrorCode.USER_NOT_OWNER);
+        // 삭제
+        chatRoomJpaRepository.delete(findChatRoom);
+    }
 }

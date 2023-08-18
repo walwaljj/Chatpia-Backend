@@ -71,12 +71,11 @@ public class ChatRoomController {
 
     // 채팅방 수정
     @Operation(summary = "채팅방 수정", description = "채팅방 수정")
-    @PostMapping(value = "/chatrooms/{chatroomid}")
+    @PatchMapping(value = "/chatrooms/{chatroomid}")
     public ResponseEntity<ResResult> updateChatRoom(
             @Valid @RequestBody ChatRoomUpdateReqDto dto,
             @PathVariable Long chatroomid){
 
-        log.info(dto.getPassword());
         // 응답 메시지 return
         log.info(String.valueOf(dto.getMemberId()));
         ResponseCode responseCode = ResponseCode.CHATROOM_UPDATE;
@@ -88,4 +87,14 @@ public class ChatRoomController {
                 .build(), HttpStatus.OK);
     }
 
+    // 채팅방 삭제
+    @Operation(summary = "채팅방 삭제", description = "채팅방 삭제")
+    @DeleteMapping(value = "/chatrooms/{chatroomid}")
+    public String deleteChatRoom(
+            @RequestBody Long memberId,
+            @PathVariable Long chatroomid){
+
+        chatRoomService.deleteChatRoom(memberId, chatroomid);
+        return "redirect:/v1/chatrooms";
+    }
 }
