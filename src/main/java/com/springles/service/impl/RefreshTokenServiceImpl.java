@@ -37,8 +37,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-//        if(optionalRefreshToken.get().getExpiration())
-
         // accessToken 재발급
         return jwtTokenUtils.generatedToken(optionalRefreshToken.get().getMemberName());
     }
