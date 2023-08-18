@@ -133,6 +133,12 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
 
+        // 기존에 생성된 refreshToken이 있을 경우 삭제
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRedisRepository.findByMemberName(memberDto.getMemberName());
+        if(optionalRefreshToken.isPresent()) {
+            refreshTokenRedisRepository.deleteById(optionalRefreshToken.get().getId());
+        }
+
         // accessToken 생성
         String accessToken = jwtTokenUtils.generatedToken(memberDto.getMemberName());
 
