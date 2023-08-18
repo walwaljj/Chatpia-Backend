@@ -34,11 +34,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+        log.info("필터 시작");
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.split(" ")[1];
+            log.info("필터 - 로그아웃 여부 체크");
             if (jwtTokenUtils.isNotLogout(token)) {
+                log.info("필터 - 토큰 유효성 검사");
                 if (jwtTokenUtils.validate(token)) {
                     SecurityContext context = SecurityContextHolder.createEmptyContext();
                     String memberName = jwtTokenUtils.parseClaims(token).getSubject();
@@ -54,15 +56,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 }
             }
         }
+        log.info("필터 끝");
         filterChain.doFilter(request, response);
     }
-
-    // filter를 거치지 않는 api
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String[] excludePath = {"/token/*"};
-        String path = request.getRequestURI();
-        return Arrays.stream(excludePath).anyMatch(path::startsWith);
-    }
-
 }

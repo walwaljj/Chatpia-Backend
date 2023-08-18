@@ -33,6 +33,7 @@ public class WebSecurityConfig {
                                  .requestMatchers(new AntPathRequestMatcher(("/member/info"))).authenticated()
                                 .requestMatchers(new AntPathRequestMatcher("/member/login")).permitAll()
                                 .requestMatchers(new AntPathRequestMatcher("/member/signup")).permitAll()
+                                .requestMatchers(new AntPathRequestMatcher("/token/reissue")).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(
