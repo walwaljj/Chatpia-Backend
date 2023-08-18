@@ -2,6 +2,7 @@ package com.springles.controller.api;
 
 import com.springles.domain.constants.ResponseCode;
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
+import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 import com.springles.domain.dto.response.ResResult;
 import com.springles.service.ChatRoomService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -67,4 +68,24 @@ public class ChatRoomController {
                         .data(chatRooms)
                         .build(), HttpStatus.OK);
     }
+
+    // 채팅방 수정
+    @Operation(summary = "채팅방 수정", description = "채팅방 수정")
+    @PostMapping(value = "/chatrooms/{chatroomid}")
+    public ResponseEntity<ResResult> updateChatRoom(
+            @Valid @RequestBody ChatRoomUpdateReqDto dto,
+            @PathVariable Long chatroomid){
+
+        log.info(dto.getPassword());
+        // 응답 메시지 return
+        log.info(String.valueOf(dto.getMemberId()));
+        ResponseCode responseCode = ResponseCode.CHATROOM_UPDATE;
+        return new ResponseEntity<>(ResResult.builder()
+                .responseCode(responseCode)
+                .code(responseCode.getCode())
+                .message(responseCode.getMessage())
+                .data(chatRoomService.updateChatRoom(dto, chatroomid))
+                .build(), HttpStatus.OK);
+    }
+
 }

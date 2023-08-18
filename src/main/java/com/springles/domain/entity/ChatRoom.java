@@ -47,5 +47,15 @@ public class ChatRoom {
 
     // 공개방/비밀방
     @Column(nullable = false)
-    private boolean open;
+    private Boolean open;
+
+    public void modify(ChatRoom chatRoom){
+        this.title = chatRoom.getTitle();
+        this.password = chatRoom.getPassword();
+        this.ownerId = chatRoom.getOwnerId();
+        this.state = chatRoom.getState();
+        this.capacity = chatRoom.getCapacity();
+        this.head = chatRoom.getHead();
+        this.open = chatRoom.getOpen();
+    }
 }

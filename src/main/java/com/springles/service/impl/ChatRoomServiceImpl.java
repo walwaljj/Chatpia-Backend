@@ -3,6 +3,7 @@ package com.springles.service.impl;
 
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.constants.ChatRoomCode;
+import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.entity.ChatRoom;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.springles.domain.dto.chatroom.ChatRoomReqDTO.createToEntity;
+import static com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto.updateToEntity;
 import static com.springles.exception.constants.ErrorCode.CLOSE_ROOM_ERROR;
 import static com.springles.exception.constants.ErrorCode.OPEN_ROOM_ERROR;
 
@@ -120,5 +122,24 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         }
 
         return chatRoomResponseDtoList;
+    }
+
+    // 채팅방 수정
+    @Transactional
+    @Override
+    public ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto dto, Long id){
+        // 기존 채팅방 데이터 받기
+        ChatRoom findChatRoom = chatRoomJpaRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+        // 수정을 요청한 사용자와 방장이 일치하는지 확인
+        if(findChatRoom.getOwnerId() != dto.getMemberId()) throw new CustomException(ErrorCode.USER_NOT_OWNER);
+        // 데이터 수정
+        findChatRoom.modify(updateToEntity(dto, id));
+        // 비밀방 선택 - 비밀번호 입력하지 않은 경우라면
+        if (!findChatRoom.getOpen() && findChatRoom.getPassword() == null) throw new CustomException(ErrorCode.PASSWORD_EMPTY);
+        // 공개방 선택 - 비밀번호 입력한 경우라면
+        if (findChatRoom.getOpen() && findChatRoom.getPassword() != null) throw new CustomException(ErrorCode.OPEN_PASSWORD);
+        // 수정한 데이터 반환
+        return ChatRoomResponseDto.of(findChatRoom);
     }
 }

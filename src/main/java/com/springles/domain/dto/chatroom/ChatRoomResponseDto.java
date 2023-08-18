@@ -37,7 +37,7 @@ public class ChatRoomResponseDto {
             .state(chatRoom.getState())
             .capacity(chatRoom.getCapacity())
             .head(chatRoom.getHead())
-            .open(chatRoom.isOpen())
+            .open(chatRoom.getOpen())
             .build();
     }
 }
