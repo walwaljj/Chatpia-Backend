@@ -11,7 +11,6 @@ import java.util.List;
 
 public interface ChatRoomService {
     @Transactional
-
     ChatRoomResponseDto createChatRoom(ChatRoomReqDTO chatRoomReqDTO);
 
     Page<ChatRoomListResponseDto> findAllChatRooms(int pageNumber, int size);
@@ -20,5 +19,8 @@ public interface ChatRoomService {
 
     List<ChatRoomListResponseDto> findChatRoomByNickname(String nickname);
 
+    @Transactional
     ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto chatRoomUpdateReqDto, Long chatroomid);
+    @Transactional
+    void deleteChatRoom(Long memberId, Long chatRoomId);
 }
