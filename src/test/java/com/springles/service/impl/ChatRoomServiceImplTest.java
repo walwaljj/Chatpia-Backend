@@ -1,7 +1,7 @@
 package com.springles.service.impl;
 
 import com.springles.domain.constants.ChatRoomCode;
-import com.springles.domain.dto.Chat.ChatRoomListResponseDto;
+import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
 import com.springles.domain.dto.member.MemberCreateRequest;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.repository.ChatRoomJpaRepository;
@@ -43,6 +43,14 @@ class ChatRoomServiceImplTest {
             );
         }
 
+        memberService.signUp(MemberCreateRequest.builder()
+                .memberName("testUser1")
+                .password("1")
+                .passwordConfirm("1")
+                .email("1@")
+                .role("user")
+                .isDeleted(false).build());
+
     }
 
 
@@ -83,18 +91,12 @@ class ChatRoomServiceImplTest {
     @DisplayName("방장 이름으로 조회")
     public void findByOwnerNickNameTest() {
 
-        // given : member init
-        memberService.signUp(MemberCreateRequest.builder()
-                .memberName("testUser1")
-                .password("1")
-                .passwordConfirm("1")
-                .email("1@")
-                .role("user")
-                .isDeleted(false).build());
-        // ----- member init 끝
+        // given
+        String testUser1 = "testUser1";
 
         // when
-        List<ChatRoomListResponseDto> chatRoomList = chatRoomService.findChatRoomByNickname("testUser1");
+
+        List<ChatRoomListResponseDto> chatRoomList = chatRoomService.findChatRoomByNickname(testUser1);
 
         //then
         ChatRoomListResponseDto result = chatRoomList.stream().findAny().get();

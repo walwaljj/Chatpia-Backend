@@ -2,8 +2,7 @@ package com.springles.service;
 
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
-import com.springles.domain.dto.Chat.ChatRoomListResponseDto;
-import com.springles.domain.entity.ChatRoom;
+import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
