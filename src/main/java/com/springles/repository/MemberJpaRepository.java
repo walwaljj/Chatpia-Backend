@@ -4,6 +4,7 @@ import com.springles.domain.entity.Member;
 import com.springles.repository.custom.MemberCustomRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberJpaRepository extends JpaRepository<Member, Long>, MemberCustomRepository {
@@ -13,4 +14,7 @@ public interface MemberJpaRepository extends JpaRepository<Member, Long>, Member
     Optional<Member> findByMemberName(String memberName);
 
     void deleteByMemberName(String memberName);
+    List<Member> findAllByEmail(String email);
+
+    Optional<Member> findByMemberNameAndEmail(String memberName, String email);
 }

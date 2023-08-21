@@ -1,10 +1,7 @@
 package com.springles.controller.api;
 
 import com.springles.domain.constants.ResponseCode;
-import com.springles.domain.dto.member.MemberCreateRequest;
-import com.springles.domain.dto.member.MemberDeleteRequest;
-import com.springles.domain.dto.member.MemberLoginRequest;
-import com.springles.domain.dto.member.MemberUpdateRequest;
+import com.springles.domain.dto.member.*;
 import com.springles.domain.dto.response.ResResult;
 import com.springles.service.MemberService;
 import jakarta.validation.Valid;
@@ -93,6 +90,38 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
+                        .build()
+        );
+    }
+
+    @PostMapping("/vertification/id")
+    public ResponseEntity<ResResult> vertificationId(
+            @RequestBody MemberVertifIdRequest memberDto
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_ID_SEND;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.vertificationId(memberDto))
+                        .build()
+        );
+    }
+
+    @PostMapping("/vertification/pw")
+    public ResponseEntity<ResResult> vertificationPw(
+            @RequestBody MemberVertifPwRequest memberDto
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_PW_SEND;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.vertificationPw(memberDto))
                         .build()
         );
     }

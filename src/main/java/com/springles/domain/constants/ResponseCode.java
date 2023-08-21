@@ -24,6 +24,8 @@ public enum ResponseCode {
     MEMBER_UPDATE(HttpStatus.OK, "200", "회원정보 수정 성공"),
     MEMBER_DELETE(HttpStatus.NO_CONTENT, "204", "회원정보 삭제 성공"),
     MEMBER_EXISTS(HttpStatus.OK,"200","회원존재 여부 조회 성공"),
+    MEMBER_ID_SEND(HttpStatus.OK,"200","아이디 메일 발송 완료"),
+    MEMBER_PW_SEND(HttpStatus.OK,"200","임시 비밀번호 메일 발송 완료"),
 
     /* CHATROOM */
     CHATROOM_SEARCH(HttpStatus.OK,"200","채팅방 목록 조회 성공"),
