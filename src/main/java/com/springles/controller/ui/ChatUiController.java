@@ -24,4 +24,14 @@ public class ChatUiController {
     public String enter(@RequestParam("username") String username) {
         return "chat";
     }
+
+    @GetMapping
+    public String index() {
+        return "chat-lobby";
+    }
+
+    @GetMapping("{roomId}/{userId}")
+    public String enterRoom(){
+        return "chat-room";
+    }
 }
