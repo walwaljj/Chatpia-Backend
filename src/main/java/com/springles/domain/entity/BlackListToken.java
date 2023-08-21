@@ -1,7 +1,5 @@
 package com.springles.domain.entity;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import org.springframework.data.annotation.Id;
 import lombok.Builder;
 import lombok.Data;
@@ -11,14 +9,15 @@ import org.springframework.data.redis.core.index.Indexed;
 
 @Data
 @Builder
-@RedisHash(value = "token")
-public class RefreshToken {
+@RedisHash(value = "blacklist")
+public class BlackListToken {
 
     @Id
-    private String Id;
+    private String id;
+
     @Indexed
-    private String memberName;
-    private String refreshToken;    // UUID
+    private String accessToken;
+
     @TimeToLive
     private Long expiration;
 }

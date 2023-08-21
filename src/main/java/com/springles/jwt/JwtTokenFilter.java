@@ -1,6 +1,8 @@
 package com.springles.jwt;
 
 import com.springles.domain.dto.member.MemberCreateRequest;
+import com.springles.exception.CustomException;
+import com.springles.exception.constants.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,26 +34,29 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-
+        // 헤더 정보 유효성 체크
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.split(" ")[1];
+            String accessToken = authHeader.split(" ")[1];
+            // 로그아웃 여부 체크
+            if (jwtTokenUtils.isNotLogout(accessToken)) {
+                // accessToken 유효성 체크
+                if (jwtTokenUtils.validate(accessToken)) {
+                    SecurityContext context = SecurityContextHolder.createEmptyContext();
+                    String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
 
-            if (jwtTokenUtils.validate(token)) {
-                SecurityContext context = SecurityContextHolder.createEmptyContext();
-                String memberName = jwtTokenUtils.parseClaims(token).getSubject();
-
-                AbstractAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        MemberCreateRequest.builder()
-                                .memberName(memberName)
-                                .build(),
-                        token, new ArrayList<>()
-                );
-
-                context.setAuthentication(authenticationToken);
-                SecurityContextHolder.setContext(context);
+                    AbstractAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                            MemberCreateRequest.builder()
+                                    .memberName(memberName)
+                                    .build(),
+                            accessToken, new ArrayList<>()
+                    );
+                    context.setAuthentication(authenticationToken);
+                    SecurityContextHolder.setContext(context);
+                }
+            } else {
+                throw new CustomException(ErrorCode.NO_JWT_TOKEN);
             }
         }
         filterChain.doFilter(request, response);
     }
-
 }

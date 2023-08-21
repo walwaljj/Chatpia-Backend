@@ -1,19 +1,25 @@
 package com.springles.service.impl;
 
 
-import com.springles.domain.dto.member.MemberCreateRequest;
-import com.springles.domain.dto.member.MemberDeleteRequest;
-import com.springles.domain.dto.member.MemberUpdateRequest;
+import com.springles.domain.dto.member.*;
+import com.springles.domain.entity.BlackListToken;
 import com.springles.domain.entity.Member;
+import com.springles.domain.entity.RefreshToken;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
+import com.springles.jwt.JwtTokenUtils;
+import com.springles.repository.BlackListTokenRedisRepository;
 import com.springles.repository.MemberJpaRepository;
+import com.springles.repository.RefreshTokenRedisRepository;
 import com.springles.service.MemberService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 
 @Slf4j
@@ -21,7 +27,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberJpaRepository memberRepository;
+    private final RefreshTokenRedisRepository memberRedisRepository;
+    private final BlackListTokenRedisRepository blackListTokenRedisRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenUtils jwtTokenUtils;
 
     @Override
     public String signUp(MemberCreateRequest memberDto) {
@@ -41,9 +51,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String updateInfo(MemberUpdateRequest memberDto, Long memberId) {
+    public String updateInfo(MemberUpdateRequest memberDto, String authHeader) {
 
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
+        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+
+        // 헤더의 회원정보가 존재하는 회원정보인지 체크
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
         if (optionalMember.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
         }
@@ -54,7 +67,6 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member updateMember = optionalMember.get();
-
 
         try {
             // 이메일이 변경되었는지 체크 (기존 이메일의 null 여부에 따른 분기)
@@ -77,8 +89,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void signOut(MemberDeleteRequest memberDto, Long memberId) {
-        Optional<Member> optionalMember = memberRepository.findById(memberId);
+    @Transactional
+    public void signOut(MemberDeleteRequest memberDto, String authHeader) {
+
+        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+
+        // 헤더의 회원정보가 존재하는 회원정보인지 체크
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
         if (optionalMember.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
         }
@@ -93,9 +110,87 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.WRONG_PASSWORD);
         }
 
-        memberRepository.deleteById(memberId);
+        memberRepository.deleteByMemberName(memberName);
     }
 
+
+    @Override
+    @Transactional
+    public String login(MemberLoginRequest memberDto) {
+        // 아이디에 해당하는 회원정보가 있는지 확인
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberDto.getMemberName());
+        if (optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        // 탈퇴한 회원인지 체크
+        if (optionalMember.get().getIsDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
+        }
+
+        // 회원정보를 가져와서 해당 비밀번호와 저장된 비밀번호가 일치하는지 확인
+        if (!passwordEncoder.matches(memberDto.getPassword(), optionalMember.get().getPassword())) {
+            throw new CustomException(ErrorCode.WRONG_PASSWORD);
+        }
+
+        // 기존에 생성된 refreshToken이 있을 경우 삭제
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRedisRepository.findByMemberName(memberDto.getMemberName());
+        if(optionalRefreshToken.isPresent()) {
+            refreshTokenRedisRepository.deleteById(optionalRefreshToken.get().getId());
+        }
+
+        // accessToken 생성
+        String accessToken = jwtTokenUtils.generatedToken(memberDto.getMemberName());
+
+        // refreshToken 생성
+        RefreshToken refreshToken = jwtTokenUtils.generaedRefreshToken(memberDto.getMemberName());
+
+        // refreshToken 저장
+        memberRedisRepository.save(refreshToken);
+
+        return MemberLoginResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .memberName(memberDto.getMemberName())
+                .build()
+                .toString();
+    }
+
+    @Override
+    @Transactional
+    public void logout(String authHeader) {
+        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+        Date rawExpiration = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getExpiration();
+
+        // 헤더의 회원정보가 존재하는 회원정보인지 체크
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if (optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        // 탈퇴한 회원인지 체크
+        if (optionalMember.get().getIsDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
+        }
+        // refreshToken 삭제
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRedisRepository.findByMemberName(memberName);
+        if(optionalRefreshToken.isEmpty()) {
+            throw new CustomException(ErrorCode.NO_JWT_TOKEN);
+        }
+        refreshTokenRedisRepository.deleteById(optionalRefreshToken.get().getId());
+
+        // 블랙리스트에 저장
+        BlackListToken blackListToken = BlackListToken.builder()
+                .accessToken(authHeader.split(" ")[1])
+                // accessToken의 남은 유효시간만큼만 저장
+                .expiration((rawExpiration.getTime() - Date.from(Instant.now()).getTime())/1000)
+                .build();
+        log.info("token Expiration : " + rawExpiration);
+
+        blackListTokenRedisRepository.save(blackListToken);
+    }
+
+    @Override
     public boolean memberExists(String memberName) {
         return memberRepository.existsByMemberName(memberName);
     }
