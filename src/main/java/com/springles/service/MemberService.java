@@ -1,9 +1,8 @@
 package com.springles.service;
 
-import com.springles.domain.dto.member.MemberCreateRequest;
-import com.springles.domain.dto.member.MemberDeleteRequest;
-import com.springles.domain.dto.member.MemberLoginRequest;
-import com.springles.domain.dto.member.MemberUpdateRequest;
+import com.springles.domain.dto.member.*;
+
+import java.io.IOException;
 
 public interface MemberService {
 
@@ -16,5 +15,8 @@ public interface MemberService {
     boolean memberExists(String memberName);
 
     String login(MemberLoginRequest memberDto);
+
     void logout(String authHeader);
+
+    String vertificationId(MemberVertifIdRequest memberDto);
 }
