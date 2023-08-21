@@ -204,7 +204,7 @@ public class MemberServiceImpl implements MemberService {
 
         List<Member> memberList = memberRepository.findAllByEmail(memberDto.getEmail());
         if(memberList.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_EMAIL_MEMBER);
+            throw new CustomException(ErrorCode.NOT_FOUND_INPUT_VALUE_MEMBER);
         }
 
         // 해당 email로 가입된 id 개수
@@ -265,11 +265,12 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public String vertificationPw(MemberVertifPwRequest memberDto) {
         String memberName = memberDto.getMemberName();
+        String email = memberDto.getEmail();
         String tempPassword = randomPassword();
 
-        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        Optional<Member> optionalMember = memberRepository.findByMemberNameAndEmail(memberName, email);
         if(optionalMember.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+            throw new CustomException(ErrorCode.NOT_FOUND_INPUT_VALUE_MEMBER);
         }
 
         // 비밀번호를 임시비밀번호로 변경
@@ -277,13 +278,12 @@ public class MemberServiceImpl implements MemberService {
         updateMember.setPassword(passwordEncoder.encode(tempPassword));
         memberRepository.save(updateMember);
 
-
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             // 수신자
-            mimeMessageHelper.setTo(memberDto.getEmail());
+            mimeMessageHelper.setTo(email);
             // 제목
             mimeMessageHelper.setSubject("[CHATFIA] 임시 비밀번호 안내드립니다.");
             // 본문 (추후 thymeleaf로 구현 예정)
@@ -321,7 +321,7 @@ public class MemberServiceImpl implements MemberService {
 
         return "memberName : " + memberName
                 + ", password : " + passwordEncoder.encode(randomPassword())
-                + ", email : " + memberDto.getEmail();
+                + ", email : " + email;
     }
 
     // 임시 비밀번호 생성
