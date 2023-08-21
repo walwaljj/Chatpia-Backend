@@ -10,9 +10,7 @@ import com.springles.domain.entity.ChatRoom;
 import com.springles.domain.entity.Member;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
-import com.springles.redis.Redisroom;
 import com.springles.repository.ChatRoomJpaRepository;
-import com.springles.repository.ChatRoomRedisRepository;
 import com.springles.repository.MemberRepository;
 import com.springles.service.ChatRoomService;
 
@@ -43,7 +41,6 @@ import java.util.stream.Collectors;
 public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomJpaRepository chatRoomJpaRepository;
-    private final ChatRoomRedisRepository chatRoomRedisRepository;
     private final MemberRepository memberRepository;
 
     @Transactional
@@ -57,15 +54,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         if (chatRoomReqDTO.getOpen() && (!chatRoomReqDTO.getPassword().isEmpty())) throw new CustomException(OPEN_ROOM_ERROR);
 
         ChatRoom chatRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO));
-
-        // Redis에 방 생성
-        Redisroom redisroom = Redisroom.builder()
-            .id(chatRoom.getId()+"")
-            .topic(chatRoom.getId()+"")
-            .build();
-
-        log.info(chatRoomRedisRepository.save(redisroom).toString());
-        log.info(redisroom.getId());
 
         // 채팅방 생성하기
         return ChatRoomResponseDto.of(chatRoom);

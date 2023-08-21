@@ -1,7 +1,6 @@
-package com.springles.domain.dto.chat;
+package com.springles.domain.dto.chatting;
 
 
-import com.springles.redis.ChatMessage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MessageRequestDto {
 
-    private ChatMessage.ChatType type;
+    public enum ChatType {
+        ENTER, QUIT, CHAT
+    }
+
+    private ChatType type;
     private String message;
     private String sender;
     private String roomId;
