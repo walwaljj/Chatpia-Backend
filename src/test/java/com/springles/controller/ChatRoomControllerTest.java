@@ -98,5 +98,29 @@ class ChatRoomControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data.size()").value(4)) // init메소드에서 title 이 Room인 방을 찾음
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("채팅방 생성")
+    public void createChatRoomTest() throws Exception {
+        // given
+        // when
+        // then
+    }
+
+    @Test
+    @DisplayName("채팅방 수정")
+    public void updateChatRoomTest() throws Exception {
+        // given
+        // when
+        // then
+    }
+
+    @Test
+    @DisplayName("채팅방 삭제")
+    public void deleteChatRoomTest() throws Exception {
+        // given
+        // when
+        // then
+    }
 }
 
