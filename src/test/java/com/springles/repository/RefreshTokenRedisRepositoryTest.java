@@ -2,6 +2,7 @@ package com.springles.repository;
 
 import com.springles.domain.entity.RefreshToken;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +19,7 @@ class RefreshTokenRedisRepositoryTest {
     RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     @Test
+    @DisplayName("memberName에 해당하는 RefreshToken 호출 테스트")
     void findByMemberName() {
         // given
         refreshTokenRedisRepository.save(
