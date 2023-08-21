@@ -1,6 +1,0 @@
-spring:
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${username} # 환경변수 설정 필요
-    password: ${password} # 환경변수 설정 필요
