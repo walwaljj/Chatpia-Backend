@@ -12,6 +12,7 @@ import com.springles.repository.BlackListTokenRedisRepository;
 import com.springles.repository.MemberJpaRepository;
 import com.springles.repository.RefreshTokenRedisRepository;
 import com.springles.service.MemberService;
+import com.sun.mail.smtp.SMTPAddressFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
@@ -22,7 +23,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -229,7 +229,7 @@ public class MemberServiceImpl implements MemberService {
             mimeMessageHelper.setTo(memberDto.getEmail());
             // 제목
             mimeMessageHelper.setSubject("[CHATFIA] 아이디 찾기 결과 안내드립니다.");
-            // 본문
+            // 본문 (추후 thymeleaf로 구현 예정)
             mimeMessageHelper.setText(
                     "<div>"
                             + "<table style = \"width:100% margin:0; padding:0; min-width:100%\">"
@@ -282,8 +282,11 @@ public class MemberServiceImpl implements MemberService {
 
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+            // 수신자
             mimeMessageHelper.setTo(memberDto.getEmail());
+            // 제목
             mimeMessageHelper.setSubject("[CHATFIA] 임시 비밀번호 안내드립니다.");
+            // 본문 (추후 thymeleaf로 구현 예정)
             mimeMessageHelper.setText(
                     "<div>"
                             + "<table style=\"width:100%; margin:0; padding:0; min-width:100%\">"

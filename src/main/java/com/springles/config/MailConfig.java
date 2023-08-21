@@ -1,6 +1,5 @@
 package com.springles.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,11 +39,15 @@ public class MailConfig {
 
     private Properties getMailProperties() {
         Properties properties = new Properties();
+        // 사용자 계정 인증 여부
         properties.setProperty("mail.smtp.auth", "true");
-        properties.setProperty("mail.smtp.auth", "true");
+        // Socket Read Timeout 시간(ms)
         properties.setProperty("mail.smtp.timeout", "3000");
+        // StartTLS 활성화(메일 전송 시 데이터 암호화) 여부
         properties.setProperty("mail.smtp.starttls.enable", "true");
+        // debugging 로그 출력 여부
         properties.setProperty("mail.debug", "true");
+
         return properties;
     }
 }
