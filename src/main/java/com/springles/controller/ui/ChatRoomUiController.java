@@ -1,18 +1,16 @@
 package com.springles.controller.ui;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping("v1/chat")
 @Controller
-public class ChatUiController {
-    // 채팅방 들어갈 때
+@RequestMapping("v1/home")
+public class ChatRoomUiController {
     @GetMapping("")
-    public String enterRoom(
-            ){
-        return "chat-room";
+    public String home(Model model) {
+        model.addAttribute("data", "Hello");
+        return "home";
     }
-
 }
