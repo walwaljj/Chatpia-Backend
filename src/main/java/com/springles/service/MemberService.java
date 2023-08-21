@@ -12,11 +12,15 @@ public interface MemberService {
 
     void signOut(MemberDeleteRequest memberDto, String authHeader);
 
-    boolean memberExists(String memberName);
-
     String login(MemberLoginRequest memberDto);
 
     void logout(String authHeader);
 
     String vertificationId(MemberVertifIdRequest memberDto);
+
+    String vertificationPw(MemberVertifPwRequest memberDto);
+
+    String randomPassword();
+
+    boolean memberExists(String memberName);
 }

@@ -109,4 +109,20 @@ public class MemberController {
                         .build()
         );
     }
+
+    @PostMapping("/vertification/pw")
+    public ResponseEntity<ResResult> vertificationPw(
+            @RequestBody MemberVertifPwRequest memberDto
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_PW_SEND;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.vertificationPw(memberDto))
+                        .build()
+        );
+    }
 }

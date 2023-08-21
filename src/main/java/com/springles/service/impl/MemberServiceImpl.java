@@ -232,7 +232,7 @@ public class MemberServiceImpl implements MemberService {
             // 본문
             mimeMessageHelper.setText(
                     "<div>"
-                            + "<table width=\"100%\" width:100% margin:0; padding:0; min-width:100%\">"
+                            + "<table style = \"width:100% margin:0; padding:0; min-width:100%\">"
                             + "<tbody>"
                             + "<tr>"
                             + "<td align=\"center\">"
@@ -260,6 +260,87 @@ public class MemberServiceImpl implements MemberService {
             log.error("{}", e.getMessage());
             throw new CustomException(ErrorCode.FAIL_SEND_MEMBER_ID);
         }
+    }
+
+    @Override
+    public String vertificationPw(MemberVertifPwRequest memberDto) {
+        String memberName = memberDto.getMemberName();
+        String tempPassword = randomPassword();
+
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if(optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        // 비밀번호를 임시비밀번호로 변경
+        Member updateMember = optionalMember.get();
+        updateMember.setPassword(passwordEncoder.encode(tempPassword));
+        memberRepository.save(updateMember);
+
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+            mimeMessageHelper.setTo(memberDto.getEmail());
+            mimeMessageHelper.setSubject("[CHATFIA] 임시 비밀번호 안내드립니다.");
+            mimeMessageHelper.setText(
+                    "<div>"
+                            + "<table style=\"width:100%; margin:0; padding:0; min-width:100%\">"
+                            + "<tbody>"
+                            + "<tr>"
+                            + "<td align=\"center\">"
+                            + "<div>"
+                            + "<h2>임시 비밀번호 안내</h2>"
+                            + "<b>" + memberName + "</b>님의 임시비밀번호는 다음과 같습니다."
+                            + "<div>"
+                            + "<pre style=\"width:320px; padding:16px 24px; border:1px solid #EEEEEE; background-color:#F4F4F4; border-radius:3px; margin-bottom:24px\">"
+                            + tempPassword
+                            + "</pre>"
+                            + "</div>"
+                            + "<p style=\"color: #767678; font-size: 12px\"> (!) 회원가입 시 등록한 정보는 [마이페이지 > 회원 정보 관리]에서 변경하실 수 있습니다.</p>"
+                            + "<div>"
+                            + "</td>"
+                            + "</tr>"
+                            + "</tbody>"
+                            + "</table>"
+                            + "</div>"
+                    , true
+            );
+
+            javaMailSender.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            log.error("{}", e.getClass());
+            log.error("{}", e.getMessage());
+            throw new CustomException(ErrorCode.FAIL_SEND_MEMBER_PW);
+        }
+
+        return "memberName : " + memberName
+                + ", password : " + passwordEncoder.encode(randomPassword())
+                + ", email : " + memberDto.getEmail();
+    }
+
+    // 임시 비밀번호 생성
+    @Override
+    public String randomPassword() {
+        // 임시 비밀번호
+        String tempPassword = "";
+        char[] charSet = {
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+                'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+                'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+                '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+                '!', '@', '#', '$', '%', '^', '&', '*'
+        };
+
+        for(int i = 0; i < 8; i++) {
+            int index = (int) (Math.random() * charSet.length);
+            tempPassword += charSet[index];
+        }
+
+        return tempPassword;
     }
 
     @Override

@@ -59,6 +59,7 @@ public enum ErrorCode {
     WRONG_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호를 잘못 입력했습니다."),
     DELETED_MEMBER(HttpStatus.BAD_REQUEST, "탈퇴한 회원입니다."),
     FAIL_SEND_MEMBER_ID(HttpStatus.INTERNAL_SERVER_ERROR,"아이디 메일 전송을 실패하였습니다."),
+    FAIL_SEND_MEMBER_PW(HttpStatus.INTERNAL_SERVER_ERROR,"비밀번호 메일 전송을 실패하였습니다."),
     NOT_FOUND_EMAIL_MEMBER(HttpStatus.NOT_FOUND, "이메일과 일치하는 회원정보가 없습니다.");
 
     private final HttpStatus status;
