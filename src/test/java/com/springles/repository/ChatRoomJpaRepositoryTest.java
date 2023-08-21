@@ -11,6 +11,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +28,7 @@ class ChatRoomJpaRepositoryTest {
     @Autowired
     ChatRoomJpaRepository chatRoomRepository;
     @Autowired
-    MemberRepository memberRepository;
+    MemberJpaRepository memberRepository;
     @Autowired
     MemberService memberService;
 
@@ -48,12 +51,13 @@ class ChatRoomJpaRepositoryTest {
         // given
         chatRoomRepository.save(new ChatRoom(3L, "gameRoom3", "1111", 3L, ChatRoomCode.WAITING, 8L, 7L, false));// 비밀방, 대기중
         chatRoomRepository.save(new ChatRoom(4L, "gameRoom4", null, 3L, ChatRoomCode.PLAYING, 8L, 8L, true));// 오픈방, 게임중
+        Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        Optional<List<ChatRoom>> allByOpenTrueAndState = chatRoomRepository.findAllByOpenTrueAndState(ChatRoomCode.WAITING);
+        Page<ChatRoom> allByOpenTrueAndState = chatRoomRepository.findAllByOpenTrueAndState(ChatRoomCode.WAITING, pageable);
 
         // then
-        assertThat(allByOpenTrueAndState.get().size()).isEqualTo(2); // 오픈되지 않은 방, 게임중인 방은 조회 되지 않음.
+        assertThat(allByOpenTrueAndState.get().count()).isEqualTo(2); // 오픈되지 않은 방, 게임중인 방은 조회 되지 않음.
     }
 
     @Test
@@ -72,10 +76,10 @@ class ChatRoomJpaRepositoryTest {
         }
 
         // when
-        Optional<ChatRoom> allByOwnerId = chatRoomRepository.findAllByOwnerId(1L);
+        Optional<List<ChatRoom>> allByOwnerId = chatRoomRepository.findAllByOwnerId(1L);
 
         //then
-        assertThat(allByOwnerId.get().getTitle()).isEqualTo("gameRoom1");
+        assertThat(allByOwnerId.get().stream().findFirst().get().getTitle()).isEqualTo("gameRoom1");
     }
 
 }
