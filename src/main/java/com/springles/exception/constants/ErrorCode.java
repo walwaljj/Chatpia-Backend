@@ -9,8 +9,20 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     /* COMMON */
-    NOT_AUTHORIZED_CONTENT(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
+    BAD_REQUEST_ERROR(HttpStatus.BAD_REQUEST,"잘못된 요청입니다."),
+    REQUEST_BODY_MISSING_ERROR(HttpStatus.BAD_REQUEST, "@RequestBody 데이터가 존재하지 않습니다."),
+    INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST," 유효하지 않은 타입입니다."),
+    MISSING_REQUEST_PARAMETER_ERROR(HttpStatus.BAD_REQUEST, "Request Parameter가 존재하지 않습니다."),
+    IO_ERROR(HttpStatus.BAD_REQUEST,"입력/출력 값이 유효하지 않습니다."),
     REQUEST_EMPTY(HttpStatus.BAD_REQUEST, "요청이 올바르지 않습니다."),
+    JSON_PARSE_ERROR(HttpStatus.BAD_REQUEST,"Json 파싱을 실패했습니다."),
+    JACKSON_PROCESS_ERROR(HttpStatus.BAD_REQUEST, "com.fasterxml.jackson.core Exception"),
+    NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "요청한 리소스가 존재하지 않습니다."),
+    NULL_POINT_ERROR(HttpStatus.NOT_FOUND, "Null Point Exception"),
+    NOT_VALID_ERROR(HttpStatus.NOT_FOUND, " @RequestBody 및 @RequestParam, @PathVariable 값이 유효하지 않습니다."),
+    NOT_VALID_HEADER_ERROR(HttpStatus.NOT_FOUND, "Header에 데이터가 존재하지 않습니다. "),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 오류가 발생했습니다."),
+    NOT_AUTHORIZED_CONTENT(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
 
     /* JWT */
     NO_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "로그인 정보가 존재하지 않습니다. 다시 로그인해 주세요."),
@@ -21,10 +33,14 @@ public enum ErrorCode {
     MODIFIED_TOKEN_DETECTED(HttpStatus.UNAUTHORIZED, "로그인 정보가 변경되었습니다."),
 
     /* CHATROOM */
+    OPEN_ROOM_ERROR(HttpStatus.BAD_REQUEST, "공개방은 비밀번호를 입력할 수 없습니다."),
+    CLOSE_ROOM_ERROR(HttpStatus.BAD_REQUEST, "비밀방은 비밀번호를 입력해야 합니다."),
     PASSWORD_EMPTY(HttpStatus.BAD_REQUEST, "비밀번호를 입력하세요."),
     CAPACITY_WRONG(HttpStatus.BAD_REQUEST, "정원은 최소 5명 이상 10명 이하 입니다."),
     TITLE_EMPTY(HttpStatus.BAD_REQUEST, "방 제목을 입력해주세요."),
     OPEN_PASSWORD(HttpStatus.BAD_REQUEST, "공개방은 비밀번호를 입력할 수 없습니다."),
+    NOT_FOUND_ROOM(HttpStatus.NOT_FOUND, "방을 찾을 수 없습니다."),
+    USER_NOT_OWNER(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다."),
 
     /* MEMBER */
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "등록되지 않은 회원입니다."),

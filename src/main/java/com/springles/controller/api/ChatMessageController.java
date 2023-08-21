@@ -1,4 +1,4 @@
-package com.springles.controller;
+package com.springles.controller.api;
 
 import com.springles.domain.dto.chat.MessageRequestDto;
 import com.springles.service.ChatService;

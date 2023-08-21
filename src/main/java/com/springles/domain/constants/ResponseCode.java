@@ -10,6 +10,9 @@ public enum ResponseCode {
 
     /* CHATROOM */
     CHATROOM_CREATE(HttpStatus.CREATED, "201", "채팅방 생성 성공"),
+    CHATROOM_UPDATE(HttpStatus.CREATED, "201", "채팅방 수정 성공"),
+    CHATROOM_DELETE(HttpStatus.NO_CONTENT, "201", "채팅방 삭제 성공"),
+
 
     /* AUTH */
     MEMBER_SAVE(HttpStatus.CREATED, "201", "회원가입 성공"),

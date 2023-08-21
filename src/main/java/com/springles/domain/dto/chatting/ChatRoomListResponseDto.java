@@ -1,4 +1,4 @@
-package com.springles.domain.dto.Chat;
+package com.springles.domain.dto.chatting;
 
 import com.springles.domain.constants.ChatRoomCode;
 import com.springles.domain.entity.ChatRoom;

@@ -3,7 +3,8 @@ package com.springles.service.impl;
 
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.constants.ChatRoomCode;
-import com.springles.domain.dto.Chat.ChatRoomListResponseDto;
+import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
+import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.domain.entity.Member;
@@ -25,6 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.springles.domain.dto.chatroom.ChatRoomReqDTO.createToEntity;
+import static com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto.updateToEntity;
+import static com.springles.exception.constants.ErrorCode.CLOSE_ROOM_ERROR;
+import static com.springles.exception.constants.ErrorCode.OPEN_ROOM_ERROR;
 
 
 import java.util.ArrayList;
@@ -47,15 +51,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     public ChatRoomResponseDto createChatRoom(ChatRoomReqDTO chatRoomReqDTO) {
         // request 자체가 빈 경우
         if (chatRoomReqDTO == null) throw new CustomException(ErrorCode.REQUEST_EMPTY);
-        // 비밀방 선택 - 비밀번호 입력하지 않은 경우라면
-        if (!chatRoomReqDTO.getOpen() && chatRoomReqDTO.getPassword() == null) throw new CustomException(ErrorCode.PASSWORD_EMPTY);
-        // 공개방 선택 - 비밀번호 입력한 경우라면
-        if (chatRoomReqDTO.getOpen() && chatRoomReqDTO.getPassword() != null) throw new CustomException(ErrorCode.OPEN_PASSWORD);
-        // 방 제목이 비어있는 경우
-        if (chatRoomReqDTO.getTitle() == null) throw new CustomException(ErrorCode.TITLE_EMPTY);
-        // 인원이 범위를 벗어나는 경우
-        Long capacity = chatRoomReqDTO.getCapacity();
-        if (capacity < 5 || capacity > 10) throw new CustomException(ErrorCode.CAPACITY_WRONG);
+        // 비밀방 선택 - 비밀번호 입력하지 않은 경우 오류 발생
+        if (!chatRoomReqDTO.getOpen() && (chatRoomReqDTO.getPassword().isEmpty())) throw new CustomException(CLOSE_ROOM_ERROR);
+        // 공개방 선택 - 비밀번호 입력한 경우 오류 발생
+        if (chatRoomReqDTO.getOpen() && (!chatRoomReqDTO.getPassword().isEmpty())) throw new CustomException(OPEN_ROOM_ERROR);
 
         ChatRoom chatRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO));
 
@@ -123,5 +122,37 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         }
 
         return chatRoomResponseDtoList;
+    }
+
+    // 채팅방 수정
+    @Transactional
+    @Override
+    public ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto dto, Long id){
+        // 기존 채팅방 데이터 받기
+        ChatRoom findChatRoom = chatRoomJpaRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+        // 수정을 요청한 사용자와 방장이 일치하는지 확인
+        if(findChatRoom.getOwnerId() != dto.getMemberId()) throw new CustomException(ErrorCode.USER_NOT_OWNER);
+        // 데이터 수정
+        findChatRoom.modify(updateToEntity(dto, id));
+        // 비밀방 선택 - 비밀번호 입력하지 않은 경우라면
+        if (!findChatRoom.getOpen() && findChatRoom.getPassword() == null) throw new CustomException(ErrorCode.PASSWORD_EMPTY);
+        // 공개방 선택 - 비밀번호 입력한 경우라면
+        if (findChatRoom.getOpen() && findChatRoom.getPassword() != null) throw new CustomException(ErrorCode.OPEN_PASSWORD);
+        // 수정한 데이터 반환
+        return ChatRoomResponseDto.of(findChatRoom);
+    }
+
+    // 채팅방 삭제
+    @Transactional
+    @Override
+    public void deleteChatRoom(Long memberId, Long chatRoomId){
+        // 기존 채팅방 데이터 받기
+        ChatRoom findChatRoom = chatRoomJpaRepository.findById(chatRoomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+        // 삭제를 요청한 사용자와 방장이 일치하는지 확인
+        if(findChatRoom.getOwnerId() != memberId) throw new CustomException(ErrorCode.USER_NOT_OWNER);
+        // 삭제
+        chatRoomJpaRepository.delete(findChatRoom);
     }
 }
