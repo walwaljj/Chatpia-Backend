@@ -11,7 +11,7 @@ import com.springles.domain.entity.Member;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.repository.ChatRoomJpaRepository;
-import com.springles.repository.MemberRepository;
+import com.springles.repository.MemberJpaRepository;
 import com.springles.service.ChatRoomService;
 
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomJpaRepository chatRoomJpaRepository;
-    private final MemberRepository memberRepository;
+    private final MemberJpaRepository memberJpaRepository;
 
 
     @Transactional
@@ -91,7 +91,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public List<ChatRoomListResponseDto> findChatRoomByNickname(String nickname) {
         // 닉네임이 포함된 멤버 모두 찾기 (대 소문자 구분하지 않음)
-        List<Member> members = memberRepository.findAllByMemberNameContainingIgnoreCase(nickname)
+        List<Member> members = memberJpaRepository.findAllByMemberNameContainingIgnoreCase(nickname)
                 .get().stream()
                 .collect(Collectors.toList());
 
