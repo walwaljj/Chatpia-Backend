@@ -65,7 +65,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     public Page<ChatRoomListResponseDto> findAllChatRooms(int pageNumber, int size) {
 
         Pageable pageable = PageRequest.of(pageNumber, size);
-        Page<ChatRoom> allByOpenTrueAndState = chatRoomJpaRepository.findAllByOpenTrueAndState(ChatRoomCode.WAITING, pageable);
+        Page<ChatRoom> allByOpenTrueAndState = chatRoomJpaRepository.findAllByCloseFalseAndState(ChatRoomCode.WAITING, pageable);
         return allByOpenTrueAndState.map(ChatRoomListResponseDto::fromEntity);
 
     }
@@ -122,9 +122,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // 데이터 수정
         findChatRoom.modify(updateToEntity(dto, id));
         // 비밀방 선택 - 비밀번호 입력하지 않은 경우라면
-        if (!findChatRoom.getOpen() && findChatRoom.getPassword() == null) throw new CustomException(ErrorCode.PASSWORD_EMPTY);
+        if (!findChatRoom.getClose() && findChatRoom.getPassword() == null) throw new CustomException(ErrorCode.PASSWORD_EMPTY);
         // 공개방 선택 - 비밀번호 입력한 경우라면
-        if (findChatRoom.getOpen() && findChatRoom.getPassword() != null) throw new CustomException(ErrorCode.OPEN_PASSWORD);
+        if (findChatRoom.getClose() && findChatRoom.getPassword() != null) throw new CustomException(ErrorCode.OPEN_PASSWORD);
         // 수정한 데이터 반환
         return ChatRoomResponseDto.of(findChatRoom);
     }
@@ -140,5 +140,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         if(findChatRoom.getOwnerId() != memberId) throw new CustomException(ErrorCode.USER_NOT_OWNER);
         // 삭제
         chatRoomJpaRepository.delete(findChatRoom);
+    }
+
+    /**
+     *  id 로 채팅방 찾기
+     * @param id ChatRoom ID
+     */
+    public ChatRoomResponseDto findChatRoomByChatRoomId(Long id){
+        return ChatRoomResponseDto.of(chatRoomJpaRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM)));
     }
 }

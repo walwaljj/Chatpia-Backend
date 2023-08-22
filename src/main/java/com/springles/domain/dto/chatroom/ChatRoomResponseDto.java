@@ -26,7 +26,7 @@ public class ChatRoomResponseDto {
     private ChatRoomCode state;
     private Long capacity;
     private Long head;
-    private boolean open;
+    private boolean close;
 
     public static ChatRoomResponseDto of(ChatRoom chatRoom) {
         return ChatRoomResponseDto.builder()
@@ -37,7 +37,7 @@ public class ChatRoomResponseDto {
             .state(chatRoom.getState())
             .capacity(chatRoom.getCapacity())
             .head(chatRoom.getHead())
-            .open(chatRoom.getOpen())
+            .close(chatRoom.getClose())
             .build();
     }
 }

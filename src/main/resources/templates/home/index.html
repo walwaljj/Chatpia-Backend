@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic}">
+<div layout:fragment="content">
+    <ul>
+        <li>
+            <h1>사용자 프로필</h1>
+        </li>
+        <li>
+            <button class="btn btn-outline-success" type="button" onclick="location.href='/v1/home/add'">게임 만들기</button>
+        </li>
+        <li>
+            <button class="btn btn-outline-success" type="button" onclick="location.href='/v1/home/add'">빠른 입장</button>
+        </li>
+        <li>
+            <h1>채팅방 목록</h1>
+        </li>
+    </ul>
+</div>
+</html>
