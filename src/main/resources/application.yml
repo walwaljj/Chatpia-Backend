@@ -3,7 +3,6 @@ spring:
     active: dev
     include:
       - redis
-      - mail
 
   jpa:
     open-in-view: false
