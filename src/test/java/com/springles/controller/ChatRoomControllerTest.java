@@ -42,7 +42,7 @@ class ChatRoomControllerTest {
         // head == i
         for (int i = 1; i <= 4; i++) {
             chatRoomRepository.save(
-                    new ChatRoom(Long.valueOf(i), "gameRoom" + i, null, Long.valueOf(i), ChatRoomCode.WAITING, 6L, Long.valueOf(i), true) // 오픈 , 대기중
+                    new ChatRoom(Long.valueOf(i), "gameRoom" + i, null, Long.valueOf(i), ChatRoomCode.WAITING, 6L, Long.valueOf(i), false) // 오픈 , 대기중
             );
         }
 
@@ -99,7 +99,7 @@ class ChatRoomControllerTest {
                 .andDo(print());
     }
 
-    @Test
+//    @Test
     @DisplayName("채팅방 생성")
     public void createChatRoomTest() throws Exception {
         // given
@@ -107,7 +107,7 @@ class ChatRoomControllerTest {
         // then
     }
 
-    @Test
+//    @Test
     @DisplayName("채팅방 수정")
     public void updateChatRoomTest() throws Exception {
         // given
@@ -115,7 +115,7 @@ class ChatRoomControllerTest {
         // then
     }
 
-    @Test
+//    @Test
     @DisplayName("채팅방 삭제")
     public void deleteChatRoomTest() throws Exception {
         // given
