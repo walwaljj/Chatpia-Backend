@@ -14,8 +14,13 @@ import java.util.Properties;
 public class MailConfig {
 
     // username, password 환경변수 설정 필요
-    private final String username = "${username}";
-    private final String password = "${password}";
+    @Value("${username}")
+    private String username;
+    @Value("${password}")
+    private String password;
+
+//    private String username = "${username}";
+//    private String password = "${password}";
 
     @Bean
     public JavaMailSender javaMailSender() {
