@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic}">
+
+<div layout:fragment="content">
+    <form th:action="@{/v1/home/add}"  th:object="${requestDto}" method="post" >
+        <table class="table">
+            <tbody>
+            <div>
+                <label for="memberId">멤버 id</label>
+                <input type="text" id="memberId" th:field="*{memberId}" class="form-control" placeholder="이름을 입력하세요">
+            </div>
+            <div>
+                <label for="title">방 제목</label>
+                <input type="text" id="title" th:field="*{title}" class="form-control" placeholder="이름을 입력하세요">
+            </div>
+            <div>
+                <label for="capacity">인원</label>
+                <input type="text" id="capacity" th:field="*{capacity}" class="form-control" placeholder="인원을 입력하세요">
+            </div>
+            <div class="form-check">
+                <input type="checkbox"
+                       id="close"
+                       th:field="*{close}"
+                       class="form-check-input">
+                <label for="close" class="form-check-label">비밀방</label>
+            </div>
+            <div>
+                <label for="password">비밀번호</label>
+                <input type="text" id="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
+            </div>
+            <button type="submit">등록</button>
+        </table>
+        <!-- javscript 코드, 비밀번호 input 입력 불가능이 기본 사항입니다. -->
+        <script th:inline="javascript">
+            $('#password').attr('disabled',true);
+            <!-- 비밀방 체크 O (비밀번호 입력 가능)
+             비밀방 체크 X (비밀번호 입력 불가능, 입력 값 초기회 -->
+            $('#close').on('click', function(){
+                const closeBtn = document.getElementById('close');
+                if( closeBtn.checked ){
+                    $('#password').removeAttr('disabled')
+                } else{
+                    $('#password').attr('disabled',true).val('');
+                }
+            })
+        </script>
+    </form>
+</div>
+</html>

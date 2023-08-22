@@ -10,6 +10,6 @@ import java.util.Optional;
 
 public interface ChatRoomCustomRepository {
     Optional<List<ChatRoom>> findAllByOwnerId(Long ownerId); //방장 이름으로 chatRoom 찾기에서 사용
-    Page<ChatRoom> findAllByOpenTrueAndState(ChatRoomCode chatRoomCode, Pageable pageable);
+    Page<ChatRoom> findAllByCloseFalseAndState(ChatRoomCode chatRoomCode, Pageable pageable);
 
 }

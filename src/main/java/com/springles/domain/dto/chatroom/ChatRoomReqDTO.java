@@ -43,7 +43,7 @@ public class ChatRoomReqDTO {
                 .state(ChatRoomCode.WAITING)                // 생성시 채팅방 상태는 "대기중"이 기본 값
                 .capacity(chatRoomCreateReqDTO.getCapacity())
                 .head(1L)                                   // 생성시 참여인원은 방장 1명이 기본값
-                .open(chatRoomCreateReqDTO.getOpen())
+                .close(chatRoomCreateReqDTO.getOpen())
                 .build();
     }
 }

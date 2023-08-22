@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ChatRoomService {
     @Transactional
@@ -23,4 +24,6 @@ public interface ChatRoomService {
     ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto chatRoomUpdateReqDto, Long chatroomid);
     @Transactional
     void deleteChatRoom(Long memberId, Long chatRoomId);
+
+    ChatRoomResponseDto findChatRoomByChatRoomId(Long id);
 }
