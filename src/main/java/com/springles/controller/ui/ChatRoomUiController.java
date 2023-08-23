@@ -40,7 +40,7 @@ public class ChatRoomUiController {
 
     // 게임 만들기 페이지 (GET)
     @GetMapping("/add")
-    public String writeRoom(Model model, ChatRoomReqDTO requestDto, Long memberId){
+    public String writeRoom(Model model, ChatRoomReqDTO requestDto){
         model.addAttribute("requestDto",requestDto);
         return "home/add";
     }

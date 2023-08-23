@@ -125,6 +125,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public String login(MemberLoginRequest memberDto) {
+
         // 아이디에 해당하는 회원정보가 있는지 확인
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberDto.getMemberName());
         if (optionalMember.isEmpty()) {
