@@ -56,7 +56,7 @@ public class ChatRoomController {
         else if (nickname != null) { chatRooms = chatRoomService.findChatRoomByNickname(nickname); }
 
         // 대기중인 모든 채팅방
-        else { chatRooms = chatRoomService.findAllChatRooms(page, size); }
+        else { chatRooms = chatRoomService.findAllByCloseFalseAndState(page, size); }
 
         ResponseCode responseCode = ResponseCode.CHATROOM_SEARCH;
 

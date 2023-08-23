@@ -4,16 +4,47 @@
       layout:decorate="~{layouts/basic}">
 
 
-<div layout:fragment="content">
-    <div class="list-group" th:each="room, i: ${allChatRooms}">
-        <a th:href="@{/chat/{roomId}/{name} (roomId=${room.id})}" class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1" th:text="${room.title}"></h5>
-                <span th:text="${room.state}" class="badge badge-primary badge-pill"></span>
-            </div>
-            <p class="mb-1" th:text="${room.capacity}"></p>
-            <small th:text="${room.head}"></small>
-        </a>
+<div id="searchForm" layout:fragment="content">
+
+    <form th:action="@{/v1/list/search}" method="get">
+        <label for="searchContent">검색: </label>
+        <input type="text" id="searchContent" name="searchContent" placeholder="nickname or title"/>
+        <button type="submit">방 찾기</button>
+    </form>
+    <div>
+        <div class="form-check"> <!-- 체크 박스여부에 따라 보여주기.. 수정중 -->
+            <input type="checkbox" id="open" name="open" class="form-check-input">
+            <input type="hidden" id="_open" value="on">
+            <lavel for="open" class="form-check">오픈 & 대기 중</lavel>
+        </div>
+        <div class="list-group" th:each="room, i: ${allChatRooms}">
+            <a th:href="@{/chat/{roomId}/{name} (roomId=${room.id})}"
+               class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1" th:text="${room.title}"></h5>
+                    <span th:text="${room.state}" class="badge badge-primary badge-pill"></span>
+                </div>
+                <div class="d-flex w-100 justify-content-between">
+                    <span th:if="${room.getClose()}" class="badge badge-primary badge-pill">비밀방</span>
+                    <span th:unless="${room.getClose()}" class="badge badge-primary badge-pill">오픈방</span>
+                </div>
+                <p class="mb-1" th:text="${room.capacity}"></p>
+                <small th:text="${room  .head}"></small>
+            </a>
+        </div>
     </div>
+
+    <script>
+        // searchContent 에 아무값이 입력되지 않는다면 "/v1/list" 로 이동
+        document.getElementById("searchForm").addEventListener("submit", function (event) {
+            var searchContent = document.getElementById("searchContent").value;
+
+            if (!searchContent) {
+                event.preventDefault();
+                window.location.href = "/v1/list";
+            }
+        });
+
+    </script>
 </div>
 </html>

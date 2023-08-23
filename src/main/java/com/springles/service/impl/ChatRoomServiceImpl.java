@@ -17,6 +17,7 @@ import com.springles.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -59,16 +60,29 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     /**
-     * 입장 가능한 채팅방 보여주기 (open 이면서 대기 중인 방 , 빠른 시작 가능한 방 순으로 정렬)
+     * 입장 가능한 채팅방 보여주기
      */
     @Override
-    public Page<ChatRoomListResponseDto> findAllChatRooms(int pageNumber, int size) {
+    public Page<ChatRoomListResponseDto> findAllByCloseFalseAndState(Integer pageNumber, Integer size) {
 
         Pageable pageable = PageRequest.of(pageNumber, size);
         Page<ChatRoom> allByCloseFalseAndState = chatRoomJpaRepository.findAllByCloseFalseAndState(ChatRoomCode.WAITING, pageable);
         return allByCloseFalseAndState.map(ChatRoomListResponseDto::fromEntity);
 
     }
+
+    /**
+     * 전채 채팅방 보여주기 (대기 중 , 비밀 방 모두 포함)
+     */
+    @Override
+    public Page<ChatRoomListResponseDto> findAllChatRooms(Integer pageNumber, Integer size) {
+
+        Pageable pageable = PageRequest.of(pageNumber, size);
+        Page<ChatRoom> allByCloseFalseAndState = chatRoomJpaRepository.findAll(pageable);
+        return allByCloseFalseAndState.map(ChatRoomListResponseDto::fromEntity);
+
+    }
+
 
     /**
      * 채팅방 이름으로 찾기
@@ -150,4 +164,26 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         return ChatRoomResponseDto.of(chatRoomJpaRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM)));
     }
+
+    // 타이틀 + 이름으로 검색
+    public Page<ChatRoomListResponseDto> findAllByTitleAndNickname(String searchContent, Integer page) {
+
+        List<ChatRoomListResponseDto> list = new ArrayList<>();
+
+        List<ChatRoomListResponseDto> chatRoomByNickname = findChatRoomByNickname(searchContent);
+        List<ChatRoomListResponseDto> chatRoomByTitle = findChatRoomByTitle(searchContent);
+
+        for (ChatRoomListResponseDto chatRoomListResponseDto : chatRoomByTitle) {
+            list.add(chatRoomListResponseDto);
+        }
+        for (ChatRoomListResponseDto chatRoomListResponseDto : chatRoomByNickname) {
+            list.add(chatRoomListResponseDto);
+        }
+        Pageable pageable = PageRequest.of(page, 10);
+
+        return new PageImpl<>(list.stream().distinct().toList(), pageable, list.size());
+
+    }
+
+
 }

@@ -60,5 +60,17 @@ public class ChatRoomUiController {
         model.addAttribute("allChatRooms",allChatRooms);
         return "home/list";
     }
+
+    // 채팅방 검색
+    @GetMapping("list/search")
+    public String searchRooms( @RequestParam(value = "searchContent", required = false) String searchContent,
+                               @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                               Model model) {
+
+        Page<ChatRoomListResponseDto> allByTitleAndNickname = chatRoomService.findAllByTitleAndNickname(searchContent, page);
+
+        model.addAttribute("allChatRooms", allByTitleAndNickname);
+        return "home/list";
+    }
 }
 

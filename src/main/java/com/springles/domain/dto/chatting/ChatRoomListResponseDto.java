@@ -18,6 +18,7 @@ public class ChatRoomListResponseDto {
     private Long capacity; // 정원
     private Long head; // 참여자 수
     private ChatRoomCode state; // 채팅방 상태
+    private boolean close; // 공개방 , 비밀방
 
     public static ChatRoomListResponseDto fromEntity(ChatRoom chatRoom) {
         return ChatRoomListResponseDto.builder()
@@ -26,6 +27,7 @@ public class ChatRoomListResponseDto {
                 .capacity(chatRoom.getCapacity())
                 .head(chatRoom.getHead())
                 .state(chatRoom.getState())
+                .close(chatRoom.getClose())
                 .build();
     }
 }
