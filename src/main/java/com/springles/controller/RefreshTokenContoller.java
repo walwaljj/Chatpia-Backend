@@ -16,7 +16,7 @@ public class RefreshTokenContoller {
     // accessToken 재발급
     @PostMapping("/token/reissue")
     public ResponseEntity<ResResult> reissue(
-            @RequestParam String refreshTokenId
+            @RequestParam("refreshTokenId") String refreshTokenId
     ) {
 
         ResponseCode responseCode = ResponseCode.ACCESS_TOKEN_REISSUE;
