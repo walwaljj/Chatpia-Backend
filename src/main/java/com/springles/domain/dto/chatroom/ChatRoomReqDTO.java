@@ -5,7 +5,6 @@ import com.springles.domain.constants.ChatRoomCode;
 import com.springles.domain.entity.ChatRoom;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import lombok.Builder;
 import lombok.Data;
 
 
@@ -28,11 +27,8 @@ public class ChatRoomReqDTO {
 
     @NotNull(message = "방 상태는 필수입니다.")
     @Schema(description = "상태")
-    private Boolean open;
+    private Boolean close;
 
-    //    @NotBlank(message = "비밀번호는 필수입니다.")
-//    @Size(min = 4, max = 15, message = "비밀번호는 4자 이상 15자 이하여야 합니다.")
-//    @Schema(description = "비밀번호")
     private String password;
 
     public static ChatRoom createToEntity(ChatRoomReqDTO chatRoomCreateReqDTO) {
@@ -43,7 +39,7 @@ public class ChatRoomReqDTO {
                 .state(ChatRoomCode.WAITING)                // 생성시 채팅방 상태는 "대기중"이 기본 값
                 .capacity(chatRoomCreateReqDTO.getCapacity())
                 .head(1L)                                   // 생성시 참여인원은 방장 1명이 기본값
-                .close(chatRoomCreateReqDTO.getOpen())
+                .close(chatRoomCreateReqDTO.getClose())
                 .build();
     }
 }

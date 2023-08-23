@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic}">
+
+
+<div layout:fragment="content">
+    <div class="list-group" th:each="room, i: ${allChatRooms}">
+        <a th:href="@{/chat/{roomId}/{name} (roomId=${room.id})}" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1" th:text="${room.title}"></h5>
+                <span th:text="${room.state}" class="badge badge-primary badge-pill"></span>
+            </div>
+            <p class="mb-1" th:text="${room.capacity}"></p>
+            <small th:text="${room.head}"></small>
+        </a>
+    </div>
+</div>
+</html>

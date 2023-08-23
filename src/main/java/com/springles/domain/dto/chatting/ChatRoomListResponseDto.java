@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChatRoomListResponseDto {
 
+    private Long id; // 채팅방 ID
     private String title; // 채팅방 이름
     private Long capacity; // 정원
     private Long head; // 참여자 수
@@ -20,6 +21,7 @@ public class ChatRoomListResponseDto {
 
     public static ChatRoomListResponseDto fromEntity(ChatRoom chatRoom) {
         return ChatRoomListResponseDto.builder()
+                .id(chatRoom.getId())
                 .title(chatRoom.getTitle())
                 .capacity(chatRoom.getCapacity())
                 .head(chatRoom.getHead())
