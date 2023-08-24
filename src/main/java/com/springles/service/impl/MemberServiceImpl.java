@@ -1,6 +1,7 @@
 package com.springles.service.impl;
 
 
+import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.member.*;
 import com.springles.domain.entity.BlackListToken;
 import com.springles.domain.entity.Member;
@@ -39,6 +40,16 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
     private final JavaMailSender javaMailSender;
+
+    // 사용자 정보 가져오기
+    @Override
+    public MemberInfoResponse getUserInfo(String authHeader){
+
+        String memberName = jwtTokenUtils.parseClaims(authHeader).getSubject();   // AccessToken으로 닉네임 받아오기
+
+        return MemberInfoResponse.of(memberRepository.findByMemberName(memberName) // 닉네임으로 info dto 반환
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)));
+    }
 
     @Override
     public String signUp(MemberCreateRequest memberDto) {
@@ -123,7 +134,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public String login(MemberLoginRequest memberDto) {
+    public MemberLoginResponse login(MemberLoginRequest memberDto) {
 
         // 아이디에 해당하는 회원정보가 있는지 확인
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberDto.getMemberName());
@@ -156,12 +167,19 @@ public class MemberServiceImpl implements MemberService {
         // refreshToken 저장
         memberRedisRepository.save(refreshToken);
 
+        // toString()으로 반환할 경우 접근하기 어려워서 수정했습니다.
         return MemberLoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .memberName(memberDto.getMemberName())
-                .build()
-                .toString();
+                .build();
+
+//        return MemberLoginResponse.builder()
+//                .accessToken(accessToken)
+//                .refreshToken(refreshToken)
+//                .memberName(memberDto.getMemberName())
+//                .build()
+//                .toString();
     }
 
     @Override
