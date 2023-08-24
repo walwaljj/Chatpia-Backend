@@ -1,7 +1,12 @@
 package com.springles.controller.ui;
 import com.springles.domain.dto.member.MemberCreateRequest;
+import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.domain.dto.member.MemberLoginRequest;
+import com.springles.domain.dto.member.MemberLoginResponse;
 import com.springles.service.MemberService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 public class MemberUiController {
+
     private final MemberService memberService;
 
     // 회원가입 페이지 조회
@@ -22,6 +28,7 @@ public class MemberUiController {
         model.addAttribute("memberDto", memberDto);
         return "member/sign-up";
     }
+
     // 회원가입 POST 요청
     @PostMapping("/signup")
     public String signup(Model model, @Valid MemberCreateRequest memberDto
@@ -37,22 +44,50 @@ public class MemberUiController {
         model.addAttribute("memberDto", memberDto);
         return "member/login";
     }
-    // 로그인 POST 요청
+
+    // 로그인 POST
     @PostMapping("/login")
-    public String signup(@ModelAttribute("memberDto")  @Valid @RequestBody MemberLoginRequest memberDto
-    ) {
-        String whtisit = memberService.login(memberDto);
-        log.info(whtisit);
+    public String signup(@ModelAttribute("memberDto") @Valid MemberLoginRequest memberDto, HttpServletResponse response)
+    {
+        // 로그인 성공, Token 정보 받기
+        MemberLoginResponse memberLoginResponse = memberService.login(memberDto);
+        // AccessToken Cookie에 저장
+        String accessToken = memberLoginResponse.getAccessToken();
+        setCookie("accessToken", accessToken, response);
+        // RefreshToken id값 Cookie에 저장
+        String refreshTokenId = memberLoginResponse.getRefreshToken().getId();
+        setCookie("refresehTokenId", refreshTokenId, response);
+
         return "redirect:index";
     }
 
-    // 로그아웃 POST 요청
+    // 로그아웃 요청
     @PostMapping("/logout")
     public String logout(
-            @RequestHeader(value = "Authorization") String authHeader
+            HttpServletRequest request
+//            @RequestHeader(value = "Authorization") String authHeader
     ) {
+        Cookie[] cookies = request.getCookies();
+        String authHeader = cookies[0].getValue();
         memberService.logout(authHeader);
+
         return "redirect:index";
     }
 
+    // 사용자 정보 요청
+    @PostMapping("/info")
+    public MemberInfoResponse info(String authHeader) {
+        return memberService.getUserInfo(authHeader);
+    }
+
+    // 쿠키 설정
+    public void setCookie(String name, String value, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setDomain("localhost");
+        cookie.setPath("/");
+        cookie.setMaxAge(60);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+    }
 }
