@@ -160,4 +160,19 @@ public class MemberController {
         );
     }
 
+    @GetMapping("/info/profile")
+    public ResponseEntity<ResResult> updateProfile(
+            @RequestHeader(value = "Authorization") String authHeader
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_READ;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.readProfile(authHeader))
+                        .build()
+        );
+    }
 }

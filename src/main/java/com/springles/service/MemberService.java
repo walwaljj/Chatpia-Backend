@@ -27,4 +27,6 @@ public interface MemberService {
     MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String authHeader);
 
     MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String authHeader);
+
+    MemberProfileRead readProfile(String authHeader);
 }
