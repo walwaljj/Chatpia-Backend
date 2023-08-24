@@ -2,6 +2,7 @@ package com.springles.repository;
 
 import com.springles.domain.entity.RefreshToken;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,11 @@ class RefreshTokenRedisRepositoryTest {
 
     @Autowired
     RefreshTokenRedisRepository refreshTokenRedisRepository;
+
+    @AfterEach
+    public void deleteAll(){
+        refreshTokenRedisRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("memberName에 해당하는 RefreshToken 호출 테스트")
