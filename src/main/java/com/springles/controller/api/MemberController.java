@@ -143,4 +143,21 @@ public class MemberController {
         );
     }
 
+    @PatchMapping("/info/profile")
+    public ResponseEntity<ResResult> updateProfile(
+            @Valid @RequestBody MemberProfileUpdateRequest memberDto,
+            @RequestHeader(value = "Authorization") String authHeader
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_UPDATE;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.updateProfile(memberDto, authHeader))
+                        .build()
+        );
+    }
+
 }

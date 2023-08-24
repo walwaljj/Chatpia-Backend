@@ -380,6 +380,36 @@ public class MemberServiceImpl implements MemberService {
         return MemberProfileResponse.of(newMemberGameInfo, optionalMember.get().getId());
     }
 
+
+    @Override
+    public MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String authHeader) {
+        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+
+        // 헤더의 회원정보가 존재하는 회원정보인지 체크
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if (optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        // 탈퇴한 회원인지 체크
+        if (optionalMember.get().getIsDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
+        }
+
+        Optional<MemberGameInfo> optionalMemberGameInfo =  memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
+
+        // 이미 프로필이 설정되어 있는지 체크
+        if (optionalMemberGameInfo.isEmpty()) {
+            throw new CustomException(ErrorCode.BAD_REQUEST_ERROR);
+        }
+
+        MemberProfileUpdateRequest memberProfileUpdateRequest = new MemberProfileUpdateRequest();
+        MemberGameInfo updateInfo = memberProfileUpdateRequest.updateMemberGameInfo(optionalMemberGameInfo.get(), memberDto);
+        memberGameInfoJpaRepository.save(updateInfo);
+
+        return MemberProfileResponse.of(updateInfo, optionalMember.get().getId());
+    }
+
     @Override
     public boolean memberExists(String memberName) {
         return memberRepository.existsByMemberName(memberName);
