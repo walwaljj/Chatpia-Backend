@@ -23,4 +23,6 @@ public interface MemberService {
     String randomPassword();
 
     boolean memberExists(String memberName);
+
+    MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String authHeader);
 }

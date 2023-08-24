@@ -125,4 +125,22 @@ public class MemberController {
                         .build()
         );
     }
+
+    @PostMapping("/info/profile")
+    public ResponseEntity<ResResult> createProfile(
+            @Valid @RequestBody MemberProfileCreateRequest memberDto,
+            @RequestHeader(value = "Authorization") String authHeader
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_CREATE;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.createProfile(memberDto, authHeader))
+                        .build()
+        );
+    }
+
 }

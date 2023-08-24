@@ -21,6 +21,9 @@ public class MemberGameInfo {
     private String nickname;    // 게임 닉네임
 
     @Column(nullable = false)
+    private Enum profileImg;  // 프로필 이미지
+
+    @Column(nullable = false)
     private Long level; // 유저 레벨
 
     @Column(nullable = false)
@@ -28,4 +31,8 @@ public class MemberGameInfo {
 
     // enum으로 변경 필요
     private String inGameRole;  // 게임 내 직업
+
+    // entity 연결 필요
+    @Column(nullable = false)
+    private Long memberId;   // memberId
 }
