@@ -33,7 +33,6 @@ public class WebSecurityConfig {
                                 .requestMatchers(new AntPathRequestMatcher("/member/updateInfo")).authenticated()
                                 .requestMatchers(new AntPathRequestMatcher("/member/signOut")).authenticated()
                                 .requestMatchers(new AntPathRequestMatcher("/member/logout")).authenticated()
-                                .requestMatchers(new AntPathRequestMatcher("/v1/add")).authenticated()
                                 .anyRequest().permitAll()
                 )
                 .sessionManagement(
