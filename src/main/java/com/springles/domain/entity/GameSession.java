@@ -4,6 +4,7 @@ import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRoleNum;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;

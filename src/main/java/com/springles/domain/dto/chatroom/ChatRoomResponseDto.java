@@ -20,7 +20,7 @@ public class ChatRoomResponseDto {
     private ChatRoomCode state;
     private Long capacity;
     private Long head;
-    private boolean close;
+    private Boolean close;
 
     public static ChatRoomResponseDto of(ChatRoom chatRoom) {
         return ChatRoomResponseDto.builder()
