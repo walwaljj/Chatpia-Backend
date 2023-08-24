@@ -1,6 +1,7 @@
-package com.springles.controller.api;
+package com.springles.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springles.controller.api.MemberController;
 import com.springles.domain.dto.member.*;
 import com.springles.domain.entity.Member;
 import com.springles.service.MemberService;
