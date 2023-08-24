@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -37,7 +36,7 @@ class ChatRoomJpaRepositoryTest {
 
         for (int i = 1; i <= 2; i++) {
             chatRoomRepository.save(
-                    new ChatRoom(Long.valueOf(i), "gameRoom" + i, null, Long.valueOf(i), ChatRoomCode.WAITING, 6L, Long.valueOf(i), true) // 오픈방, 대기중
+                    new ChatRoom(Long.valueOf(i), "gameRoom" + i, null, Long.valueOf(i), ChatRoomCode.WAITING, 6L, Long.valueOf(i), false) // 오픈방, 대기중
             );
         }
 
@@ -49,15 +48,15 @@ class ChatRoomJpaRepositoryTest {
     public void findAllByOpenTrueAndStateTest() {
 
         // given
-        chatRoomRepository.save(new ChatRoom(3L, "gameRoom3", "1111", 3L, ChatRoomCode.WAITING, 8L, 7L, false));// 비밀방, 대기중
-        chatRoomRepository.save(new ChatRoom(4L, "gameRoom4", null, 3L, ChatRoomCode.PLAYING, 8L, 8L, true));// 오픈방, 게임중
+        chatRoomRepository.save(new ChatRoom(3L, "gameRoom3", "1111", 3L, ChatRoomCode.WAITING, 8L, 7L, true));// 비밀방, 대기중
+        chatRoomRepository.save(new ChatRoom(4L, "gameRoom4", null, 3L, ChatRoomCode.PLAYING, 8L, 8L, false));// 오픈방, 게임중
         Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        Page<ChatRoom> allByOpenTrueAndState = chatRoomRepository.findAllByOpenTrueAndState(ChatRoomCode.WAITING, pageable);
+        Page<ChatRoom> allByCloseFalseAndState = chatRoomRepository.findAllByCloseFalseAndState(ChatRoomCode.WAITING, pageable);
 
         // then
-        assertThat(allByOpenTrueAndState.get().count()).isEqualTo(2); // 오픈되지 않은 방, 게임중인 방은 조회 되지 않음.
+        assertThat(allByCloseFalseAndState.get().count()).isEqualTo(2); // 오픈되지 않은 방, 게임중인 방은 조회 되지 않음.
     }
 
     @Test

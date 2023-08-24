@@ -38,7 +38,7 @@ public class ChatRoomUpdateReqDto {
 
     @NotNull(message = "방 상태는 필수입니다.")
     @Schema(description = "상태")
-    private Boolean open;
+    private Boolean close;
 
 
     // 수정 요청을 받게 되면 ChatRoom을 다시 build()
@@ -51,7 +51,7 @@ public class ChatRoomUpdateReqDto {
                 .state(dto.getState())
                 .capacity(dto.getCapacity())
                 .head(dto.getHead())
-                .open(dto.getOpen())
+                .close(dto.getClose())
                 .build();
     }
 }

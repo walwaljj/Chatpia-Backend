@@ -39,7 +39,7 @@ class ChatRoomServiceImplTest {
 
         for (int i = 1; i <= 2; i++) {
             chatRoomRepository.save(
-                    new ChatRoom(Long.valueOf(i), "gameRoom" + i, null, Long.valueOf(i), ChatRoomCode.WAITING, 6L, Long.valueOf(i), true) // 오픈 , 대기중
+                    new ChatRoom(Long.valueOf(i), "gameRoom" + i, null, Long.valueOf(i), ChatRoomCode.WAITING, 6L, Long.valueOf(i), false) // 오픈 , 대기중
             );
         }
 
@@ -59,8 +59,8 @@ class ChatRoomServiceImplTest {
     public void findByOpenTrueTest() {
 
         // given
-        chatRoomRepository.save(new ChatRoom(3L, "gameRoom3", "1111", 3L, ChatRoomCode.WAITING, 8L, 7L, false));// 비밀방, 대기중
-        ChatRoom gameRoom4 = chatRoomRepository.save(new ChatRoom(4L, "gameRoom4", null, 4L, ChatRoomCode.WAITING, 8L, 5L, true));// 오픈방, 대기중, 시작 3명남음.
+        chatRoomRepository.save(new ChatRoom(3L, "gameRoom3", "1111", 3L, ChatRoomCode.WAITING, 8L, 7L, true));// 비밀방, 대기중
+        ChatRoom gameRoom4 = chatRoomRepository.save(new ChatRoom(4L, "gameRoom4", null, 4L, ChatRoomCode.WAITING, 8L, 5L, false));// 오픈방, 대기중, 시작 3명남음.
 
         // when
         Page<ChatRoomListResponseDto> allChatRooms = chatRoomService.findAllChatRooms(0, 10);

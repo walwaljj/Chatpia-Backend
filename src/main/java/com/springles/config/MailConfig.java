@@ -19,9 +19,6 @@ public class MailConfig {
     @Value("${password}")
     private String password;
 
-//    private String username = "${username}";
-//    private String password = "${password}";
-
     @Bean
     public JavaMailSender javaMailSender() {
 

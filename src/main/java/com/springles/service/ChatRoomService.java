@@ -5,22 +5,26 @@ import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ChatRoomService {
     @Transactional
     ChatRoomResponseDto createChatRoom(ChatRoomReqDTO chatRoomReqDTO);
+    @Transactional
+    ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto chatRoomUpdateReqDto, Long chatroomId);
+    @Transactional
+    void deleteChatRoom(Long memberId, Long chatRoomId);
 
-    Page<ChatRoomListResponseDto> findAllChatRooms(int pageNumber, int size);
 
+    Page<ChatRoomListResponseDto> findAllByCloseFalseAndState(Integer pageNumber, Integer size);
     List<ChatRoomListResponseDto> findChatRoomByTitle(String title);
 
     List<ChatRoomListResponseDto> findChatRoomByNickname(String nickname);
-
-    @Transactional
-    ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto chatRoomUpdateReqDto, Long chatroomid);
-    @Transactional
-    void deleteChatRoom(Long memberId, Long chatRoomId);
+    ChatRoomResponseDto findChatRoomByChatRoomId(Long id);
+    Page<ChatRoomListResponseDto> findAllByTitleAndNickname(String searchContent, Integer page);
+    Page<ChatRoomListResponseDto> findAllChatRooms(Integer pageNumber, Integer size);
 }

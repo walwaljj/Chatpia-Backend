@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div class="card" style="width: 18rem;" th:object="${chatroom}">
+    <!--    초대장 이미지-->
+    <!--    <img src="..." class="card-img-top" alt="...">-->
+    <div class="card-body">
+        <!--        초대 문구-->
+        <h5 class="card-title">챗피아로 초대합니다.</h5>
+        <p class="card-text">갓피아! 갓피아!</p>
+    </div>
+
+    <div class="card-body">
+        <!-- 공유 하기 버튼 -->
+        <div class="sns">
+            <a href="#n" onclick="fn_sendFB('facebook');return false;" class="facebook" target="_self"
+               title="페이스북 새창열림"><span class="skip">페이스북</span></a>
+            <a href="#n" onclick="fn_sendFB('twitter');return false;" class="twitter" target="_self"
+               title="트위터 새창열림"><span class="skip">트위터</span></a>
+            <a href="#n" id="btnKakao" onclick="fn_sendFB('kakaotalk');return false;" class="kakaotalk" target="_self"
+               title="카카오톡 새창열림"><span class="skip">카카오톡</span></a>
+            <!-- 복사 하기 버튼 -->
+            <a href="#n" onclick="handleCopyClipBoard();return false;" th:field="*{id}" class="clipboard" target="_self"
+               title="클립보드 복사"><span class="skip">복사하기</span></a>
+        </div>
+
+    </div>
+</div>
+
+
+</ul>
+</body>
+</html>
+<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+<script th:inline="javascript">
+    const snsTitle = "챗피아에서 게임하기";
+    var thisUrl = document.URL.split("chat")[0]; // http://localhost:8080/chat/1/detail
+    var roomId = [[${chatroom.id}]]//  http://localhost:8080/chat/1?nickname={유입 유저 nickname}
+    thisUrl = thisUrl + 'chat/' + roomId
+    console.log("thisUrl", thisUrl)
+    const handleCopyClipBoard = async () => {
+        try {
+            await navigator.clipboard.writeText(thisUrl);
+            alert('클립보드에 링크가 복사되었습니다.');
+        } catch (e) {
+            alert('복사에 실패하였습니다');
+        }
+    };
+
+    function fn_sendFB(sns) {
+
+
+        if (sns == 'facebook') {
+            var url = "http://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(thisUrl);
+            window.open(url, "", "width=486, height=286");
+        } else if (sns == 'twitter') {
+            var url = "http://twitter.com/share?url=" + encodeURIComponent(thisUrl) + "&text=" + encodeURIComponent(snsTitle);
+            window.open(url, "tweetPop", "width=486, height=286,scrollbars=yes");
+        } else if (sns == 'band') {
+            var url = "http://www.band.us/plugin/share?body=" + encodeURIComponent(snsTitle) + "&route=" + encodeURIComponent(thisUrl);
+            window.open(url, "shareBand", "width=400, height=500, resizable=yes");
+        }
+        <!-- 카카오  -->
+        else if (sns == 'kakaotalk') {
+            // 사용할 앱의 JavaScript 키 설정
+            Kakao.init('1f068199be43767b197138dfc91f1cb6');
+
+            // 카카오링크 버튼 생성
+            Kakao.Link.createDefaultButton({
+                container: '#btnKakao', // HTML에서 작성한 ID값
+                objectType: 'feed',
+                content: {
+                    title: snsTitle, // 보여질 제목
+                    description: snsTitle, // 보여질 설명
+                    imageUrl: thisUrl, // 카카오공유하기 시 썸네일 이미지 경로
+                    link: { //  카카오공유하기 시 클릭 후 이동 경로
+                        mobileWebUrl: thisUrl,
+                        webUrl: thisUrl
+                    }
+                }
+            });
+        }
+    }
+
+</script>
+

@@ -2,12 +2,6 @@ package com.springles.domain.dto.chatroom;
 
 import com.springles.domain.constants.ChatRoomCode;
 import com.springles.domain.entity.ChatRoom;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +20,7 @@ public class ChatRoomResponseDto {
     private ChatRoomCode state;
     private Long capacity;
     private Long head;
-    private boolean open;
+    private boolean close;
 
     public static ChatRoomResponseDto of(ChatRoom chatRoom) {
         return ChatRoomResponseDto.builder()
@@ -37,7 +31,7 @@ public class ChatRoomResponseDto {
             .state(chatRoom.getState())
             .capacity(chatRoom.getCapacity())
             .head(chatRoom.getHead())
-            .open(chatRoom.getOpen())
+            .close(chatRoom.getClose())
             .build();
     }
 }
