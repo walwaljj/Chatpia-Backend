@@ -1,5 +1,7 @@
 package com.springles.domain.dto.member;
 
+import com.springles.domain.constants.GameRole;
+import com.springles.domain.constants.ProfileImg;
 import com.springles.domain.entity.MemberGameInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,10 +15,10 @@ import lombok.RequiredArgsConstructor;
 public class MemberProfileResponse {
 
     private String nickname;    // 게임 닉네임
-    private Enum profileImg;
+    private ProfileImg profileImg;
     private Long level; // 유저 레벨
     private Long exp;   // 유저 경험치
-    private String inGameRole;  // 게임 내 직업
+    private GameRole inGameRole;  // 게임 내 직업
     private Long memberId;
 
     public static MemberProfileResponse of(MemberGameInfo memberGameInfo, Long memberId) {

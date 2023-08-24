@@ -24,7 +24,7 @@ public class MemberProfileCreateRequest {
     @NotNull
     private int profileImgNum;
 
-    private Enum profileImg;
+    private ProfileImg profileImg;
 
     public MemberGameInfo newMemberGameInfo(MemberProfileCreateRequest memberDto, Long memberId) {
 

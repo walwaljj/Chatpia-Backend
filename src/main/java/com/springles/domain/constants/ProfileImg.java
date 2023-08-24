@@ -13,5 +13,7 @@ public enum ProfileImg {
 
     private String fileUrl;
 
-    ProfileImg(String fileUrl) {}
+    ProfileImg(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
 }

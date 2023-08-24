@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class MemberProfileRead {
 
     private String nickname;
-    private Enum profileImg;
+    private ProfileImg profileImg;
     private Long level;
     private Long exp;
     private Long nextLevel;

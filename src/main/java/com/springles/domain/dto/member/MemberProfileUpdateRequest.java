@@ -23,7 +23,7 @@ public class MemberProfileUpdateRequest {
     @NotNull
     private int profileImgNum;
 
-    private Enum profileImg;
+    private ProfileImg profileImg;
 
     public MemberGameInfo updateMemberGameInfo(MemberGameInfo memberGameInfo, MemberProfileUpdateRequest memberDto) {
 

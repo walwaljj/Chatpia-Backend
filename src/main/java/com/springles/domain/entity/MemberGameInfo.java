@@ -1,5 +1,7 @@
 package com.springles.domain.entity;
 
+import com.springles.domain.constants.GameRole;
+import com.springles.domain.constants.ProfileImg;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +23,8 @@ public class MemberGameInfo {
     private String nickname;    // 게임 닉네임
 
     @Column(nullable = false)
-    private Enum profileImg;  // 프로필 이미지
+    @Enumerated(EnumType.STRING)
+    private ProfileImg profileImg;  // 프로필 이미지
 
     @Column(nullable = false)
     private Long level; // 유저 레벨
@@ -29,8 +32,8 @@ public class MemberGameInfo {
     @Column(nullable = false)
     private Long exp;   // 유저 경험치
 
-    // enum으로 변경 필요
-    private String inGameRole;  // 게임 내 직업
+    @Enumerated(EnumType.STRING)
+    private GameRole inGameRole;  // 게임 내 직업
 
     // entity 연결 필요
     @Column(nullable = false)
