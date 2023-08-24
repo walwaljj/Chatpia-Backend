@@ -45,15 +45,15 @@ class RefreshTokenServiceImplTest {
     @BeforeEach
     void init() {
         memberJpaRepository.save(Member.builder()
-                .memberName("user1")
+                .memberName("mafia1")
                 .password(passwordEncoder.encode("password1!"))
-                .email("user1@gmail.com")
+                .email("mafia1@gmail.com")
                 .role("USER")
                 .isDeleted(false)
                 .build());
 
         MemberLoginRequest memberLoginRequest = MemberLoginRequest.builder()
-                .memberName("user1")
+                .memberName("mafia1")
                 .password("password1!")
                 .build();
 
@@ -66,12 +66,12 @@ class RefreshTokenServiceImplTest {
      * 1. refreshTokenId로 재발급된 accssToken이 정상적인가(jwt parsing이 잘 되는가)
      * */
     @Test
-    @DisplayName("accessToken 재발급 테스트")
+    @DisplayName("accessToken 재발급 테스트 - CASE.성공")
     void reissue() {
         // given - when
         String newAccessToken = refreshTokenService.reissue(refreshTokenId);
 
         // then
-        assertEquals("user1", jwtTokenUtils.parseClaims(newAccessToken).getSubject());
+        assertEquals("mafia1", jwtTokenUtils.parseClaims(newAccessToken).getSubject());
     }
 }

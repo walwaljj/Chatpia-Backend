@@ -56,15 +56,15 @@ class MemberServiceImplTest {
     @BeforeEach
     void init() {
         memberJpaRepository.save(Member.builder()
-                .memberName("user1")
+                .memberName("mafia1")
                 .password(passwordEncoder.encode("password1!"))
-                .email("user1@gmail.com")
+                .email("mafia1@gmail.com")
                 .role("USER")
                 .isDeleted(false)
                 .build());
 
         MemberLoginRequest memberLoginRequest = MemberLoginRequest.builder()
-                .memberName("user1")
+                .memberName("mafia1")
                 .password("password1!")
                 .build();
 
@@ -78,24 +78,24 @@ class MemberServiceImplTest {
      * 1. DB에 해당 회원정보가 정상적으로 저장되는가
      * */
     @Test
-    @DisplayName("회원가입 테스트")
+    @DisplayName("회원가입 테스트 - CASE.성공")
     void signUp() {
         // given
         MemberCreateRequest memberDto = MemberCreateRequest.builder()
-                .memberName("user2")
+                .memberName("mafia2")
                 .password("password2!")
                 .passwordConfirm("password2!")
-                .email("user2@gmail.com")
+                .email("mafia2@gmail.com")
                 .build();
 
         // when
         memberService.signUp(memberDto);
-        Optional<Member> optionalMember = memberJpaRepository.findByMemberName("user2");
+        Optional<Member> optionalMember = memberJpaRepository.findByMemberName("mafia2");
 
         // then
         assertNotNull(optionalMember.get().getId());
         assertTrue(passwordEncoder.matches("password2!", optionalMember.get().getPassword()));
-        assertEquals(optionalMember.get().getEmail(), "user2@gmail.com");
+        assertEquals(optionalMember.get().getEmail(), "mafia2@gmail.com");
         assertEquals(optionalMember.get().getRole(), "USER");
         assertFalse(optionalMember.get().getIsDeleted());
     }
@@ -105,21 +105,21 @@ class MemberServiceImplTest {
      * 1. 변경한 정보가 DB에 정상적으로 저장되는가
      * */
     @Test
-    @DisplayName("회원 정보 변경 테스트")
+    @DisplayName("회원 정보 변경 테스트 - CASE.성공")
     void updateInfo() {
         // given
         MemberUpdateRequest memberDto = MemberUpdateRequest.builder()
                 .password("updatepassword1!")
                 .passwordConfirm("updatepassword1!")
-                .email("updateuser1@gmail.com")
+                .email("updatemafia1@gmail.com")
                 .build();
 
         // when
         memberService.updateInfo(memberDto, authHeader);
-        Optional<Member> optionalUpdateMember = memberJpaRepository.findByMemberName("user1");
+        Optional<Member> optionalUpdateMember = memberJpaRepository.findByMemberName("mafia1");
 
         // then
-        assertEquals(optionalUpdateMember.get().getEmail(), "updateuser1@gmail.com");
+        assertEquals(optionalUpdateMember.get().getEmail(), "updatemafia1@gmail.com");
         assertTrue(passwordEncoder.matches("updatepassword1!", optionalUpdateMember.get().getPassword()));
     }
 
@@ -128,7 +128,7 @@ class MemberServiceImplTest {
      * 1.  해당 회원의 isDeleted 값이 true로 변경되는가
      * */
     @Test
-    @DisplayName("회원 탈퇴 테스트")
+    @DisplayName("회원 탈퇴 테스트 - CASE.성공")
     void signOut() {
         // given
         MemberDeleteRequest memberDto = MemberDeleteRequest.builder()
@@ -137,7 +137,7 @@ class MemberServiceImplTest {
 
         // when
         memberService.signOut(memberDto, authHeader);
-        Optional<Member> optionalMember = memberJpaRepository.findByMemberName("user1");
+        Optional<Member> optionalMember = memberJpaRepository.findByMemberName("mafia1");
 
         // then
         assertTrue(optionalMember.get().getIsDeleted());
@@ -149,11 +149,11 @@ class MemberServiceImplTest {
      * 2. refreshToken이 정상적으로 생성되며, redis에 저장되는가
      * */
     @Test
-    @DisplayName("로그인 테스트")
+    @DisplayName("로그인 테스트 - CASE.성공")
     void login() {
         // given - when
         String result = memberService.login(MemberLoginRequest.builder()
-                .memberName("user1")
+                .memberName("mafia1")
                 .password("password1!")
                 .build()
         );
@@ -162,7 +162,7 @@ class MemberServiceImplTest {
         String refreshTokenId = result.split("refreshToken : \\{ id : ")[1].split(",")[0];
 
         // then
-        assertEquals("user1", jwtTokenUtils.parseClaims(accessToken).getSubject());
+        assertEquals("mafia1", jwtTokenUtils.parseClaims(accessToken).getSubject());
         assertTrue(refreshTokenRedisRepository.existsById(refreshTokenId));
     }
 
@@ -172,13 +172,13 @@ class MemberServiceImplTest {
      * 2. refreshToken이 redis에서 삭제되는가
      * */
     @Test
-    @DisplayName("로그아웃 테스트")
+    @DisplayName("로그아웃 테스트 - CASE.성공")
     void logout() {
         // given - when
         memberService.logout(authHeader);
 
         boolean IsBlackListToken = blackListTokenRedisRepository.existsByAccessToken(accessToken);
-        Optional<RefreshToken> optionalRefreshToken = refreshTokenRedisRepository.findByMemberName("user1");
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRedisRepository.findByMemberName("mafia1");
 
         // then
         assertTrue(IsBlackListToken);
@@ -192,28 +192,28 @@ class MemberServiceImplTest {
      * (반환값이 정상이다 = 메일 전송이 정상적으로 완료되었다)
      * */
     @Test
-    @DisplayName("아이디 찾기 테스트")
+    @DisplayName("아이디 찾기 테스트 - CASE.성공")
     void vertificationId() {
         // given
         memberService.signUp(
                 MemberCreateRequest.builder()
-                        .memberName("user2")
+                        .memberName("mafia2")
                         .password("password2!")
                         .passwordConfirm("password2!")
-                        .email("user2@gmail.com")
+                        .email("mafia2@gmail.com")
                         .build()
         );
 
         // when
         String result = memberService.vertificationId(
                 MemberVertifIdRequest.builder()
-                        .email("user2@gmail.com")
+                        .email("mafia2@gmail.com")
                         .build()
         );
 
         // then
-        assertEquals("user2@gmail.com", result.split("email : ")[1]);
-        assertEquals("user2", result.split("\\[")[1].split("]")[0]);
+        assertEquals("mafia2@gmail.com", result.split("email : ")[1]);
+        assertEquals("mafia2", result.split("\\[")[1].split("]")[0]);
     }
 
 
@@ -224,29 +224,29 @@ class MemberServiceImplTest {
      * 3. db에 임시 비밀번호가 정상적으로 저장되는가(기존 비밀번호와 다른 값이 저장되어 있는가)
      * */
     @Test
-    @DisplayName("비밀번호 찾기 테스트")
+    @DisplayName("비밀번호 찾기 테스트 - CASE.성공")
     void vertificationPw() {
         // given
         memberService.signUp(
                 MemberCreateRequest.builder()
-                        .memberName("user2")
+                        .memberName("mafia2")
                         .password("password2!")
                         .passwordConfirm("password2!")
-                        .email("user2@gmail.com")
+                        .email("mafia2@gmail.com")
                         .build()
         );
 
         // when
         String result = memberService.vertificationPw(
                 MemberVertifPwRequest.builder()
-                        .memberName("user2")
-                        .email("user2@gmail.com")
+                        .memberName("mafia2")
+                        .email("mafia2@gmail.com")
                         .build()
         );
 
         // then
-        assertEquals("user2@gmail.com", result.split("email : ")[1]);
-        assertEquals("user2", result.split(" ")[2].split(",")[0]);
+        assertEquals("mafia2@gmail.com", result.split("email : ")[1]);
+        assertEquals("mafia2", result.split(" ")[2].split(",")[0]);
         assertFalse(passwordEncoder.matches("password2!", result.split(" ")[5].split(",")[0]));
     }
 
@@ -256,7 +256,7 @@ class MemberServiceImplTest {
      * 2. 생성된 비밀번호의 글자수는 8자인가
      * */
     @Test
-    @DisplayName("임시 비밀번호 생성 테스트")
+    @DisplayName("임시 비밀번호 생성 테스트 - CASE.성공")
     void randomPassword() {
         // given - when
         String firstPassword = memberService.randomPassword();
