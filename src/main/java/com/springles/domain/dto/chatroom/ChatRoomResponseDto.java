@@ -2,12 +2,6 @@ package com.springles.domain.dto.chatroom;
 
 import com.springles.domain.constants.ChatRoomCode;
 import com.springles.domain.entity.ChatRoom;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

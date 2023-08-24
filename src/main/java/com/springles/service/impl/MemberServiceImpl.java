@@ -12,7 +12,6 @@ import com.springles.repository.BlackListTokenRedisRepository;
 import com.springles.repository.MemberJpaRepository;
 import com.springles.repository.RefreshTokenRedisRepository;
 import com.springles.service.MemberService;
-import com.sun.mail.smtp.SMTPAddressFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;

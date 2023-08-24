@@ -1,7 +1,5 @@
 package com.springles.domain.entity;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import org.springframework.data.annotation.Id;
 import lombok.Builder;
 import lombok.Data;
