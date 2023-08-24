@@ -161,7 +161,7 @@ public class MemberController {
     }
 
     @GetMapping("/info/profile")
-    public ResponseEntity<ResResult> updateProfile(
+    public ResponseEntity<ResResult> readProfile(
             @RequestHeader(value = "Authorization") String authHeader
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_READ;
