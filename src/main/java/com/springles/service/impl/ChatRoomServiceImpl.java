@@ -49,9 +49,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // request 자체가 빈 경우
         if (chatRoomReqDTO == null) throw new CustomException(ErrorCode.REQUEST_EMPTY);
         // 비밀방 선택 - 비밀번호 입력하지 않은 경우 오류 발생
-        if (chatRoomReqDTO.getClose() && (chatRoomReqDTO.getPassword().isEmpty())) throw new CustomException(CLOSE_ROOM_ERROR);
+        if (chatRoomReqDTO.getClose() && (chatRoomReqDTO.getPassword().isEmpty()))
+            throw new CustomException(CLOSE_ROOM_ERROR);
         // 공개방 선택 - 비밀번호 입력한 경우 오류 발생
-        if (!chatRoomReqDTO.getClose() && (!chatRoomReqDTO.getPassword().isEmpty())) throw new CustomException(OPEN_ROOM_ERROR);
+        if (!chatRoomReqDTO.getClose() && (!chatRoomReqDTO.getPassword().isEmpty()))
+            throw new CustomException(OPEN_ROOM_ERROR);
 
         ChatRoom chatRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO));
 
@@ -72,21 +74,21 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     /**
-     * 전채 채팅방 보여주기 (대기 중 , 비밀 방 모두 포함)
+     * 전체 채팅방 보여주기 (대기 중 , 비밀 방 모두 포함)
      */
     @Override
     public Page<ChatRoomListResponseDto> findAllChatRooms(Integer pageNumber, Integer size) {
 
         Pageable pageable = PageRequest.of(pageNumber, size);
-        Page<ChatRoom> allByCloseFalseAndState = chatRoomJpaRepository.findAll(pageable);
-        return allByCloseFalseAndState.map(ChatRoomListResponseDto::fromEntity);
+        Page<ChatRoom> findAllChatRooms = chatRoomJpaRepository.findAll(pageable);
+        return findAllChatRooms.map(ChatRoomListResponseDto::fromEntity);
 
     }
 
 
     /**
      * 채팅방 이름으로 찾기
-     * */
+     */
     @Override
     public List<ChatRoomListResponseDto> findChatRoomByTitle(String title) {
         List<ChatRoom> chatRooms = chatRoomJpaRepository.findAll().stream()
@@ -127,18 +129,20 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     // 채팅방 수정
     @Transactional
     @Override
-    public ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto dto, Long id){
+    public ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto dto, Long id) {
         // 기존 채팅방 데이터 받기
         ChatRoom findChatRoom = chatRoomJpaRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
         // 수정을 요청한 사용자와 방장이 일치하는지 확인
-        if(findChatRoom.getOwnerId() != dto.getMemberId()) throw new CustomException(ErrorCode.USER_NOT_OWNER);
+        if (findChatRoom.getOwnerId() != dto.getMemberId()) throw new CustomException(ErrorCode.USER_NOT_OWNER);
         // 데이터 수정
         findChatRoom.modify(updateToEntity(dto, id));
         // 비밀방 선택 - 비밀번호 입력하지 않은 경우라면
-        if (findChatRoom.getClose() && findChatRoom.getPassword() == null) throw new CustomException(ErrorCode.PASSWORD_EMPTY);
+        if (findChatRoom.getClose() && findChatRoom.getPassword() == null)
+            throw new CustomException(ErrorCode.PASSWORD_EMPTY);
         // 공개방 선택 - 비밀번호 입력한 경우라면
-        if (!findChatRoom.getClose() && findChatRoom.getPassword() != null) throw new CustomException(ErrorCode.OPEN_PASSWORD);
+        if (!findChatRoom.getClose() && findChatRoom.getPassword() != null)
+            throw new CustomException(ErrorCode.OPEN_PASSWORD);
         // 수정한 데이터 반환
         return ChatRoomResponseDto.of(findChatRoom);
     }
@@ -146,40 +150,44 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     // 채팅방 삭제
     @Transactional
     @Override
-    public void deleteChatRoom(Long memberId, Long chatRoomId){
+    public void deleteChatRoom(Long memberId, Long chatRoomId) {
         // 기존 채팅방 데이터 받기
         ChatRoom findChatRoom = chatRoomJpaRepository.findById(chatRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
         // 삭제를 요청한 사용자와 방장이 일치하는지 확인
-        if(findChatRoom.getOwnerId() != memberId) throw new CustomException(ErrorCode.USER_NOT_OWNER);
+        if (findChatRoom.getOwnerId() != memberId) throw new CustomException(ErrorCode.USER_NOT_OWNER);
         // 삭제
         chatRoomJpaRepository.delete(findChatRoom);
     }
 
     /**
-     *  id 로 채팅방 찾기
+     * id 로 채팅방 찾기
+     *
      * @param id ChatRoom ID
      */
-    public ChatRoomResponseDto findChatRoomByChatRoomId(Long id){
+    public ChatRoomResponseDto findChatRoomByChatRoomId(Long id) {
         return ChatRoomResponseDto.of(chatRoomJpaRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM)));
     }
 
     // 타이틀 + 이름으로 검색
-    public Page<ChatRoomListResponseDto> findAllByTitleAndNickname(String searchContent, Integer page) {
+    public Page<ChatRoomListResponseDto> findAllByTitleAndNickname(String searchContent, Integer page, Integer size) {
 
         List<ChatRoomListResponseDto> list = new ArrayList<>();
+
+        // 만약 검색어가 없다면 NO_CONTENT 반환
+        if (searchContent.isEmpty()) throw new CustomException(ErrorCode.NO_CONTENT);
 
         List<ChatRoomListResponseDto> chatRoomByNickname = findChatRoomByNickname(searchContent);
         List<ChatRoomListResponseDto> chatRoomByTitle = findChatRoomByTitle(searchContent);
 
-        for (ChatRoomListResponseDto chatRoomListResponseDto : chatRoomByTitle) {
-            list.add(chatRoomListResponseDto);
-        }
-        for (ChatRoomListResponseDto chatRoomListResponseDto : chatRoomByNickname) {
-            list.add(chatRoomListResponseDto);
-        }
-        Pageable pageable = PageRequest.of(page, 10);
+        list.addAll(chatRoomByTitle);
+        list.addAll(chatRoomByNickname);
+
+        // 검색 결과가 비어있다면 NOT_FOUND_ROOM 반환
+        if (list.isEmpty()) throw new CustomException(ErrorCode.NOT_FOUND_ROOM);
+
+        Pageable pageable = PageRequest.of(page, size);
 
         return new PageImpl<>(list.stream().distinct().toList(), pageable, list.size());
 
