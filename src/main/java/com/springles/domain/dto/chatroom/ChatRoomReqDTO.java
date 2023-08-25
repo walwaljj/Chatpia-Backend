@@ -10,10 +10,6 @@ import lombok.Data;
 
 @Data
 public class ChatRoomReqDTO {
-    @NotNull(message = "member ID는 필수입니다.")
-    @Schema(description = "방장 ID")
-    private Long memberId;
-
     @NotBlank(message = "방 제목은 필수입니다.")
     @Size(min = 4, max = 15, message = "방 제목은 4자 이상 15자 이하여야 합니다.")
     @Schema(description = "제목")
@@ -31,11 +27,11 @@ public class ChatRoomReqDTO {
 
     private String password;
 
-    public static ChatRoom createToEntity(ChatRoomReqDTO chatRoomCreateReqDTO) {
+    public static ChatRoom createToEntity(ChatRoomReqDTO chatRoomCreateReqDTO, Long id) {
         return ChatRoom.builder()
                 .title(chatRoomCreateReqDTO.getTitle())
                 .password(chatRoomCreateReqDTO.getPassword())
-                .ownerId(chatRoomCreateReqDTO.getMemberId())
+                .ownerId(id)
                 .state(ChatRoomCode.WAITING)                // 생성시 채팅방 상태는 "대기중"이 기본 값
                 .capacity(chatRoomCreateReqDTO.getCapacity())
                 .head(1L)                                   // 생성시 참여인원은 방장 1명이 기본값
