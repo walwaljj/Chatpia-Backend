@@ -1,9 +1,11 @@
 package com.springles.service.impl;
 
 
+import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.member.*;
 import com.springles.domain.entity.BlackListToken;
 import com.springles.domain.entity.Member;
+import com.springles.domain.entity.MemberGameInfo;
 import com.springles.domain.entity.RefreshToken;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
@@ -11,9 +13,13 @@ import com.springles.jwt.JwtTokenUtils;
 import com.springles.repository.BlackListTokenRedisRepository;
 import com.springles.repository.MemberJpaRepository;
 import com.springles.repository.RefreshTokenRedisRepository;
+import com.springles.repository.support.MemberGameInfoJpaRepository;
 import com.springles.service.MemberService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,9 +42,20 @@ public class MemberServiceImpl implements MemberService {
     private final RefreshTokenRedisRepository memberRedisRepository;
     private final BlackListTokenRedisRepository blackListTokenRedisRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
+    private final MemberGameInfoJpaRepository memberGameInfoJpaRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
     private final JavaMailSender javaMailSender;
+
+    // 사용자 정보 가져오기
+    @Override
+    public MemberInfoResponse getUserInfo(String authHeader){
+
+        String memberName = jwtTokenUtils.parseClaims(authHeader).getSubject();   // AccessToken으로 닉네임 받아오기
+
+        return MemberInfoResponse.of(memberRepository.findByMemberName(memberName) // 닉네임으로 info dto 반환
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)));
+    }
 
     @Override
     public String signUp(MemberCreateRequest memberDto) {
@@ -123,7 +140,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public String login(MemberLoginRequest memberDto) {
+    public MemberLoginResponse login(MemberLoginRequest memberDto) {
 
         // 아이디에 해당하는 회원정보가 있는지 확인
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberDto.getMemberName());
@@ -156,12 +173,19 @@ public class MemberServiceImpl implements MemberService {
         // refreshToken 저장
         memberRedisRepository.save(refreshToken);
 
+        // toString()으로 반환할 경우 접근하기 어려워서 수정했습니다.
         return MemberLoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .memberName(memberDto.getMemberName())
-                .build()
-                .toString();
+                .build();
+
+//        return MemberLoginResponse.builder()
+//                .accessToken(accessToken)
+//                .refreshToken(refreshToken)
+//                .memberName(memberDto.getMemberName())
+//                .build()
+//                .toString();
     }
 
     @Override
@@ -344,6 +368,96 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return tempPassword;
+    }
+
+    @Override
+    public MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String authHeader) {
+
+        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+
+        // 헤더의 회원정보가 존재하는 회원정보인지 체크
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if (optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        // 탈퇴한 회원인지 체크
+        if (optionalMember.get().getIsDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
+        }
+
+        Optional<MemberGameInfo> optionalMemberGameInfo =  memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
+
+        // 이미 프로필이 설정되어 있는지 체크
+        if (optionalMemberGameInfo.isPresent()) {
+            throw new CustomException(ErrorCode.BAD_REQUEST_ERROR);
+        }
+
+        MemberProfileCreateRequest newMemberInfo = new MemberProfileCreateRequest();
+        MemberGameInfo newMemberGameInfo = memberGameInfoJpaRepository.save(newMemberInfo.newMemberGameInfo(memberDto, optionalMember.get().getId()));
+        return MemberProfileResponse.of(newMemberGameInfo, optionalMember.get().getId());
+    }
+
+
+    @Override
+    public MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String authHeader) {
+        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+
+        // 헤더의 회원정보가 존재하는 회원정보인지 체크
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if (optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        // 탈퇴한 회원인지 체크
+        if (optionalMember.get().getIsDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
+        }
+
+        Optional<MemberGameInfo> optionalMemberGameInfo =  memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
+
+        // 이미 프로필이 설정되어 있는지 체크
+        if (optionalMemberGameInfo.isEmpty()) {
+            throw new CustomException(ErrorCode.BAD_REQUEST_ERROR);
+        }
+
+        MemberProfileUpdateRequest memberProfileUpdateRequest = new MemberProfileUpdateRequest();
+        MemberGameInfo updateInfo = memberProfileUpdateRequest.updateMemberGameInfo(optionalMemberGameInfo.get(), memberDto);
+        memberGameInfoJpaRepository.save(updateInfo);
+
+        return MemberProfileResponse.of(updateInfo, optionalMember.get().getId());
+    }
+
+
+    @Override
+    public MemberProfileRead readProfile(String authHeader) {
+        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+
+        // 헤더의 회원정보가 존재하는 회원정보인지 체크
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if (optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        // 탈퇴한 회원인지 체크
+        if (optionalMember.get().getIsDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
+        }
+
+        Optional<MemberGameInfo> optionalMemberGameInfo =  memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
+
+        // 이미 프로필이 설정되어 있는지 체크
+        if (optionalMemberGameInfo.isEmpty()) {
+            throw new CustomException(ErrorCode.BAD_REQUEST_ERROR);
+        }
+
+        return MemberProfileRead.builder()
+                .nickname(optionalMemberGameInfo.get().getNickname())
+                .profileImg(optionalMemberGameInfo.get().getProfileImg())
+                .level(optionalMemberGameInfo.get().getLevel())
+                .exp(optionalMemberGameInfo.get().getExp())
+                .nextLevel(optionalMemberGameInfo.get().getLevel() + 1)
+                .build();
     }
 
     @Override

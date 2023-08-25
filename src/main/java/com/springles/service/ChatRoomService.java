@@ -12,13 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatRoomService {
-    @Transactional
-    ChatRoomResponseDto createChatRoom(ChatRoomReqDTO chatRoomReqDTO);
-    @Transactional
+    ChatRoomResponseDto createChatRoom(ChatRoomReqDTO chatRoomReqDTO, Long id);
     ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto chatRoomUpdateReqDto, Long chatroomId);
-    @Transactional
     void deleteChatRoom(Long memberId, Long chatRoomId);
-
 
     Page<ChatRoomListResponseDto> findAllByCloseFalseAndState(Integer pageNumber, Integer size);
     List<ChatRoomListResponseDto> findChatRoomByTitle(String title);

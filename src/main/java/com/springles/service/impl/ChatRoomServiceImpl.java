@@ -42,20 +42,18 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatRoomJpaRepository chatRoomJpaRepository;
     private final MemberJpaRepository memberJpaRepository;
 
-
+   // 채팅방 생성
     @Transactional
     @Override
-    public ChatRoomResponseDto createChatRoom(ChatRoomReqDTO chatRoomReqDTO) {
+    public ChatRoomResponseDto createChatRoom(ChatRoomReqDTO chatRoomReqDTO, Long id) {
         // request 자체가 빈 경우
         if (chatRoomReqDTO == null) throw new CustomException(ErrorCode.REQUEST_EMPTY);
         // 비밀방 선택 - 비밀번호 입력하지 않은 경우 오류 발생
-        if (chatRoomReqDTO.getClose() && (chatRoomReqDTO.getPassword().isEmpty()))
-            throw new CustomException(CLOSE_ROOM_ERROR);
-        // 공개방 선택 - 비밀번호 입력한 경우 오류 발생
-        if (!chatRoomReqDTO.getClose() && (!chatRoomReqDTO.getPassword().isEmpty()))
-            throw new CustomException(OPEN_ROOM_ERROR);
+        if (chatRoomReqDTO.getClose() && chatRoomReqDTO.getPassword() == null) throw new CustomException(ErrorCode.PASSWORD_EMPTY);
+        // 공개방 선택 - 비밀번호 입력한 경우라면
+        if (!chatRoomReqDTO.getClose() && chatRoomReqDTO.getPassword() != null) throw new CustomException(ErrorCode.OPEN_PASSWORD);
 
-        ChatRoom chatRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO));
+        ChatRoom chatRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO, id));
 
         // 채팅방 생성하기
         return ChatRoomResponseDto.of(chatRoom);

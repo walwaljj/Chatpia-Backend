@@ -125,4 +125,54 @@ public class MemberController {
                         .build()
         );
     }
+
+    @PostMapping("/info/profile")
+    public ResponseEntity<ResResult> createProfile(
+            @Valid @RequestBody MemberProfileCreateRequest memberDto,
+            @RequestHeader(value = "Authorization") String authHeader
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_CREATE;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.createProfile(memberDto, authHeader))
+                        .build()
+        );
+    }
+
+    @PatchMapping("/info/profile")
+    public ResponseEntity<ResResult> updateProfile(
+            @Valid @RequestBody MemberProfileUpdateRequest memberDto,
+            @RequestHeader(value = "Authorization") String authHeader
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_UPDATE;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.updateProfile(memberDto, authHeader))
+                        .build()
+        );
+    }
+
+    @GetMapping("/info/profile")
+    public ResponseEntity<ResResult> readProfile(
+            @RequestHeader(value = "Authorization") String authHeader
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_READ;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.readProfile(authHeader))
+                        .build()
+        );
+    }
 }

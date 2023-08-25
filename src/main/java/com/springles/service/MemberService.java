@@ -6,13 +6,16 @@ import java.io.IOException;
 
 public interface MemberService {
 
+    // 사용자 정보 API
+    MemberInfoResponse getUserInfo(String authHeader);
+
     String signUp(MemberCreateRequest memberDto);
 
     String updateInfo(MemberUpdateRequest memberDto, String authHeader);
 
     void signOut(MemberDeleteRequest memberDto, String authHeader);
 
-    String login(MemberLoginRequest memberDto);
+    MemberLoginResponse login(MemberLoginRequest memberDto);
 
     void logout(String authHeader);
 
@@ -23,4 +26,10 @@ public interface MemberService {
     String randomPassword();
 
     boolean memberExists(String memberName);
+
+    MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String authHeader);
+
+    MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String authHeader);
+
+    MemberProfileRead readProfile(String authHeader);
 }

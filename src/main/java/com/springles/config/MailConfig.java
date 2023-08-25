@@ -1,5 +1,6 @@
 package com.springles.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,8 +13,11 @@ import java.util.Properties;
 @Configuration
 public class MailConfig {
 
-    private String memberName = "${username}";  // 환경변수 설정 필요
-    private String password = "${password}";  // 환경변수 설정 필요
+    // username, password 환경변수 설정 필요
+    @Value("${username}")
+    private String username;
+    @Value("${password}")
+    private String password;
 
     @Bean
     public JavaMailSender javaMailSender() {
@@ -22,7 +26,7 @@ public class MailConfig {
 
         javaMailSender.setHost("smtp.gmail.com");
         javaMailSender.setPort(587);
-        javaMailSender.setUsername(memberName);
+        javaMailSender.setUsername(username);
         javaMailSender.setPassword(password);
 
         javaMailSender.setJavaMailProperties(getMailProperties());

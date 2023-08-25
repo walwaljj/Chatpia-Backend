@@ -3,8 +3,10 @@ package com.springles.controller.ui;
 
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
-import com.springles.exception.CustomException;
+import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.service.ChatRoomService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +22,8 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class ChatRoomUiController {
 
+    private final MemberUiController memberUiController;
     private final ChatRoomService chatRoomService;
-
 
     // 홈으로 가는 controller : addAttribute 로 username 을 전달 해주고 있다.
 //    @GetMapping("/detail.html")
@@ -31,7 +33,6 @@ public class ChatRoomUiController {
 //        }
 //        return "detail";
 
-
     // 메인 페이지
     @GetMapping("/index")
     public String index() {
@@ -39,17 +40,25 @@ public class ChatRoomUiController {
     }
 
 
-    // 게임 만들기 페이지 (GET)
+    // 채팅방 만들기 페이지 (GET)
     @GetMapping("/add")
     public String writeRoom(Model model, ChatRoomReqDTO requestDto) {
         model.addAttribute("requestDto", requestDto);
         return "home/add";
     }
 
-    // 게임 만들기 (POST)
+
+    // 채팅방 만들기 (POST)
     @PostMapping("/add")
-    public String createRoom(@ModelAttribute("requestDto") @Valid ChatRoomReqDTO requestDto) {
-        chatRoomService.createChatRoom(requestDto);
+    public String createRoom(@ModelAttribute("requestDto") @Valid ChatRoomReqDTO requestDto, HttpServletRequest request){
+        // 쿠키에서 accessToken 가져오기
+        Cookie[] cookies = request.getCookies();
+        String accessToken = cookies[0].getValue();
+        // 사용자 정보 가져오는 api 호출
+        MemberInfoResponse info = memberUiController.info(accessToken);
+        Long id = info.getId();
+        log.info(String.valueOf(id));
+        chatRoomService.createChatRoom(requestDto, id);
         return "redirect:index";
     }
 
@@ -101,7 +110,10 @@ public class ChatRoomUiController {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("search-content",searchContent);
         }
+
         return "home/list";
     }
+
+
 }
 
