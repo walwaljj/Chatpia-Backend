@@ -42,10 +42,11 @@ public class ChatRoomUiController {
 
     // 채팅방 만들기 페이지 (GET)
     @GetMapping("/add")
-    public String writeRoom(Model model, ChatRoomReqDTO requestDto){
-        model.addAttribute("requestDto",requestDto);
+    public String writeRoom(Model model, ChatRoomReqDTO requestDto) {
+        model.addAttribute("requestDto", requestDto);
         return "home/add";
     }
+
 
     // 채팅방 만들기 (POST)
     @PostMapping("/add")
@@ -61,24 +62,55 @@ public class ChatRoomUiController {
         return "redirect:index";
     }
 
-    // 채팅방 목록 페이지
+    // 채팅방 목록 페이지 (전체 조회)
     @GetMapping("/list")
     public String chatRoomList(Model model,
                                @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
-                               @RequestParam(value = "size", defaultValue = "10", required = false) Integer size){
+                               @RequestParam(value = "size", defaultValue = "5", required = false) Integer size) {
         Page<ChatRoomListResponseDto> allChatRooms = chatRoomService.findAllChatRooms(page, size);
-        model.addAttribute("allChatRooms",allChatRooms);
+        model.addAttribute("allChatRooms", allChatRooms);
         return "home/list";
+    }
+
+    // 채팅방 목록 페이지 (오픈 & 대기 조회)
+    @GetMapping("/list/check")
+    public String checkedChatRoomList(Model model,
+                                      @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                                      @RequestParam(value = "size", defaultValue = "5", required = false) Integer size) {
+        Page<ChatRoomListResponseDto> closeFalseAndStateList = chatRoomService.findAllByCloseFalseAndState(page, size);
+        model.addAttribute("allChatRooms", closeFalseAndStateList);
+        return "home/check";
     }
 
     // 채팅방 검색
     @GetMapping("list/search")
-    public String searchRooms( @RequestParam(value = "searchContent", required = false) String searchContent,
-                               @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
-                               Model model) {
+    public String searchRooms(@RequestParam(value = "search-content", required = false) String searchContent,
+                              @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
+                              @RequestParam(value = "size", defaultValue = "5", required = false) Integer size,
+                              Model model) {
 
-        Page<ChatRoomListResponseDto> allByTitleAndNickname = chatRoomService.findAllByTitleAndNickname(searchContent, page);
-        model.addAttribute("allChatRooms", allByTitleAndNickname);
+        try {
+
+            Page<ChatRoomListResponseDto> allByTitleAndNickname = chatRoomService.findAllByTitleAndNickname(searchContent, page, size);
+            model.addAttribute("allChatRooms", allByTitleAndNickname);
+
+        } catch (CustomException e) {
+
+            // 검색어가 비어있다면
+            if (searchContent.isEmpty()) {
+
+                Page<ChatRoomListResponseDto> allChatRooms = chatRoomService.findAllChatRooms(page, size);
+                model.addAttribute("allChatRooms", allChatRooms);
+                model.addAttribute("errorMessage", e.getMessage());
+
+            }
+
+            // 검색어가 비어 있지 않고 방을 찾지 못했을 때
+
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("search-content",searchContent);
+        }
+
         return "home/list";
     }
 

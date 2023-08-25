@@ -21,6 +21,6 @@ public interface ChatRoomService {
 
     List<ChatRoomListResponseDto> findChatRoomByNickname(String nickname);
     ChatRoomResponseDto findChatRoomByChatRoomId(Long id);
-    Page<ChatRoomListResponseDto> findAllByTitleAndNickname(String searchContent, Integer page);
+    Page<ChatRoomListResponseDto> findAllByTitleAndNickname(String searchContent, Integer page,Integer size);
     Page<ChatRoomListResponseDto> findAllChatRooms(Integer pageNumber, Integer size);
 }
