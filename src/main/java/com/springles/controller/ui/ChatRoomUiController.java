@@ -4,6 +4,7 @@ package com.springles.controller.ui;
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
 import com.springles.domain.dto.member.MemberInfoResponse;
+import com.springles.exception.CustomException;
 import com.springles.service.ChatRoomService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
