@@ -22,6 +22,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -482,17 +483,14 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.NOT_FOUND_GAME_INFO);
         }
 
-        // 해당 회원의 가장 최근 게임기록 호출
-        List<GameRecord> gameRecordList = gameRecordJpaRepository.findTOP1ByMemberIdOrderByIdDesc(optionalMember.get().getId());
-        if (gameRecordList.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_GAME_RECORD);
-        }
-
-        // 현재 경험치
-        Long exp = optionalMemberGameInfo.get().getExp();
+        // 가장 최근 게임기록
+        GameRecord gameRecord = gameRecordJpaRepository.findTOP1ByMemberIdOrderByIdDesc(optionalMember.get().getId());
 
         // 현재 레벨
         Level level = optionalMemberGameInfo.get().getLevel();
+
+        // 현재 경험치
+        Long exp = optionalMemberGameInfo.get().getExp();
 
         // 레벨업까지 목표 경험치
         Long goalExp = level.getGoalExp();
@@ -501,26 +499,20 @@ public class MemberServiceImpl implements MemberService {
         String inGameRole = optionalMemberGameInfo.get().getInGameRole().getVal();
 
         // 이긴 팀(true: 마피아, false: 시민)
-        boolean isWinner = true;
-        for(GameRecord gameRecord : gameRecordList) {
-            isWinner = gameRecord.isWinner();
-        }
+        boolean isWinner = gameRecord.isWinner();
 
         // 게임 속 내 역할이 없을 경우
-        if (inGameRole.equals("NONE")) {
+        if (inGameRole.equals("none")) {
             throw new CustomException(ErrorCode.NO_IN_GAME_ROLE);
         }
 
-        // 내 역할의 팀이 이겼을 경우
-        if (isWinner && inGameRole.equals("MAFIA")
-                || !isWinner && !inGameRole.equals("MAFIA")) {
-            exp += 200;
-        }
-        // 내 역할의 팀이 졌을 경우
-        else if (isWinner && !(inGameRole.equals("MAFIA"))
-                || !isWinner && inGameRole.equals("MAFIA")) {
-            exp += 100;
-        }
+        // 경험치 부여(내가 속한 팀이 이김: +200exp, 짐: +100exp)
+        exp += ((isWinner && inGameRole.equals("mafia")
+                || !isWinner && (inGameRole.equals("civilian")
+                                || inGameRole.equals("police")
+                                || inGameRole.equals("doctor"))
+                )
+                ? 200 : 100);
 
         // 레벨업이 가능할 경우
         if (exp >= goalExp) {
