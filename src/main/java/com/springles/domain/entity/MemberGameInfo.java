@@ -28,6 +28,7 @@ public class MemberGameInfo {
     private ProfileImg profileImg;  // 프로필 이미지
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Level level; // 유저 레벨
 
     @Column(nullable = false)
