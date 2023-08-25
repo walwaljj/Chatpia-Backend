@@ -534,6 +534,7 @@ public class MemberServiceImpl implements MemberService {
         return MemberProfileResponse.of(updateLevelAndExp, optionalMember.get().getId());
     }
 
+    @Override
     public Level nextLevel(Level rawLevel) {
         if (rawLevel.equals(Level.BEGINNER)) {
             return Level.ASSOCIATE;

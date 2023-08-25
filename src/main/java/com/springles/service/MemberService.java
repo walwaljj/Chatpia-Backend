@@ -1,5 +1,6 @@
 package com.springles.service;
 
+import com.springles.domain.constants.Level;
 import com.springles.domain.dto.member.*;
 
 import java.io.IOException;
@@ -34,4 +35,6 @@ public interface MemberService {
     MemberProfileRead readProfile(String authHeader);
 
     MemberProfileResponse levelUp(String authHeader);
+
+    Level nextLevel(Level rawLevel);
 }
