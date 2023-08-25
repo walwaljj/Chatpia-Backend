@@ -32,4 +32,6 @@ public interface MemberService {
     MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String authHeader);
 
     MemberProfileRead readProfile(String authHeader);
+
+    MemberProfileResponse levelUp(String authHeader);
 }

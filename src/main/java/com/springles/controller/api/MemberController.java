@@ -175,4 +175,20 @@ public class MemberController {
                         .build()
         );
     }
+
+    @PatchMapping("/levelup")
+    public ResponseEntity<ResResult> levelUp(
+            @RequestHeader(value = "Authorization") String authHeader
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_LEVEL_UP;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.levelUp(authHeader))
+                        .build()
+        );
+    }
 }

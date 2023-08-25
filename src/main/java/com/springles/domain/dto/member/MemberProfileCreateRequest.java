@@ -1,5 +1,6 @@
 package com.springles.domain.dto.member;
 
+import com.springles.domain.constants.Level;
 import com.springles.domain.constants.ProfileImg;
 import com.springles.domain.entity.MemberGameInfo;
 import jakarta.validation.constraints.NotBlank;
@@ -45,7 +46,7 @@ public class MemberProfileCreateRequest {
         return MemberGameInfo.builder()
                 .nickname(memberDto.getNickname())
                 .profileImg(profileImg)
-                .level(0L)
+                .level(Level.BEGINNER)
                 .exp(0L)
                 .memberId(memberId)
                 .build();

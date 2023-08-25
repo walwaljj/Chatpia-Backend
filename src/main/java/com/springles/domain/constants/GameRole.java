@@ -1,7 +1,9 @@
 package com.springles.domain.constants;
 
+import lombok.Getter;
 import lombok.val;
 
+@Getter
 public enum GameRole {
     MAFIA("mafia"),
     CIVILIAN("civilian"),
