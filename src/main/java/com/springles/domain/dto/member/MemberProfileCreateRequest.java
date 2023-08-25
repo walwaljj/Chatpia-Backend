@@ -1,5 +1,6 @@
 package com.springles.domain.dto.member;
 
+import com.springles.domain.constants.GameRole;
 import com.springles.domain.constants.Level;
 import com.springles.domain.constants.ProfileImg;
 import com.springles.domain.entity.MemberGameInfo;
@@ -48,6 +49,7 @@ public class MemberProfileCreateRequest {
                 .profileImg(profileImg)
                 .level(Level.BEGINNER)
                 .exp(0L)
+                .inGameRole(GameRole.NONE)
                 .memberId(memberId)
                 .build();
     }
