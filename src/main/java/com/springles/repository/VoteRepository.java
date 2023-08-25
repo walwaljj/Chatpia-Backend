@@ -2,12 +2,14 @@ package com.springles.repository;
 
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
+import com.springles.domain.entity.Vote;
 import com.springles.domain.entity.VoteInfo;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +38,31 @@ public class VoteRepository {
         voteRedisRepository.startVote(getVoters(roomId), phase);
     }
 
+    public boolean isEnd(String roomId, int phaseCount) {
+        VoteInfo voteInfo = voteInfosMap.get(roomId);
+        // roomId에 해당하는 투표 정보가 없거나 해당 차수의 투표가 존재하지 않는다면 끝
+        if (voteInfo == null | voteInfo.getPhaseCount() != phaseCount) {
+            return true;
+        }
+        return false;
+    }
+
+    // roomId와 phase 넘버가 맞아야 유효한 투표라고 반환하는 메소드
+    public boolean isValid(String playerId, GamePhase phase) {
+        return voteRedisRepository.isExist(playerId) == true
+                ? (voteRedisRepository.getVote(playerId).getPhase() == phase ? true : false)
+                : false;
+    }
+
+
+    // 누가 누구를 투표했는지 Map<투표한사람, 투표받은사람>으로 변환해 주는 메소드
+    private Map<String, String> voteResultConvert(Map<String, Vote> voteResult) {
+        Map<String, String> result = new HashMap<String, String>();
+        voteResult.forEach((playerId, vote) -> {
+            result.put(playerId, vote.getVote());
+        });
+        return result;
+    }
     private List<String> getVoters(String roomId) {
         return voteInfosMap.get(roomId) // roomId에 해당하는 VoteInfo
                 .getVotersMap().keySet() // VoteInfo에 있는 <String, GameRole> 중 String 값
