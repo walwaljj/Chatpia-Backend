@@ -9,7 +9,8 @@ public enum Level {
     SOLDIER(2L, 3000L, "SOLDIER"),
     CAPTAIN(3L, 6000L, "CAPTAIN"),
     UNDERBOSS(4L, 10000L, "UNDER BOSS"),
-    BOSS(5L, 100000L, "BOSS");
+    BOSS(5L, 0L, "BOSS"),
+    NONE(6L,0L,"NONE");
 
     private Long val;
     private Long goalExp;

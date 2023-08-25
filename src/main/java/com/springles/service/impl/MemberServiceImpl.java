@@ -515,7 +515,7 @@ public class MemberServiceImpl implements MemberService {
                 ? 200 : 100);
 
         // 레벨업이 가능할 경우
-        if (exp >= goalExp) {
+        if(!(level.equals(Level.BOSS) || level.equals(Level.NONE)) && (exp >= goalExp)) {
             level = nextLevel(level);
         }
 
@@ -547,8 +547,7 @@ public class MemberServiceImpl implements MemberService {
         } else if (rawLevel.equals(Level.UNDERBOSS)) {
             return Level.BOSS;
         } else
-            // 현재 레벨이 BOSS일 경우 null 반환
-            return null;
+            return Level.NONE;
     }
 
     @Override
