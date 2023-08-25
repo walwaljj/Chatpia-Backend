@@ -479,13 +479,13 @@ public class MemberServiceImpl implements MemberService {
         // 해당 회원의 게임정보 호출
         Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
         if (optionalMemberGameInfo.isEmpty()) {
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new CustomException(ErrorCode.NOT_FOUND_GAME_INFO);
         }
 
         // 해당 회원의 가장 최근 게임기록 호출
         List<GameRecord> gameRecordList = gameRecordJpaRepository.findTOP1ByMemberIdOrderByIdDesc(optionalMember.get().getId());
         if (gameRecordList.isEmpty()) {
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new CustomException(ErrorCode.NOT_FOUND_GAME_RECORD);
         }
 
         // 현재 경험치
@@ -508,7 +508,7 @@ public class MemberServiceImpl implements MemberService {
 
         // 게임 속 내 역할이 없을 경우
         if (inGameRole.equals("NONE")) {
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new CustomException(ErrorCode.NO_IN_GAME_ROLE);
         }
 
         // 내 역할의 팀이 이겼을 경우
