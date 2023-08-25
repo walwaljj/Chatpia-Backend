@@ -4,12 +4,16 @@ import com.springles.domain.entity.Member;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Builder
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class MemberCreateRequest {
 
     // 게임 아이디
