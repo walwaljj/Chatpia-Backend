@@ -21,8 +21,4 @@ public class CustomException extends RuntimeException {
             '}';
     }
 
-    public ErrorCode getErrorCode() {
-        return this.errorCode;
-    }
-
 }
