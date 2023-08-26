@@ -23,7 +23,7 @@ public enum ErrorCode {
     NOT_VALID_HEADER_ERROR(HttpStatus.NOT_FOUND, "Header에 데이터가 존재하지 않습니다. "),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 오류가 발생했습니다."),
     NOT_AUTHORIZED_CONTENT(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
-
+    NO_CONTENT(HttpStatus.BAD_REQUEST,"입력된 값이 없습니다."),
     /* JWT */
     NO_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "로그인 정보가 존재하지 않습니다. 다시 로그인해 주세요."),
     NOT_AUTHORIZED_TOKEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
@@ -62,8 +62,19 @@ public enum ErrorCode {
     FAIL_SEND_MEMBER_PW(HttpStatus.INTERNAL_SERVER_ERROR,"비밀번호 메일 전송을 실패하였습니다."),
     NOT_FOUND_INPUT_VALUE_MEMBER(HttpStatus.NOT_FOUND, "입력한 정보와 일치하는 회원정보가 없습니다."),
     NOT_FOUND_GAME_INFO(HttpStatus.NOT_FOUND, "등록된 게임정보(프로필)이 없습니다."),
-    NO_IN_GAME_ROLE(HttpStatus.BAD_REQUEST, "부여된 GameRole이 없습니다.");
+    NO_IN_GAME_ROLE(HttpStatus.BAD_REQUEST, "부여된 GameRole이 없습니다."),
 
+    /* PLAYER */
+    PLAYER_HEAD_ERROR(HttpStatus.BAD_REQUEST, "5명 이상 10명 이하로 플레이 가능합니다."),
+    PLAYER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 플레이어입니다."),
+    PLAYER_STILL_INGAME(HttpStatus.INTERNAL_SERVER_ERROR, "플레이어가 이미 게임을 진행 중입니다."),
+
+    /* GAME SESSION */
+    GAME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게임입니다."),
+    GAME_HEAD_FULL(HttpStatus.BAD_REQUEST, "정원이 초과되었습니다."),
+    GAME_PLAYER_EXISTS(HttpStatus.BAD_REQUEST, "아직 플레이어가 존재하는 게임은 삭제할 수 없습니다");
+
+    
     private final HttpStatus status;
     private final String message;
 

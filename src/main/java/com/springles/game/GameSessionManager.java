@@ -4,6 +4,8 @@ import com.springles.domain.constants.GameRole;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
+import com.springles.exception.CustomException;
+import com.springles.exception.constants.ErrorCode;
 import com.springles.repository.GameSessionRedisRepository;
 import com.springles.repository.PlayerRedisRepository;
 import groovy.util.logging.Slf4j;
@@ -27,47 +29,56 @@ public class GameSessionManager {
 
     /* 게임 세션 생성 */
     public void createGame(ChatRoom chatRoom) {
-        gameSessionRedisRepository.save(GameSession.of(chatRoom));
+        GameSession gameSession = gameSessionRedisRepository.save(GameSession.of(chatRoom));
+        addUser(chatRoom.getId(), chatRoom.getOwnerId());
     }
 
     /* 게임 시작 */
     public void startGame(Long roomId) {
-        // 플레이어 수 확인
-        List<Player> players = playerRedisRepository.findByRoomId(roomId);
-        if (players.size() == 0) {
-            // 에러코드 필요 (인원 부족)
+        List<Player> players = findPlayersByRoomId(roomId);
+        if (players.size() < 5 || players.size() > 10) {
+            throw new CustomException(ErrorCode.PLAYER_HEAD_ERROR);
         }
         roleManager.assignRole(players);
-        GameSession gameSession = gameSessionRedisRepository.findById(roomId).orElseThrow(); // 익셉션
+        GameSession gameSession = findGameByRoomId(roomId);
         gameSessionRedisRepository.save(gameSession.start(players.size()));
         // 메세지 보내기
     }
 
     /* 게임 종료 -> 준비 상태로 돌아가기 */
     public void endGame(Long roomId) {
-        GameSession gameSession = gameSessionRedisRepository.findById(roomId).orElseThrow();
+        GameSession gameSession = findGameByRoomId(roomId);
         gameSession.end();
         gameSessionRedisRepository.save(gameSession);
-        List<Player> players = playerRedisRepository.findByRoomId(roomId);
-        for (Player player : players) player.updateRole(GameRole.NONE);
+        List<Player> players = findPlayersByRoomId(roomId);
+        for (Player player : players) {
+            player.updateRole(GameRole.NONE);
+        }
+        playerRedisRepository.saveAll(players);
+
     }
 
     /* 게임 세션 삭제 */
     public void removeGame(Long roomId) {
-        List<Player> players = playerRedisRepository.findByRoomId(roomId);
-        playerRedisRepository.deleteAll(players);
+        List<Player> players = findPlayersByRoomId(roomId);
+        if (!players.isEmpty()) {
+            throw new CustomException(ErrorCode.GAME_PLAYER_EXISTS);
+        }
         gameSessionRedisRepository.deleteById(roomId);
     }
 
     /* 게임에서 유저 제거 */
     public void removePlayer(Long roomId, Long playerId) {
-        Player player = playerRedisRepository.findById(playerId).orElseThrow(); // 에러코드
-        GameSession gameSession = gameSessionRedisRepository.findById(roomId).orElseThrow(); // 에러코드
+        Player player = findPlayerByMemeberId(playerId);
+        GameSession gameSession = findGameByRoomId(roomId);
         playerRedisRepository.deleteById(playerId);
-        List<Player> players = playerRedisRepository.findByRoomId(roomId);
-        if (players.isEmpty()) removeGame(roomId); // 아무도 없다면 방삭제
+        List<Player> players = findPlayersByRoomId(roomId);
+        // 아무도 없다면 방삭제
+        if (players.isEmpty()) {
+            removeGame(roomId);
+        }
+        // 남은 플레이어가 존재하고 방장이 나갔다면 랜덤으로 방장 넘겨주기
         else if (Objects.equals(gameSession.getHostId(), playerId)) {
-            // 랜덤으로 방장 넘겨주기
             Random random = new Random();
             gameSession.changeHost(players.get(random.nextInt(players.size())).getMemberId());
             gameSessionRedisRepository.save(gameSession);
@@ -76,16 +87,34 @@ public class GameSessionManager {
 
     /* 게임에 유저 추가 */
     public void addUser(Long roomId, Long memberId) {
-        if (playerRedisRepository.countByRoomId(roomId) > 10) {
-            // 에러 코드 필요 (정원초과)
+        if (playerRedisRepository.findByRoomId(roomId).size() > 10) {
+            throw new CustomException(ErrorCode.GAME_HEAD_FULL);
         }
-        GameSession gameSession = gameSessionRedisRepository.findById(roomId)
-            .orElseThrow(); // 에러코드 필요(세션이 존재하지 않음)
+        GameSession gameSession = findGameByRoomId(roomId);
+        // 아직 다른 방에 참가중이라면 -> 게임 중간에 나갔을 경우 발생 가능 -> 중간에 나갔을 경우를 처리해야 함.
         if (playerRedisRepository.existsByMemberId(memberId)) {
-            // 에러코드 필요(Player가 이미 존재)
+            throw new CustomException(ErrorCode.PLAYER_STILL_INGAME);
         }
-        Player newPlayer = Player.of(memberId, roomId);
-        playerRedisRepository.save(newPlayer);
+        playerRedisRepository.save(Player.of(memberId, roomId));
+    }
+
+    public GameSession findGameByRoomId(Long roomId) {
+        return gameSessionRedisRepository.findById(roomId)
+            .orElseThrow(() -> new CustomException(ErrorCode.GAME_NOT_FOUND));
+    }
+
+    public GameSession findGamByHostId(Long hostId) {
+        return gameSessionRedisRepository.findByHostId(hostId)
+            .orElseThrow(() -> new CustomException(ErrorCode.GAME_NOT_FOUND));
+    }
+
+    public List<Player> findPlayersByRoomId(Long roomId) {
+        return playerRedisRepository.findByRoomId(roomId);
+    }
+
+    public Player findPlayerByMemeberId(Long memberId) {
+        return playerRedisRepository.findById(memberId)
+            .orElseThrow(() -> new CustomException(ErrorCode.PLAYER_NOT_FOUND));
     }
 
 }

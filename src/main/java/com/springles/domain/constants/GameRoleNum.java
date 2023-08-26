@@ -1,5 +1,7 @@
 package com.springles.domain.constants;
 
+import com.springles.exception.CustomException;
+import com.springles.exception.constants.ErrorCode;
 import java.util.EnumMap;
 import lombok.Getter;
 
@@ -15,13 +17,14 @@ public enum GameRoleNum {
     private int mafia, civilian, police, doctor;
 
     GameRoleNum(int mafia, int civilian, int police, int doctor) {
+        this.civilian = civilian;
+        this.mafia = mafia;
+        this.police = police;
+        this.doctor = doctor;
     }
 
     public static GameRoleNum getRoleNum(int playerCount) {
-        if (playerCount > 10 || playerCount < 5) {
-            // 정원 익셉션 발생
-        }
-        return GameRoleNum.values()[playerCount + 4];
+        return GameRoleNum.values()[playerCount-5];
     }
 
 }

@@ -37,6 +37,7 @@ public class GameSession {
         return GameSession.builder()
             .roomId(chatRoom.getId())
             .hostId(chatRoom.getOwnerId())
+            .gamePhase(GamePhase.READY)
             .build();
     }
 
@@ -51,7 +52,7 @@ public class GameSession {
     }
 
     public void end() {
-        this.gamePhase = GamePhase.END;
+        this.gamePhase = GamePhase.READY;
         this.aliveCivilian = 0;
         this.aliveMafia = 0;
         this.aliveDoctor = 0;
