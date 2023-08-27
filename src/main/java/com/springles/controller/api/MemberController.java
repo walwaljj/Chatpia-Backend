@@ -178,7 +178,8 @@ public class MemberController {
 
     @PatchMapping("/levelup")
     public ResponseEntity<ResResult> levelUp(
-            @RequestHeader(value = "Authorization") String authHeader
+            // 테스트를 위해 param으로 받음 -> 추후 @RequestParam 삭제 필요
+            @RequestParam("memberId") Long memberId
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_LEVEL_UP;
 
@@ -187,7 +188,7 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.levelUp(authHeader))
+                        .data(memberService.levelUp(memberId))
                         .build()
         );
     }

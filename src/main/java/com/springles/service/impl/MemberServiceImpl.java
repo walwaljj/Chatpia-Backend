@@ -463,28 +463,16 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberProfileResponse levelUp(String authHeader) {
-        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
-
-        // 헤더의 회원정보가 존재하는 회원정보인지 체크
-        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
-        if (optionalMember.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
-        }
-
-        // 탈퇴한 회원인지 체크
-        if (optionalMember.get().getIsDeleted()) {
-            throw new CustomException(ErrorCode.DELETED_MEMBER);
-        }
+    public MemberProfileResponse levelUp(Long memberId) {
 
         // 해당 회원의 게임정보 호출
-        Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
+        Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(memberId);
         if (optionalMemberGameInfo.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_GAME_INFO);
         }
 
         // 가장 최근 게임기록
-        GameRecord gameRecord = gameRecordJpaRepository.findTOP1ByMemberIdOrderByIdDesc(optionalMember.get().getId());
+        GameRecord gameRecord = gameRecordJpaRepository.findTOP1ByMemberIdOrderByIdDesc(memberId);
 
         // 현재 레벨
         Level level = optionalMemberGameInfo.get().getLevel();
@@ -531,7 +519,7 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         memberGameInfoJpaRepository.save(updateLevelAndExp);
-        return MemberProfileResponse.of(updateLevelAndExp, optionalMember.get().getId());
+        return MemberProfileResponse.of(updateLevelAndExp, memberId);
     }
 
     @Override

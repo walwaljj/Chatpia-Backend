@@ -34,7 +34,7 @@ public interface MemberService {
 
     MemberProfileRead readProfile(String authHeader);
 
-    MemberProfileResponse levelUp(String authHeader);
+    MemberProfileResponse levelUp(Long memberId);
 
     Level nextLevel(Level rawLevel);
 }
