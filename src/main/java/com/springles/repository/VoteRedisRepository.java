@@ -20,12 +20,13 @@ public class VoteRedisRepository {
     private HashOperations<String, Long, Vote> opsHashVote;
     private static final String key = "Vote";
 
+    // 의존성 주입하고 초기 세팅
     public VoteRedisRepository(RedisTemplate<String, Vote> redisTemplate) {
         this.redisTemplate = redisTemplate;
         this.opsHashVote = redisTemplate.opsForHash();
     }
 
-
+    // 투표 생성을 위해 <"Vote", playerId, Vote> 형태로 Vote는 비워 둔 채 hash 저드
     public Map<Long, Vote> startVote(List<Long> players, GamePhase phase) {
         Map<Long, Vote> voteResult = new HashMap<Long, Vote>();
         players.forEach((playerId) -> {
@@ -76,5 +77,16 @@ public class VoteRedisRepository {
             voteResult.put(playerId, getVote(playerId));
         });
         return voteResult;
+    }
+
+    public boolean vote(Long playerId, Long player) {
+        // 투표를 시작할 때 Vote 객체 다 만들고 초기화했으니까 새로 생성하지 않고 불러들임
+        Vote vote = getVote(playerId);
+        if (!vote.isConfirm()) {
+            vote.setConfirm(true); // 투표를 확정하고
+            updateVote(playerId, vote); // playerId가 vote 투표를 헀다고 업데이트
+            return true;
+        }
+        return false;
     }
 }

@@ -30,12 +30,20 @@ public class VoteRepository {
         voteInfosMap = new ConcurrentHashMap<Long, VoteInfo>();
     }
 
+
+    // voteInfoMap에 roomId, 투표 참여자 목록 저장
     public void startVote(Long roomId, int phaseCount, GamePhase phase, Map<Long, GameRole> players) {
         // 무슨 투표이고 어떤 참여자가 투표하는지 HashMap 초기화
         VoteInfo voteInfo = VoteInfo.builder(phaseCount, players);
         voteInfosMap.put(roomId, voteInfo);
         log.info("Room {} VoteInfo {}", roomId, voteInfo.toString());
         voteRedisRepository.startVote(getVoters(roomId), phase);
+    }
+
+    // 투표를 하는 메소드
+    public Map<Long, Long> vote(Long roomId, Long playerId, Long player) {
+        voteRedisRepository.vote(playerId, player);
+        return voteResultConvert(getRedisVoteResult(getVoters(roomId)));
     }
 
     public boolean isEnd(String roomId, int phaseCount) {
@@ -58,6 +66,8 @@ public class VoteRepository {
         return voteResultConvert(getRedisVoteResult(getVoters(roomId)));
     }
 
+
+    // <투표한 사람, 투표 객체>로 반환해 주는 메소드
     public Map<Long, Vote> getRedisVoteResult(List<Long> voters) {
         return voteRedisRepository.getVoteResult(voters);
     }
@@ -71,6 +81,8 @@ public class VoteRepository {
         });
         return result;
     }
+
+    // roomId에 해당하는 투표에 참여한 참여자 목록 제공
     private List<Long> getVoters(Long roomId) {
         return voteInfosMap.get(roomId) // roomId에 해당하는 VoteInfo
                 .getVotersMap().keySet() // VoteInfo에 있는 <String, GameRole> 중 String 값
