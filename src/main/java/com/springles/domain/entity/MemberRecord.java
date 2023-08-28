@@ -19,6 +19,9 @@ public class MemberRecord {
     private Long id;
 
     @Column(nullable = false)
+    private Long mafiaCnt;
+
+    @Column(nullable = false)
     private Long citizenCnt;
 
     @Column(nullable = false)
