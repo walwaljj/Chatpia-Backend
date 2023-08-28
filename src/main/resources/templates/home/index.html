@@ -3,20 +3,41 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/basic}">
 <div layout:fragment="content">
-    <ul>
-        <li>
-            <h1>사용자 프로필</h1>
-        </li>
-        <li>
-            <button class="btn btn-outline-success" type="button" onclick="location.href='add'">게임 만들기</button>
-        </li>
-        <li>
-            <button class="btn btn-outline-success" type="button" onclick="location.href='add'">빠른 입장</button>
-        </li>
-        <li>
-            <button class="btn btn-outline-success" type="button" onclick="location.href='list'">채팅방 목록</button>
-        </li>
-
-    </ul>
+    <div class="container">
+        <div class="row">
+            <div class="col-4 center">
+                <!---사용자 정보 --->
+                <div class="card profile border-secondary">
+                    <div class="card-header">Begginer (아이콘)</div>
+                    <div class="card-body text-secondary">
+                        <div class="container">
+                            <div class="row justify-content-around">
+                                <div class="col-9">
+                                    <img src="/images/profile_01.jpg"/>
+                                </div>
+                                <div class="col-3">
+                                    <h6 class="card-title">나는야 마피아</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--- 게임 만들기, 빠른 입장 --->
+                <div>
+                    <button class="my_btn" type="button" onclick="location.href='add'" style="background-color: #666666;">
+                        <span class="text-white">게임 만들기</span>
+                    </button>
+                </div>
+                <div>
+                    <button class="my_btn" type="button" onclick="location.href='add'" style="background-color: #666666;">
+                        <span class="text-white">빠른 입장</span>
+                    </button>
+                </div>
+            </div>
+            <div class="col-8">
+                <h1>채팅방목록</h1>
+            </div>
+        </div>
+    </div>
 </div>
 </html>

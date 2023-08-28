@@ -4,7 +4,24 @@ html {
     margin: 0;
 }
 body {
-    min-height: 100%;
+    width: 100vw;
+    height: 100vh;
+    /*background: pink;*/
+}
+.profile {
+    width: 30vw;
+    height: 50vh;
+    padding: 3px 6px;
+}
+.my_btn {
+    width: 30vw;
+    height: 7vh;
+    padding: 1px 6px;
+    margin-top: 10px;
+
+}
+.center {
+    text-align: center;
 }
 .footer {
     position: absolute;
@@ -12,9 +29,18 @@ body {
     right: 0;
     bottom: 0;
     width: 100%;
-    padding: 15px 0;
+    /*padding: 15px 0;*/
     text-align: center;
 }
 .content{
-    margin: 50px 200px 100px;
+    width: 100vw;
+    height: 100vh;
+    padding: 40px;
+}
+
+img {
+    width: 30vw;
+    height: 30vh;
+    margin-right: 3px;
+    /*object-fit: cover;*/
 }
