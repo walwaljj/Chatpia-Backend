@@ -2,10 +2,16 @@ package com.springles.controller.ui;
 
 import com.google.gson.Gson;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
+import com.springles.domain.dto.member.MemberInfoResponse;
+import com.springles.exception.CustomException;
+import com.springles.exception.constants.ErrorCode;
 import com.springles.service.ChatRoomService;
 import com.springles.service.MemberService;
+import com.springles.service.impl.ChatRoomServiceImpl;
 import com.springles.websocket.SimpleChatHandler;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,11 +23,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("chat")
 @RequiredArgsConstructor
+@Slf4j
 public class ChatUiController {
     private final SimpleChatHandler simpleChatHandler;
     private final Gson gson;
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
+    private final MemberUiController memberUiController;
 
     @GetMapping("rooms")
     public String rooms() {
@@ -38,8 +46,26 @@ public class ChatUiController {
         return "chat-lobby";
     }
 
-    @GetMapping("{roomId}/{userId}")
+//    @GetMapping("{roomId}/{userId}")
     public String enterRoom(){
+        return "chat-room";
+    }
+
+    @GetMapping("{room-id}/{nick-name}")
+    public String enterRoom2(HttpServletRequest request, Model model){
+
+        String accessToken = (String)request.getAttribute("accessToken");
+        MemberInfoResponse memberInfo = memberUiController.info(accessToken);
+
+        model.addAttribute("member",memberInfo);
+        log.info("member name = {}", memberInfo.getMemberName());
+        // 입장 시 방 condition 을 확인함.
+        try{
+            //TODO
+        }catch (CustomException e){
+            // TODO 비밀 방 일 경우
+
+        }
         return "chat-room";
     }
 
