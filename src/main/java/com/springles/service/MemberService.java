@@ -43,6 +43,8 @@ public interface MemberService {
 
     Long rank(Long memberId);
 
+    /** 멤버 게임 기록 조회 */
+    MemberRecordResponse readRecord(String authHeader);
 
     /** 멤버 게임 기록 update */
     MemberRecordResponse updateRecord(Long memberId);

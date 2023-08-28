@@ -193,6 +193,22 @@ public class MemberController {
         );
     }
 
+    @GetMapping("/record")
+    public ResponseEntity<ResResult> readRecord(
+            @RequestHeader(value = "Authorization") String authHeader
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_GAME_RECORD_READ;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.readRecord(authHeader))
+                        .build()
+        );
+    }
+
     @PatchMapping("/record")
     public ResponseEntity<ResResult> updateRecord(
             @RequestParam("memberId") Long memberId

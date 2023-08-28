@@ -547,6 +547,31 @@ public class MemberServiceImpl implements MemberService {
 
     /** 멤버 게임 기록 update */
     @Override
+    public MemberRecordResponse readRecord(String authHeader) {
+        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+
+        // 헤더의 회원정보가 존재하는 회원정보인지 체크
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if (optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        // 탈퇴한 회원인지 체크
+        if (optionalMember.get().getIsDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
+        }
+
+        Optional<MemberRecord> optionalMemberRecord = memberRecordJpaRepository.findByMemberId(optionalMember.get().getId());
+        if(optionalMemberRecord.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER_RECORD);
+        }
+
+        return MemberRecordResponse.of(optionalMemberRecord.get());
+    }
+
+
+    /** 멤버 게임 기록 update */
+    @Override
     public MemberRecordResponse updateRecord(Long memberId) {
 
         // memberRecord(게임한 기록) 호출
