@@ -12,9 +12,9 @@ import java.util.Map;
 @Builder
 public class VoteInfo {
     private int phaseCount;
-    private Map<String, GameRole> votersMap;
+    private Map<Long, GameRole> votersMap;
 
-    public static VoteInfo builder(int phaseCount, Map<String, GameRole> votersMap) {
+    public static VoteInfo builder(int phaseCount, Map<Long, GameRole> votersMap) {
         return new VoteInfoBuilder().phaseCount(phaseCount).votersMap(votersMap).build();
     }
 
@@ -23,7 +23,7 @@ public class VoteInfo {
         StringBuilder sb = new StringBuilder();
         sb.append("VoteInfo [phaseCount=" + phaseCount + ", voters={ ");
         votersMap.keySet().forEach(key -> {
-            sb.append(key.substring(0, 4) + "|");
+            sb.append(key + "|");
         });
         sb.deleteCharAt(sb.length()-1);
         sb.append(" } ]");
