@@ -22,4 +22,5 @@ public class MemberProfileRead {
     private String level;
     private Long exp;
     private String nextLevel;
+    private Long rank;
 }

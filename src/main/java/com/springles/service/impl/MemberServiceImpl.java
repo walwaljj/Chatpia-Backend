@@ -459,6 +459,7 @@ public class MemberServiceImpl implements MemberService {
                 .exp(optionalMemberGameInfo.get().getExp())
                 // 최종레벨일 경우, nextLevel 비노출 필요
                 .nextLevel(nextLevel(optionalMemberGameInfo.get().getLevel()).getName())
+                .rank(rank(optionalMember.get().getId()))
                 .build();
     }
 
@@ -520,6 +521,11 @@ public class MemberServiceImpl implements MemberService {
 
         memberGameInfoJpaRepository.save(updateLevelAndExp);
         return MemberProfileResponse.of(updateLevelAndExp, memberId);
+    }
+
+    @Override
+    public Long rank(Long memberId) {
+        return memberGameInfoJpaRepository.findByMemberRank(memberId);
     }
 
     @Override

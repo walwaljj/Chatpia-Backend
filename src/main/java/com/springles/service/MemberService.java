@@ -37,4 +37,6 @@ public interface MemberService {
     MemberProfileResponse levelUp(Long memberId);
 
     Level nextLevel(Level rawLevel);
+
+    Long rank(Long memberId);
 }
