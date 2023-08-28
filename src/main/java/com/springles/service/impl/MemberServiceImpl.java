@@ -1,16 +1,15 @@
 package com.springles.service.impl;
 
-
+import com.springles.domain.constants.GameRole;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
+import com.springles.domain.constants.Level;
 import com.springles.domain.dto.member.*;
-import com.springles.domain.entity.BlackListToken;
-import com.springles.domain.entity.Member;
-import com.springles.domain.entity.MemberGameInfo;
-import com.springles.domain.entity.RefreshToken;
+import com.springles.domain.entity.*;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.jwt.JwtTokenUtils;
 import com.springles.repository.BlackListTokenRedisRepository;
+import com.springles.repository.GameRecordJpaRepository;
 import com.springles.repository.MemberJpaRepository;
 import com.springles.repository.RefreshTokenRedisRepository;
 import com.springles.repository.support.MemberGameInfoJpaRepository;
@@ -23,6 +22,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,13 +43,14 @@ public class MemberServiceImpl implements MemberService {
     private final BlackListTokenRedisRepository blackListTokenRedisRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final MemberGameInfoJpaRepository memberGameInfoJpaRepository;
+    private final GameRecordJpaRepository gameRecordJpaRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
     private final JavaMailSender javaMailSender;
 
     // 사용자 정보 가져오기
     @Override
-    public MemberInfoResponse getUserInfo(String authHeader){
+    public MemberInfoResponse getUserInfo(String authHeader) {
 
         String memberName = jwtTokenUtils.parseClaims(authHeader).getSubject();   // AccessToken으로 닉네임 받아오기
 
@@ -160,7 +161,7 @@ public class MemberServiceImpl implements MemberService {
 
         // 기존에 생성된 refreshToken이 있을 경우 삭제
         Optional<RefreshToken> optionalRefreshToken = refreshTokenRedisRepository.findByMemberName(memberDto.getMemberName());
-        if(optionalRefreshToken.isPresent()) {
+        if (optionalRefreshToken.isPresent()) {
             refreshTokenRedisRepository.deleteById(optionalRefreshToken.get().getId());
         }
 
@@ -206,7 +207,7 @@ public class MemberServiceImpl implements MemberService {
         }
         // refreshToken 삭제
         Optional<RefreshToken> optionalRefreshToken = refreshTokenRedisRepository.findByMemberName(memberName);
-        if(optionalRefreshToken.isEmpty()) {
+        if (optionalRefreshToken.isEmpty()) {
             throw new CustomException(ErrorCode.NO_JWT_TOKEN);
         }
         refreshTokenRedisRepository.deleteById(optionalRefreshToken.get().getId());
@@ -215,7 +216,7 @@ public class MemberServiceImpl implements MemberService {
         BlackListToken blackListToken = BlackListToken.builder()
                 .accessToken(authHeader.split(" ")[1])
                 // accessToken의 남은 유효시간만큼만 저장
-                .expiration((rawExpiration.getTime() - Date.from(Instant.now()).getTime())/1000)
+                .expiration((rawExpiration.getTime() - Date.from(Instant.now()).getTime()) / 1000)
                 .build();
         log.info("token Expiration : " + rawExpiration);
 
@@ -227,7 +228,7 @@ public class MemberServiceImpl implements MemberService {
     public String vertificationId(MemberVertifIdRequest memberDto) {
 
         List<Member> memberList = memberRepository.findAllByEmail(memberDto.getEmail());
-        if(memberList.isEmpty()) {
+        if (memberList.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_INPUT_VALUE_MEMBER);
         }
 
@@ -293,7 +294,7 @@ public class MemberServiceImpl implements MemberService {
         String tempPassword = randomPassword();
 
         Optional<Member> optionalMember = memberRepository.findByMemberNameAndEmail(memberName, email);
-        if(optionalMember.isEmpty()) {
+        if (optionalMember.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_INPUT_VALUE_MEMBER);
         }
 
@@ -362,7 +363,7 @@ public class MemberServiceImpl implements MemberService {
                 '!', '@', '#', '$', '%', '^', '&', '*'
         };
 
-        for(int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {
             int index = (int) (Math.random() * charSet.length);
             tempPassword += charSet[index];
         }
@@ -386,7 +387,7 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.DELETED_MEMBER);
         }
 
-        Optional<MemberGameInfo> optionalMemberGameInfo =  memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
+        Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
 
         // 이미 프로필이 설정되어 있는지 체크
         if (optionalMemberGameInfo.isPresent()) {
@@ -414,7 +415,7 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.DELETED_MEMBER);
         }
 
-        Optional<MemberGameInfo> optionalMemberGameInfo =  memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
+        Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
 
         // 이미 프로필이 설정되어 있는지 체크
         if (optionalMemberGameInfo.isEmpty()) {
@@ -444,7 +445,7 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.DELETED_MEMBER);
         }
 
-        Optional<MemberGameInfo> optionalMemberGameInfo =  memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
+        Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
 
         // 이미 프로필이 설정되어 있는지 체크
         if (optionalMemberGameInfo.isEmpty()) {
@@ -454,10 +455,93 @@ public class MemberServiceImpl implements MemberService {
         return MemberProfileRead.builder()
                 .nickname(optionalMemberGameInfo.get().getNickname())
                 .profileImg(optionalMemberGameInfo.get().getProfileImg())
-                .level(optionalMemberGameInfo.get().getLevel())
+                .level(optionalMemberGameInfo.get().getLevel().getName())
                 .exp(optionalMemberGameInfo.get().getExp())
-                .nextLevel(optionalMemberGameInfo.get().getLevel() + 1)
+                // 최종레벨일 경우, nextLevel 비노출 필요
+                .nextLevel(nextLevel(optionalMemberGameInfo.get().getLevel()).getName())
+                .rank(rank(optionalMember.get().getId()))
                 .build();
+    }
+
+    @Override
+    public MemberProfileResponse levelUp(Long memberId) {
+
+        // 해당 회원의 게임정보 호출
+        Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(memberId);
+        if (optionalMemberGameInfo.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_GAME_INFO);
+        }
+
+        // 가장 최근 게임기록
+        GameRecord gameRecord = gameRecordJpaRepository.findTOP1ByMemberIdOrderByIdDesc(memberId);
+
+        // 현재 레벨
+        Level level = optionalMemberGameInfo.get().getLevel();
+
+        // 현재 경험치
+        Long exp = optionalMemberGameInfo.get().getExp();
+
+        // 레벨업까지 목표 경험치
+        Long goalExp = level.getGoalExp();
+
+        // 게임 속 내 역할
+        String inGameRole = optionalMemberGameInfo.get().getInGameRole().getVal();
+
+        // 이긴 팀(true: 마피아, false: 시민)
+        boolean isWinner = gameRecord.isWinner();
+
+        // 게임 속 내 역할이 없을 경우
+        if (inGameRole.equals("none")) {
+            throw new CustomException(ErrorCode.NO_IN_GAME_ROLE);
+        }
+
+        // 경험치 부여(내가 속한 팀이 이김: +200exp, 짐: +100exp)
+        exp += ((isWinner && inGameRole.equals("mafia")
+                || !isWinner && (inGameRole.equals("civilian")
+                                || inGameRole.equals("police")
+                                || inGameRole.equals("doctor"))
+                )
+                ? 200 : 100);
+
+        // 레벨업이 가능할 경우
+        if(!(level.equals(Level.BOSS) || level.equals(Level.NONE)) && (exp >= goalExp)) {
+            level = nextLevel(level);
+        }
+
+        // 멤버 게임정보 업데이트
+        MemberGameInfo updateLevelAndExp = MemberGameInfo.builder()
+                .id(optionalMemberGameInfo.get().getId())
+                .memberId(optionalMemberGameInfo.get().getMemberId())
+                .nickname(optionalMemberGameInfo.get().getNickname())
+                .profileImg(optionalMemberGameInfo.get().getProfileImg())
+                .level(level)
+                .exp(exp)
+                .inGameRole(optionalMemberGameInfo.get().getInGameRole())
+                .build();
+
+        memberGameInfoJpaRepository.save(updateLevelAndExp);
+        return MemberProfileResponse.of(updateLevelAndExp, memberId);
+    }
+
+    @Override
+    public Long rank(Long memberId) {
+        return memberGameInfoJpaRepository.findByMemberRank(memberId);
+    }
+
+    @Override
+    public Level nextLevel(Level rawLevel) {
+        if (rawLevel.equals(Level.BEGINNER)) {
+            return Level.ASSOCIATE;
+        } else if (rawLevel.equals(Level.ASSOCIATE)) {
+            return Level.SOLDIER;
+        } else if (rawLevel.equals(Level.SOLDIER)) {
+            return Level.CAPTAIN;
+        } else if (rawLevel.equals(Level.CAPTAIN)) {
+            return Level.UNDERBOSS;
+        } else if (rawLevel.equals(Level.UNDERBOSS)) {
+            return Level.BOSS;
+        } else
+            return Level.NONE;
     }
 
     @Override

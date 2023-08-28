@@ -175,4 +175,21 @@ public class MemberController {
                         .build()
         );
     }
+
+    @PatchMapping("/levelup")
+    public ResponseEntity<ResResult> levelUp(
+            // 테스트를 위해 param으로 받음 -> 추후 @RequestParam 삭제 필요
+            @RequestParam("memberId") Long memberId
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_LEVEL_UP;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.levelUp(memberId))
+                        .build()
+        );
+    }
 }

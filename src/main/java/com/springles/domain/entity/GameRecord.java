@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -40,8 +41,11 @@ public class GameRecord {
     private boolean open; // 공개방 / 비밀방
 
     @Column(nullable = false)
-    private boolean winner; // 이긴팀
+    private boolean winner; // 이긴팀 (true: 마피아, false: 시민)?
 
     @Column(nullable = false)
     private LocalDateTime duration; // 게임 진행 시간
+
+    // entity 맵핑 필요
+    private Long memberId;
 }
