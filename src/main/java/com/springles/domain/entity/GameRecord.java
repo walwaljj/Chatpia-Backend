@@ -44,7 +44,7 @@ public class GameRecord {
     private boolean winner; // 이긴팀 (true: 마피아, false: 시민)?
 
     @Column(nullable = false)
-    private LocalDateTime duration; // 게임 진행 시간
+    private int duration; // 게임 진행 시간
 
     // entity 맵핑 필요
     private Long memberId;
