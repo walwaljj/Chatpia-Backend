@@ -86,4 +86,15 @@ public class VoteRedisRepository {
         voteDao.setVote(vote);
         updateVote(playerId, voteDao);
     }
+
+    // 투표를 확정하는 메소드
+    public boolean confirmVote(Long playerId) {
+        Vote voteDao = getVote(playerId);
+        if (!voteDao.isConfirm()) {
+            voteDao.setConfirm(true);
+            updateVote(playerId, voteDao);
+            return true;
+        }
+        return false;
+    }
 }

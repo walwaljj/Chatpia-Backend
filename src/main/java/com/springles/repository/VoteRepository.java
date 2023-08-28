@@ -59,6 +59,14 @@ public class VoteRepository {
                 key -> voters.get(key) == role).collect(Collectors.toList());
     }
 
+    // <투표한 사람, 투표 확정 유무>로 반환해 주는 메소드
+    public Map<Long, Boolean> confirmVote(Long roomId, Long playerId) {
+        voteRedisRepository.confirmVote(playerId);
+        return confirmResultConvert( // <투표한 사람, 투표 확정 유무>로 반환
+                getRedisVoteResult( // <투표한 사람, 투표 객체>로 반환
+                        getVoters(roomId))); // roomId에 해당하는 투표에 참여한 참여자 목록
+    }
+
     public boolean isEnd(String roomId, int phaseCount) {
         VoteInfo voteInfo = voteInfosMap.get(roomId);
         // roomId에 해당하는 투표 정보가 없거나 해당 차수의 투표가 존재하지 않는다면 끝
@@ -101,4 +109,14 @@ public class VoteRepository {
                 .getVotersMap().keySet() // VoteInfo에 있는 <String, GameRole> 중 String 값
                 .stream().collect(Collectors.toList());
     }
+
+
+    private Map<Long, Boolean> confirmResultConvert(Map<Long, Vote> voteResult) {
+        Map<Long, Boolean> confirmResult = new HashMap<Long, Boolean>();
+        voteResult.forEach((playerId, vote) -> {
+            confirmResult.put(playerId, vote.isConfirm());
+        });
+        return confirmResult;
+    }
 }
+
