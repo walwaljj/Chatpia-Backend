@@ -54,7 +54,7 @@ public class VoteRepository {
                 : false;
     }
 
-    public Map<String, String> getVoteResult(Long roomId) {
+    public Map<Long, Long> getVoteResult(Long roomId) {
         return voteResultConvert(getRedisVoteResult(getVoters(roomId)));
     }
 
@@ -64,8 +64,8 @@ public class VoteRepository {
 
 
     // 누가 누구를 투표했는지 Map<투표한사람, 투표받은사람>으로 변환해 주는 메소드
-    private Map<String, String> voteResultConvert(Map<String, Vote> voteResult) {
-        Map<String, String> result = new HashMap<String, String>();
+    private Map<Long, Long> voteResultConvert(Map<Long, Vote> voteResult) {
+        Map<Long, Long> result = new HashMap<Long, Long>();
         voteResult.forEach((playerId, vote) -> {
             result.put(playerId, vote.getVote());
         });

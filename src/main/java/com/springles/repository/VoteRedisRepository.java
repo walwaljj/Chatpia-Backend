@@ -2,9 +2,6 @@ package com.springles.repository;
 
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.entity.Vote;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,13 +13,18 @@ import java.util.Map;
 
 @Repository
 @Getter
-@AllArgsConstructor
 public class VoteRedisRepository {
     // RedisTemplate: Redis 데이터베이스와 상호작용하기 위한 편리한 방법을 제공하는 도구
     private final RedisTemplate<String, Vote> redisTemplate;
     // HashOperations: Redis 해시에 데이터를 추가하고 조회하고 수정하고 삭제하는 작업을 간편하게 수행
     private HashOperations<String, Long, Vote> opsHashVote;
     private static final String key = "Vote";
+
+    public VoteRedisRepository(RedisTemplate<String, Vote> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+        this.opsHashVote = redisTemplate.opsForHash();
+    }
+
 
     public Map<Long, Vote> startVote(List<Long> players, GamePhase phase) {
         Map<Long, Vote> voteResult = new HashMap<Long, Vote>();
@@ -51,8 +53,8 @@ public class VoteRedisRepository {
     }
 
     // Vote를 받아서 업데이트하는 함수
-    private void updateVote(Long playerId, Vote voteDao) {
-        opsHashVote.put(key, playerId, voteDao);
+    private void updateVote(Long playerId, Vote vote) {
+        opsHashVote.put(key, playerId, vote);
     }
 
     private void deleteVote(Long playerId) {
