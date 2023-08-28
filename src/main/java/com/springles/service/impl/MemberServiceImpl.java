@@ -8,10 +8,7 @@ import com.springles.domain.entity.*;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.jwt.JwtTokenUtils;
-import com.springles.repository.BlackListTokenRedisRepository;
-import com.springles.repository.GameRecordJpaRepository;
-import com.springles.repository.MemberJpaRepository;
-import com.springles.repository.RefreshTokenRedisRepository;
+import com.springles.repository.*;
 import com.springles.repository.support.MemberGameInfoJpaRepository;
 import com.springles.service.MemberService;
 import jakarta.mail.MessagingException;
@@ -29,10 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -44,6 +38,7 @@ public class MemberServiceImpl implements MemberService {
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
     private final MemberGameInfoJpaRepository memberGameInfoJpaRepository;
     private final GameRecordJpaRepository gameRecordJpaRepository;
+    private final MemberRecordJpaRepository memberRecordJpaRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
     private final JavaMailSender javaMailSender;
@@ -547,5 +542,148 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public boolean memberExists(String memberName) {
         return memberRepository.existsByMemberName(memberName);
+    }
+
+
+    /** 멤버 게임 기록 update */
+    @Override
+    public MemberRecordResponse updateRecord(Long memberId) {
+
+        // memberRecord(게임한 기록) 호출
+        Optional<MemberRecord> optionalMemberRecord = memberRecordJpaRepository.findByMemberId(memberId);
+        if(optionalMemberRecord.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER_RECORD);
+        }
+
+        // memberGameInfo(프로필 정보) 호출
+        Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(memberId);
+        if(optionalMemberGameInfo.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_GAME_INFO);
+        }
+
+        // 내 게임 기록
+        MemberRecord memberRecord = optionalMemberRecord.get();
+
+        // 가장 최근에 한 gameRecord(게임 정보)
+        GameRecord gameRecord = gameRecordJpaRepository.findTOP1ByMemberIdOrderByIdDesc(memberId);
+
+        // 게임 속 내 역할
+        String inGameRole = optionalMemberGameInfo.get().getInGameRole().getVal();
+
+        // 역할별 횟수 업데이트
+        Long mafiaCnt = updateInGameRoleCnt(inGameRole, memberRecord).get("mafia");
+        Long citizenCnt = updateInGameRoleCnt(inGameRole, memberRecord).get("citizen");
+        Long policeCnt = updateInGameRoleCnt(inGameRole, memberRecord).get("police");
+        Long doctorCnt = updateInGameRoleCnt(inGameRole, memberRecord).get("doctor");
+
+        // 이긴팀 업데이트
+        Long mafiaWinCnt = updateWinCnt(inGameRole, memberRecord, gameRecord).get("mafiaWinCnt");
+        Long citizenWinCnt = updateWinCnt(inGameRole, memberRecord, gameRecord).get("citizenWinCnt");
+
+        // 총 게임 횟수 업데이트
+        Long totalCnt = updateTotalCnt(memberRecord).get("totalCnt");
+
+        // 총 게임 시간 업데이트(totalTime)
+        Long totalTime = updateTotalTime(memberRecord, gameRecord).get("totalTime");
+
+        // TODO 살린 횟수 업데이트(saveCnt)
+        Long saveCnt = memberRecord.getSaveCnt();
+
+        // TODO 죽인 횟수 업데이트(killCnt)
+        Long killCnt = memberRecord.getKillCnt();
+
+        MemberRecord updateMemberRecord =  MemberRecord.builder()
+                .id(memberRecord.getId())
+                .memberId(memberId)
+                .mafiaCnt(mafiaCnt)
+                .citizenCnt(citizenCnt)
+                .policeCnt(policeCnt)
+                .doctorCnt(doctorCnt)
+                .citizenWinCnt(citizenWinCnt)
+                .mafiaWinCnt(mafiaWinCnt)
+                .saveCnt(saveCnt)
+                .killCnt(killCnt)
+                .totalCnt(totalCnt)
+                .totalTime(totalTime)
+                .build();
+
+        memberRecordJpaRepository.save(updateMemberRecord);
+        return MemberRecordResponse.of(updateMemberRecord);
+    }
+
+
+    /** 역할별 게임 횟수 update */
+    @Override
+    public Map<String, Long> updateInGameRoleCnt(String inGameRole, MemberRecord memberRecord) {
+        Long mafiaCnt = memberRecord.getMafiaCnt();
+        Long citizenCnt = memberRecord.getCitizenCnt();
+        Long policeCnt = memberRecord.getPoliceCnt();
+        Long doctorCnt = memberRecord.getDoctorCnt();
+
+        switch(inGameRole) {
+            case "mafia" : mafiaCnt++; break;
+            case "civilian" : citizenCnt++; break;
+            case "police" : policeCnt++; break;
+            case "doctor" : doctorCnt++; break;
+        }
+
+        Map<String, Long> inGameRoleCntMap = new HashMap<>();
+
+        inGameRoleCntMap.put("mafia", mafiaCnt);
+        inGameRoleCntMap.put("citizen", citizenCnt);
+        inGameRoleCntMap.put("police", policeCnt);
+        inGameRoleCntMap.put("doctor", doctorCnt);
+
+        return inGameRoleCntMap;
+    }
+
+    /** 시민/마피아로 이긴 팀 횟수 update */
+    @Override
+    public Map<String, Long> updateWinCnt(String inGameRole, MemberRecord memberRecord, GameRecord gameRecord) {
+        // 이긴 팀(true: 마피아, false: 시민)
+        boolean isWinner = gameRecord.isWinner();
+
+        Long mafiaWinCnt = memberRecord.getMafiaWinCnt();
+        Long citizenWinCnt = memberRecord.getCitizenWinCnt();
+
+        if(isWinner && inGameRole.equals("mafia")) {
+            mafiaWinCnt++;
+        } else if(
+                (!isWinner && inGameRole.equals("civilian"))
+                        || (!isWinner && inGameRole.equals("police"))
+                        || (!isWinner && inGameRole.equals("doctor"))
+        ) {
+            citizenWinCnt++;
+        }
+
+        Map<String, Long> winCntMap = new HashMap<>();
+        winCntMap.put("mafiaWinCnt", mafiaWinCnt);
+        winCntMap.put("citizenWinCnt", citizenWinCnt);
+
+        return winCntMap;
+    }
+
+    /** 총 게임 횟수 update */
+    @Override
+    public Map<String, Long> updateTotalCnt(MemberRecord memberRecord) {
+        Long totalCnt = memberRecord.getTotalCnt();
+        totalCnt++;
+
+        Map<String, Long> totalCntMap = new HashMap<>();
+        totalCntMap.put("totalCnt", totalCnt);
+        return totalCntMap;
+    }
+
+    /** 총 게임 시간 update */
+    @Override
+    public Map<String, Long> updateTotalTime(MemberRecord memberRecord, GameRecord gameRecord) {
+        Long totalTime = memberRecord.getTotalTime();
+        int duration = gameRecord.getDuration();
+        totalTime += duration;
+
+        Map<String, Long> totalTimeMap = new HashMap<>();
+        totalTimeMap.put("totalTime", totalTime);
+
+        return totalTimeMap;
     }
 }

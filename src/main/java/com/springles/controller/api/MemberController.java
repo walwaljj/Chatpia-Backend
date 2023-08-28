@@ -192,4 +192,20 @@ public class MemberController {
                         .build()
         );
     }
+
+    @PatchMapping("/record")
+    public ResponseEntity<ResResult> updateRecord(
+            @RequestParam("memberId") Long memberId
+    ) {
+        ResponseCode responseCode = ResponseCode.MEMBER_GAME_RECORD_UPDATE;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.updateRecord(memberId))
+                        .build()
+        );
+    }
 }
