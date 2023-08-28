@@ -211,6 +211,7 @@ public class MemberController {
 
     @PatchMapping("/record")
     public ResponseEntity<ResResult> updateRecord(
+            // 테스트를 위해 param으로 받음 -> 추후 @RequestParam 삭제 필요
             @RequestParam("memberId") Long memberId
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_GAME_RECORD_UPDATE;
