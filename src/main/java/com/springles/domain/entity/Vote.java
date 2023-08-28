@@ -4,9 +4,7 @@ import com.springles.domain.constants.GamePhase;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -14,18 +12,20 @@ import java.io.Serializable;
 @Builder
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Vote implements Serializable { // 외부로 전송하기 위한 직렬화
     @Id
-    private String playerId;
+    private Long playerId;
 
     @Enumerated(EnumType.STRING)
     private GamePhase phase;
 
-    private String vote;
+    private Long vote;
 
     private boolean confirm;
 
-    public static Vote builder(String playerId, GamePhase phase) {
+    public static Vote builder(Long playerId, GamePhase phase) {
         return new VoteBuilder().playerId(playerId).phase(phase).vote(null).confirm(false).build();
     }
 }
