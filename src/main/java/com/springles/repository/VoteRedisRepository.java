@@ -79,14 +79,11 @@ public class VoteRedisRepository {
         return voteResult;
     }
 
-    public boolean vote(Long playerId, Long player) {
+    // 투표를 하는 메소드
+    public void vote(Long playerId, Long vote) {
         // 투표를 시작할 때 Vote 객체 다 만들고 초기화했으니까 새로 생성하지 않고 불러들임
-        Vote vote = getVote(playerId);
-        if (!vote.isConfirm()) {
-            vote.setConfirm(true); // 투표를 확정하고
-            updateVote(playerId, vote); // playerId가 vote 투표를 헀다고 업데이트
-            return true;
-        }
-        return false;
+        Vote voteDao = getVote(playerId);
+        voteDao.setVote(vote);
+        updateVote(playerId, voteDao);
     }
 }

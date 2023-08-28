@@ -40,10 +40,23 @@ public class VoteRepository {
         voteRedisRepository.startVote(getVoters(roomId), phase);
     }
 
-    // 투표를 하는 메소드
+    // 낮에 투표를 하는 메소드
     public Map<Long, Long> vote(Long roomId, Long playerId, Long player) {
         voteRedisRepository.vote(playerId, player);
         return voteResultConvert(getRedisVoteResult(getVoters(roomId)));
+    }
+
+    // 밤에 투표를 하는 메소드
+    public Map<Long, Long> nightVote (Long roomId, Long playerId, Long player, GameRole role) {
+        voteRedisRepository.vote(playerId, player);
+        return voteResultConvert(getRedisVoteResult(getNightVoters(roomId, role)));
+    }
+
+    // 밤에 roomId에 해당하고 특정한 role을 가진 투표에 참여한 참여자 목록 제공
+    private List<Long> getNightVoters(Long roomId, GameRole role) {
+        Map<Long, GameRole> voters = voteInfosMap.get(roomId).getVotersMap();
+        return voters.keySet().stream().collect(Collectors.toList()).stream().filter(
+                key -> voters.get(key) == role).collect(Collectors.toList());
     }
 
     public boolean isEnd(String roomId, int phaseCount) {
@@ -82,7 +95,7 @@ public class VoteRepository {
         return result;
     }
 
-    // roomId에 해당하는 투표에 참여한 참여자 목록 제공
+    // 낮에 roomId에 해당하는 투표에 참여한 참여자 목록 제공
     private List<Long> getVoters(Long roomId) {
         return voteInfosMap.get(roomId) // roomId에 해당하는 VoteInfo
                 .getVotersMap().keySet() // VoteInfo에 있는 <String, GameRole> 중 String 값
