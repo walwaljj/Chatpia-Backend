@@ -48,4 +48,7 @@ public class MemberRecord {
     @Column(nullable = false)
     private Long totalTime;
 
+    // entity 맵핑 필요
+    private Long memberId;
+
 }
