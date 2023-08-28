@@ -60,4 +60,7 @@ public interface MemberService {
 
     /** 총 게임 시간 update */
     Map<String, Long> updateTotalTime(MemberRecord memberRecord, GameRecord gameRecord);
+
+    /** 멤버 기록 생성(초기화) */
+    MemberRecord newMemberRecord(String memberName);
 }

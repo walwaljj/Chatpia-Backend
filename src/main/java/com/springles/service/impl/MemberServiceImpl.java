@@ -66,7 +66,12 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.NOT_MATCH_PASSWORD);
         }
 
+        // 회원가입 완료
         memberRepository.save(memberDto.newMember(passwordEncoder));
+
+        // 게임기록 생성
+        memberRecordJpaRepository.save(newMemberRecord(memberDto.getMemberName()));
+
         return MemberCreateRequest.fromEntity(memberDto.newMember(passwordEncoder)).toString();
     }
 
@@ -710,5 +715,30 @@ public class MemberServiceImpl implements MemberService {
         totalTimeMap.put("totalTime", totalTime);
 
         return totalTimeMap;
+    }
+
+    /** 멤버 기록 생성(초기화)
+     * 회원가입 시 (signUp 메소드 내에서) 호출
+     * */
+    @Override
+    public MemberRecord newMemberRecord(String memberName) {
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if(optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        return MemberRecord.builder()
+                .memberId(optionalMember.get().getId())
+                .mafiaCnt(0L)
+                .citizenCnt(0L)
+                .doctorCnt(0L)
+                .policeCnt(0L)
+                .saveCnt(0L)
+                .killCnt(0L)
+                .mafiaWinCnt(0L)
+                .citizenWinCnt(0L)
+                .totalCnt(0L)
+                .totalTime(0L)
+                .build();
     }
 }
