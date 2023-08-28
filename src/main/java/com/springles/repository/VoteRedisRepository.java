@@ -97,4 +97,17 @@ public class VoteRedisRepository {
         }
         return false;
     }
+
+    public void endVote(List<Long> players, GamePhase phase) {
+        players.forEach((playerId) -> {
+            Vote voteDao = getVote(playerId);
+            if(voteDao.getPhase() == phase) {
+                deleteVote(playerId);
+            }
+        });
+    }
+
+    public void removeVote(Long playerId) {
+        deleteVote(playerId);
+    }
 }

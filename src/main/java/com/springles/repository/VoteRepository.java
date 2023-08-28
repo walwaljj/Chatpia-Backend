@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 public class VoteRepository {
     private final VoteRedisRepository voteRedisRepository;
     // ConcurrentHashMap: Java에서 제공하는 동시성(Concurrency)을 지원하는 해시 맵(HashMap) 구현체
+    // 동시성을 지원하기 때문에 현재 시간에 어떤 방에서 어떤 투표가 진행 중인지를 기록하고 투표가 끝나면 삭제됨
     private ConcurrentHashMap<Long, VoteInfo> voteInfosMap;
-
 
     // @PostConstruct: Spring 프레임워크에서 제공하는 어노테이션 중 하나로, 초기화 작업을 수행하는 메서드를 지정할 때 사용
     @PostConstruct
@@ -59,12 +59,26 @@ public class VoteRepository {
                 key -> voters.get(key) == role).collect(Collectors.toList());
     }
 
-    // <투표한 사람, 투표 확정 유무>로 반환해 주는 메소드
+    // 투표를 확정하고 <투표한 사람, 투표 확정 유무>로 반환해 주는 메소드
     public Map<Long, Boolean> confirmVote(Long roomId, Long playerId) {
         voteRedisRepository.confirmVote(playerId);
         return confirmResultConvert( // <투표한 사람, 투표 확정 유무>로 반환
                 getRedisVoteResult( // <투표한 사람, 투표 객체>로 반환
                         getVoters(roomId))); // roomId에 해당하는 투표에 참여한 참여자 목록
+    }
+
+    // 확정 변경 없이 <투표한 사람, 투표 확정 유무>로 반환해 주는 메소드
+    public Map<Long, Boolean> getConfirm(Long roomId) {
+        return confirmResultConvert( // <투표한 사람, 투표 확정 유무>로 반환
+                getRedisVoteResult( // <투표한 사람, 투표 객체>로 반환
+                        getVoters(roomId))); // roomId에 해당하는 투표에 참여한 참여자 목록
+    }
+
+    // 확정 변경 없이 해당 role에 해당하는 투표자에 한해 <투표한 사람, 투표 확정 유무>로 반환해 주는 메소드
+    public Map<Long, Boolean> getNightConfirm(Long roomId, GameRole role) {
+        return confirmResultConvert(
+                getRedisVoteResult(
+                        getNightVoters(roomId, role)));
     }
 
     public boolean isEnd(String roomId, int phaseCount) {
@@ -87,6 +101,12 @@ public class VoteRepository {
         return voteResultConvert(getRedisVoteResult(getVoters(roomId)));
     }
 
+    // 투표 종료
+    public void endVote(Long roomId, GamePhase phase) {
+        voteRedisRepository.endVote(getVoters(roomId), phase);
+        voteInfosMap.remove(roomId);
+        log.info("Room {} Phase {} Vote Del Complete", roomId, phase);
+    }
 
     // <투표한 사람, 투표 객체>로 반환해 주는 메소드
     public Map<Long, Vote> getRedisVoteResult(List<Long> voters) {
@@ -111,6 +131,7 @@ public class VoteRepository {
     }
 
 
+    // <playerId, Vote> 형태를 <playerId, isConfirm()> 형태로 전환
     private Map<Long, Boolean> confirmResultConvert(Map<Long, Vote> voteResult) {
         Map<Long, Boolean> confirmResult = new HashMap<Long, Boolean>();
         voteResult.forEach((playerId, vote) -> {
@@ -119,4 +140,3 @@ public class VoteRepository {
         return confirmResult;
     }
 }
-
