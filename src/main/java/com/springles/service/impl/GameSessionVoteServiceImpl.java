@@ -4,6 +4,8 @@ import com.springles.config.TimeConfig;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.dto.game.GameSessionVoteRequest;
+import com.springles.exception.CustomException;
+import com.springles.exception.constants.ErrorCode;
 import com.springles.game.task.VoteFinTimerTask;
 import com.springles.redisPubSub.Publisher;
 import com.springles.repository.VoteRepository;
@@ -57,7 +59,12 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
     @Override
     public Map<Long, Long> vote(Long roomId, Long playerId, GameSessionVoteRequest request) {
-        return null;
+        // 유효현 투표가 아니라면 예외 발생
+        if(!voteRepository.isValid(playerId, request.getPhase())) {
+            throw new CustomException(ErrorCode.VOTE_NOT_VALID);
+        }
+        log.info("Room {} Player {} Voted At {}", roomId, playerId, request.getPhase());
+        return voteRepository.vote(roomId, playerId, request.getVote());
     }
 
     @Override

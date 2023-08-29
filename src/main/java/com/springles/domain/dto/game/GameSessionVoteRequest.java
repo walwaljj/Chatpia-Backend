@@ -14,5 +14,5 @@ public class GameSessionVoteRequest {
     private GamePhase phase;
 
     @Nullable
-    String vote;
+    Long vote;
 }
