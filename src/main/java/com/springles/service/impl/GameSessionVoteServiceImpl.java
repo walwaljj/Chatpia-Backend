@@ -59,7 +59,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
     @Override
     public Map<Long, Long> vote(Long roomId, Long playerId, GameSessionVoteRequest request) {
-        // 유효현 투표가 아니라면 예외 발생
+        // 유효한 투표가 아니라면 예외 발생
         if(!voteRepository.isValid(playerId, request.getPhase())) {
             throw new CustomException(ErrorCode.VOTE_NOT_VALID);
         }
@@ -69,7 +69,12 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
     @Override
     public Map<Long, Long> nightVote(Long roomId, Long playerId, GameSessionVoteRequest request, GameRole role) {
-        return null;
+        // 유효한 투표가 아니라면 예외 발생
+        if(!voteRepository.isValid(playerId, request.getPhase())) {
+            throw new CustomException(ErrorCode.VOTE_NOT_VALID);
+        }
+        return voteRepository.nightVote(roomId, playerId, request.getVote(), role);
+
     }
 
     @Override
