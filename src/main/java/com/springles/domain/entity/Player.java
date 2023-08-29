@@ -24,11 +24,14 @@ public class Player {
     @Enumerated(EnumType.STRING)
     private GameRole role;
 
+    private boolean alive;
+
     public static Player of(Long memberId, Long roomId) {
         return Player.builder()
             .memberId(memberId)
             .roomId(roomId)
             .role(GameRole.NONE)
+            .alive(true)
             .build();
     }
 

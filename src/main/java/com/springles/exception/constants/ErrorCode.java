@@ -75,7 +75,8 @@ public enum ErrorCode {
     GAME_PLAYER_EXISTS(HttpStatus.BAD_REQUEST, "아직 플레이어가 존재하는 게임은 삭제할 수 없습니다"),
 
     /* VOTE SESSION */
-    VOTE_NOT_VALID(HttpStatus.BAD_REQUEST, "유효하지 않은 투표 정보입니다.");
+    VOTE_NOT_VALID(HttpStatus.BAD_REQUEST, "유효하지 않은 투표 정보입니다."),
+    ENDED_VOTE(HttpStatus.BAD_REQUEST, "이미 종료된 투표입니다.");
 
     private final HttpStatus status;
     private final String message;

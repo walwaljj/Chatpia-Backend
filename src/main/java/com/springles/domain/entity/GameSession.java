@@ -33,11 +33,14 @@ public class GameSession {
 
     private int alivePolice; // 살아 있는 경찰 수
 
+    private int phaseCount; // 게임의 투표 턴 수
+
     public static GameSession of(ChatRoom chatRoom) {
         return GameSession.builder()
             .roomId(chatRoom.getId())
             .hostId(chatRoom.getOwnerId())
             .gamePhase(GamePhase.READY)
+            .phaseCount(0)
             .build();
     }
 
@@ -48,6 +51,7 @@ public class GameSession {
         this.aliveDoctor += gameRoleNum.getDoctor();
         this.alivePolice += gameRoleNum.getPolice();
         this.gamePhase = GamePhase.START;
+        this.phaseCount = 0;
         return this;
     }
 
@@ -57,6 +61,7 @@ public class GameSession {
         this.aliveMafia = 0;
         this.aliveDoctor = 0;
         this.alivePolice = 0;
+        this.phaseCount = 0;
     }
 
     public void changeHost(long playerId) {

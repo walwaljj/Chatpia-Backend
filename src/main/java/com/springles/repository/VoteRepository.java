@@ -68,7 +68,7 @@ public class VoteRepository {
     }
 
     // 확정 변경 없이 <투표한 사람, 투표 확정 유무>로 반환해 주는 메소드
-    public Map<Long, Boolean> getConfirm(Long roomId) {
+    public Map<Long, Boolean> getConfirm(Long roomId, Long playerId) {
         return confirmResultConvert( // <투표한 사람, 투표 확정 유무>로 반환
                 getRedisVoteResult( // <투표한 사람, 투표 객체>로 반환
                         getVoters(roomId))); // roomId에 해당하는 투표에 참여한 참여자 목록
