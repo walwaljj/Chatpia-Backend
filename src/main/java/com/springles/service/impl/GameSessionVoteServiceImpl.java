@@ -43,7 +43,16 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
     @Override
     public void endVote(Long roomId, int phaseCount, GamePhase phase) {
-
+        // 이미 끝났다면
+        if(voteRepository.isEnd(roomId, phaseCount)) {
+            return;
+        }
+        else {
+            Map<Long, Long> vote = voteRepository.getVoteResult(roomId);
+            log.info("Room {} end Vote for {}", roomId, phase);
+            voteRepository.endVote(roomId, phase);
+            publishRedis(roomId, vote);
+        }
     }
 
     @Override
@@ -74,5 +83,9 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     @Override
     public Map<Long, Long> getVoteResult(Long roomId, GameSessionVoteRequest request) {
         return null;
+    }
+
+    private void publishRedis(Long roomId, Map<Long, Long> vote) {
+
     }
 }

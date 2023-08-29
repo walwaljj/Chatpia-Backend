@@ -81,7 +81,7 @@ public class VoteRepository {
                         getNightVoters(roomId, role)));
     }
 
-    public boolean isEnd(String roomId, int phaseCount) {
+    public boolean isEnd(Long roomId, int phaseCount) {
         VoteInfo voteInfo = voteInfosMap.get(roomId);
         // roomId에 해당하는 투표 정보가 없거나 해당 차수의 투표가 존재하지 않는다면 끝
         if (voteInfo == null | voteInfo.getPhaseCount() != phaseCount) {
