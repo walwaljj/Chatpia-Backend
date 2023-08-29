@@ -19,6 +19,9 @@ public class MemberRecord {
     private Long id;
 
     @Column(nullable = false)
+    private Long mafiaCnt;
+
+    @Column(nullable = false)
     private Long citizenCnt;
 
     @Column(nullable = false)
@@ -44,5 +47,8 @@ public class MemberRecord {
 
     @Column(nullable = false)
     private Long totalTime;
+
+    // entity 맵핑 필요
+    private Long memberId;
 
 }

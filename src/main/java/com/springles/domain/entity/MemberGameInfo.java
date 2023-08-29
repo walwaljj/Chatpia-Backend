@@ -37,6 +37,9 @@ public class MemberGameInfo {
     @Enumerated(EnumType.STRING)
     private GameRole inGameRole;  // 게임 내 직업
 
+    @Column(nullable = false)
+    private boolean isObserver;  // 게임 내 관찰자인지 여부
+
     // entity 맵핑 필요
     @Column(nullable = false)
     private Long memberId;   // memberId

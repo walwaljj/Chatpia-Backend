@@ -1,6 +1,7 @@
 package com.springles.service.impl;
 
 import com.springles.domain.dto.member.MemberLoginRequest;
+import com.springles.domain.dto.member.MemberLoginResponse;
 import com.springles.domain.entity.Member;
 import com.springles.jwt.JwtTokenUtils;
 import com.springles.repository.MemberJpaRepository;
@@ -57,9 +58,8 @@ class RefreshTokenServiceImplTest {
                 .password("password1!")
                 .build();
 
-        String loginInfo = memberService.login(memberLoginRequest);
-
-        refreshTokenId = loginInfo.split("refreshToken : \\{ id : ")[1].split(",")[0];
+        MemberLoginResponse loginInfo = memberService.login(memberLoginRequest);
+        refreshTokenId = loginInfo.getRefreshToken().getId();
     }
 
     /** 테스트 항목
