@@ -60,7 +60,7 @@ public class ChatUiController {
         model.addAttribute("member",memberInfo);
         log.info("member name = {}", memberInfo.getMemberName());
         // 입장 시 방 condition 을 확인함.
-        try{
+        try {
             //TODO
         }catch (CustomException e){
             // TODO 비밀 방 일 경우
