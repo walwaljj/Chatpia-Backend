@@ -41,6 +41,7 @@ public enum ErrorCode {
     OPEN_PASSWORD(HttpStatus.BAD_REQUEST, "공개방은 비밀번호를 입력할 수 없습니다."),
     NOT_FOUND_ROOM(HttpStatus.NOT_FOUND, "방을 찾을 수 없습니다."),
     USER_NOT_OWNER(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다."),
+    NOT_FOUND_QUICK_ENTRY_ROOM(HttpStatus.NOT_FOUND, "빠른 입장이 가능한 방을 찾을 수 없습니다."),
 
     /* MEMBER */
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "등록되지 않은 회원입니다."),

@@ -41,9 +41,8 @@
 <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
 <script th:inline="javascript">
     const snsTitle = "챗피아에서 게임하기";
-    var thisUrl = document.URL.split("chat")[0]; // http://localhost:8080/chat/1/detail
-    var roomId = [[${chatroom.id}]]//  http://localhost:8080/chat/1?nickname={유입 유저 nickname}
-    thisUrl = thisUrl + 'chat/' + roomId
+    const referrer = document.referrer;
+    const thisUrl =  referrer
     console.log("thisUrl", thisUrl)
     const handleCopyClipBoard = async () => {
         try {

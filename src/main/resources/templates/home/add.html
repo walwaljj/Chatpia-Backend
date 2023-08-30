@@ -4,32 +4,40 @@
       layout:decorate="~{layouts/basic}">
 
 <div layout:fragment="content">
-    <form th:action="@{/v1/add}" th:object="${requestDto}" method="post" >
-        <table class="table">
-            <tbody>
-            <div>
-                <label for="title">방 제목</label>
-                <input type="text" id="title" th:field="*{title}" class="form-control" placeholder="이름을 입력하세요">
-            </div>
-            <div>
-                <label for="capacity">인원</label>
-                <input type="text" id="capacity" th:field="*{capacity}" class="form-control" placeholder="인원을 입력하세요">
-            </div>
-            <div class="form-check">
-                <input type="checkbox"
-                       id="close"
-                       th:field="*{close}"
-                       class="form-check-input">
-                <label for="close" class="form-check-label">비밀방</label>
-            </div>
-            <div>
-                <label for="password">비밀번호</label>
-                <input type="text" id="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
-            </div>
-            <button id = "Send_Request" type="submit">등록</button>
-        </table>
-        <!-- javscript 코드, 비밀번호 input 입력 불가능이 기본 사항입니다. -->
-    </form>
+    <div class="form-container">
+        <div class="form-item">
+
+            <form th:action="@{/v1/add}" th:object="${requestDto}" method="post" >
+                <table class="table">
+                    <tbody>
+                    <div>
+                        <label for="title">방 제목</label>
+                        <input type="text" id="title" th:field="*{title}" class="form-control" placeholder="이름을 입력하세요">
+                    </div>
+                    <div>
+                        <label for="capacity">인원</label>
+                        <input type="text" id="capacity" th:field="*{capacity}" class="form-control" placeholder="인원을 입력하세요">
+                    </div>
+                    <div class="checkbox">
+                        <input type="checkbox"
+                               id="close"
+                               th:field="*{close}"
+                               class="checkbox">
+                        <label for="close" class="checkbox">비밀방</label>
+                    </div>
+                    <div>
+                        <label for="password">비밀번호</label>
+                        <input type="text" id="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
+                    </div>
+                    <div>
+                        <button id = "Send_Request" class="submit_btn" type="submit">등록</button>
+                    </div>
+                </table>
+                <!-- javscript 코드, 비밀번호 input 입력 불가능이 기본 사항입니다. -->
+            </form>
+        </div>
+    </div>
+
     <th:block layout:fragment="script">
         <script th:inline="javascript">
             $('#password').attr('disabled',true);
