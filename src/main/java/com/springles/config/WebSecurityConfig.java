@@ -1,6 +1,6 @@
 package com.springles.config;
 
-import com.springles.jwt.AccessTokenInterceptor;
+//import com.springles.jwt.AccessTokenInterceptor;
 import com.springles.jwt.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,11 +21,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebSecurityConfig implements WebMvcConfigurer {
 
     private final JwtTokenFilter jwtTokenFilter;
-    private final AccessTokenInterceptor accessTokenInterceptor;
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(this.accessTokenInterceptor);
-    }
+//    private final AccessTokenInterceptor accessTokenInterceptor;
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(this.accessTokenInterceptor);
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
