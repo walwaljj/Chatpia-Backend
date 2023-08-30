@@ -61,9 +61,11 @@ public class ChatUiController {
         model.addAttribute("member",memberInfo);
         log.info("member name = {}", memberInfo.getMemberName());
         // 입장 시 방 condition 을 확인함.
+
         try{
             ChatRoomResponseDto chatRoomResponseDto = chatRoomService.chatRoomCondition(roomId);
             model.addAttribute("chatRoomResponseDto",chatRoomResponseDto);
+
         }catch (CustomException e){
             // 비밀 방 일 경우
             model.addAttribute("errorMessage",e.getMessage());

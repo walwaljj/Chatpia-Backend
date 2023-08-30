@@ -3,20 +3,133 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/basic}">
 <div layout:fragment="content">
-    <ul>
-        <li>
-            <h1>사용자 프로필</h1>
-        </li>
-        <li>
-            <button class="btn btn-outline-success" type="button" onclick="location.href='add'">게임 만들기</button>
-        </li>
-        <li>
-            <button class="btn btn-outline-success" type="button" onclick="location.href='/chat/quick-enter'">빠른 입장</button>
-        </li>
-        <li>
-            <button class="btn btn-outline-success" type="button" onclick="location.href='list'">채팅방 목록</button>
-        </li>
+    <div class="index-container">
+        <div class="row">
+            <div class="col-3 center p-1 m-5">
+                <!-----------------------사용자 정보 ----------------------------------------------------------->
+                <div class="card profile">
+                    <!---------레벨 ---------->
+                    <div class="card-header text-white" style="border-radius: 14px;">BEGINNER (아이콘)</div>
+                    <div class="card-body2 container row">
+                        <!--------- 프로필 사진 -------->
+                            <div class="my_div my_bg col m-3 p-0">
+                            </div>
+                        <!--------------------- 닉네임 -------->
+                        <div class="nick-name-box col p-3">
+                            <div class="nick-name" th:text="${member.getMemberName()}"></div>
+                        </div>
+                    </div>
+                </div>
+                <!--- 게임 만들기, 빠른 입장 --->
+                <div>
+                    <button class="my_btn" type="button" onclick="location.href='/v1/add'">
+                        <span class="text-white">게임 만들기</span>
+                    </button>
+                </div>
+                <div>
+                    <button class="my_btn" type="button" onclick="location.href='/v1/add'">
+                        <span class="text-white">빠른 입장</span>
+                    </button>
+                </div>
+            </div>
+            <div class="col-7 center px-2 m-5">
+                <div class="container row cover">
+                    <!------------------ 체크 박스 ------------------------>
+                    <div class="custom-control custom-checkbox my-1 mr-sm-2 check-box">
+                        <input type="checkbox"
+                               id="checkbox"
+                               name="checkbox"
+                               class="custom-control-input form-check-input">
+                        <label class="custom-control-label" for="checkbox">오픈&대기중</label>
+                    </div>
+                    <!------------------- 검색 ------------------------->
+                    <form class="form-inline" th:action="@{/v1/index}" method="get">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <button class="input-group-text" type="submit">
+                                    <img class="search_thumbnail" src="/images/search.png"/>
+                                </button>
+                            </div>
+                            <input class="form-control mr-sm-2" type="text" id="search-content" name="search-content" placeholder="nickname or title"/>
+                            </div>
+                        <!------------------ 리셋 ---------------------------->
+                        <button type="button" class="btn btn-light my-1" onclick="clearButton()">리셋</button
+                    </form>
+                </div>
+                <!------------------ 메시지 --------------------------->
+                <div th:if="${errorMessage}" id="errorMessage" class="alert alert-danger">
+                    <p th:text="${errorMessage}"></p>
+                </div>
 
-    </ul>
+                <!------------------ 채팅방 목록 ----------------------->
+                <div th:if="${allChatRooms != null}">
+                    <div th:id="'room_' + ${i.index}" class="list-group" th:each="room, i: ${allChatRooms}">
+                        <a th:href="@{/chat/{roomId}/{nickName} (roomId=${room.id},nickName=${member.memberName})}"
+                           class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-between">
+                                <!-----------------게임중 / 대기중 -------------------->
+                                <span id="state"
+                                      th:text="${room.state}"
+                                      class="badge badge-primary badge-pill"></span>
+                                <!-----------------비밀방 여부 -------------------->
+                                <div class="d-flex w-100 justify-content-between">
+                                    <span id="close" th:if="${room.getClose()}">
+                                        <img class="lock_thumbnail" src="/images/lock.png"/>
+                                    </span>
+                                    <span id="open" th:unless="${room.getClose()}">
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="contaniner row" style="text-align: left">
+                                <!---------------- 방 제목 ----------------------------->
+                                <div class="col-11">
+                                    <h5 class="mb-1" th:text="${room.title}"></h5>
+                                </div>
+                                <!-----------------참여인원 / 정원 -------------------->
+                                <div class="col-1">
+                                    <span class="mb-1" th:text="${room.head}"></span>/
+                                    <span class="mb-1" th:text="${room.capacity}"></span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!------------------------- ------------------------>
+            </div>
+
+            <!---------------------- script ----------------------->
+            <th:block layout:fragment="script">
+                <script th:inline="javascript">  // 자바스크립트 인라인
+                $('#checkbox').on('click', function () {
+                    const checkBtn = document.getElementById('checkbox');
+                    let allChatRooms = [[${allChatRooms}]];
+                    if (allChatRooms.length === 0) return;
+                    allChatRooms = [[${allChatRooms.getContent()}]];
+                    console.log("allChatRooms : " + allChatRooms);
+                    // 필터를 적용해야하는 경우라면
+                    if (checkBtn.checked) {
+
+                        for (var i = 0; i < allChatRooms.length; i++) {
+                            // 비밀방 또는 게임중이면 HIDE
+                            if (allChatRooms[i].close || allChatRooms[i].state === "PLAYING") {
+                                document.getElementById('room_' + i).style.display = "none";
+                            }
+                        }
+                    } else {
+                        for (var i = 0; i < allChatRooms.length; i++) {
+                            document.getElementById('room_' + i).style.display = "";
+                        }
+                    }
+
+                });
+
+                function clearButton() {
+                    window.location.href = "/v1/index";
+                }
+                </script>
+            </th:block>
+        </div>
+    </div>
 </div>
 </html>
