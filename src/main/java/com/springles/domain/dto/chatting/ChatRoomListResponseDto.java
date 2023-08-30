@@ -23,6 +23,7 @@ public class ChatRoomListResponseDto {
     private ChatRoomCode state; // 채팅방 상태
     private Boolean close; // 공개방 , 비밀방
     private Long ownerId; // 방장 ID
+    private String password; // 방 pw
 
 
     // Entity -> Dto
@@ -35,6 +36,7 @@ public class ChatRoomListResponseDto {
                 .state(chatRoom.getState())
                 .close(chatRoom.getClose())
                 .ownerId(chatRoom.getOwnerId())
+                .password(chatRoom.getPassword())
                 .build();
     }
 
