@@ -1,4 +1,4 @@
-package com.springles.domain.dto.game;
+package com.springles.domain.dto.vote;
 
 import com.springles.domain.constants.GamePhase;
 import jakarta.annotation.Nullable;
@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GameSessionVoteRequest {
+public class GameSessionVoteRequestDto {
     @Enumerated(EnumType.STRING)
     private GamePhase phase;
 

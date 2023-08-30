@@ -3,7 +3,7 @@ package com.springles.service.impl;
 import com.springles.config.TimeConfig;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
-import com.springles.domain.dto.game.GameSessionVoteRequest;
+import com.springles.domain.dto.vote.GameSessionVoteRequestDto;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
@@ -59,7 +59,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     @Override
-    public Map<Long, Long> vote(Long roomId, Long playerId, GameSessionVoteRequest request) {
+    public Map<Long, Long> vote(Long roomId, Long playerId, GameSessionVoteRequestDto request) {
         // 유효한 투표가 아니라면 예외 발생
         if(!voteRepository.isValid(playerId, request.getPhase())) {
             throw new CustomException(ErrorCode.VOTE_NOT_VALID);
@@ -69,7 +69,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     @Override
-    public Map<Long, Long> nightVote(Long roomId, Long playerId, GameSessionVoteRequest request, GameRole role) {
+    public Map<Long, Long> nightVote(Long roomId, Long playerId, GameSessionVoteRequestDto request, GameRole role) {
         // 유효한 투표가 아니라면 예외 발생
         if(!voteRepository.isValid(playerId, request.getPhase())) {
             throw new CustomException(ErrorCode.VOTE_NOT_VALID);
@@ -79,7 +79,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     @Override
-    public Map<Long, Boolean> confirmVote(Long roomId, Long playerId, GameSessionVoteRequest request) {
+    public Map<Long, Boolean> confirmVote(Long roomId, Long playerId, GameSessionVoteRequestDto request) {
         // 유효한 투표가 아니라면 예외 발생
         if(!voteRepository.isValid(playerId, request.getPhase())) {
             throw new CustomException(ErrorCode.VOTE_NOT_VALID);
@@ -88,7 +88,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     @Override
-    public Map<Long, Boolean> getConfirm(Long roomId, Long playerId, GameSessionVoteRequest request) {
+    public Map<Long, Boolean> getConfirm(Long roomId, Long playerId, GameSessionVoteRequestDto request) {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         Player player = playerRedisRepository.findById(playerId).get();
 
@@ -106,7 +106,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     @Override
-    public Map<Long, Boolean> getNightConfirm(Long roomId, Long playerId, GameSessionVoteRequest request, GameRole role) {
+    public Map<Long, Boolean> getNightConfirm(Long roomId, Long playerId, GameSessionVoteRequestDto request, GameRole role) {
         // 유효한 투표가 아니라면 예외 발생
         if(!voteRepository.isValid(playerId, request.getPhase())) {
             throw new CustomException(ErrorCode.VOTE_NOT_VALID);
@@ -116,7 +116,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     @Override
-    public Map<Long, Long> getVoteResult(Long roomId, GameSessionVoteRequest request) {
+    public Map<Long, Long> getVoteResult(Long roomId, GameSessionVoteRequestDto request) {
         return voteRepository.getVoteResult(roomId);
     }
 
