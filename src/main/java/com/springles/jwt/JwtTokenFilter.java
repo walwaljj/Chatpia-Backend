@@ -5,6 +5,7 @@ import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtils jwtTokenUtils;
+    private String accessToken = "";
 
     @Override
     protected void doFilterInternal(
@@ -33,10 +35,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        // 헤더 정보 유효성 체크
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String accessToken = authHeader.split(" ")[1];
+        // 쿠키에서 accessToken 추출
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            log.info("쿠키 != null");
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    accessToken = cookie.getValue();
+                    request.setAttribute("accessToken", accessToken);
+                    log.info("uri : " + request.getRequestURI());
+                    log.info("accessToken : " + accessToken);
+                }
+            }
             // 로그아웃 여부 체크
             if (jwtTokenUtils.isNotLogout(accessToken)) {
                 // accessToken 유효성 체크
