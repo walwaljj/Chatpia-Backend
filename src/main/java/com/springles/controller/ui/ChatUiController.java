@@ -1,8 +1,10 @@
 package com.springles.controller.ui;
 
 import com.google.gson.Gson;
+import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.exception.CustomException;
+import com.springles.exception.constants.ErrorCode;
 import com.springles.service.ChatRoomService;
 import com.springles.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
