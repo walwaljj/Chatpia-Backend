@@ -1,5 +1,7 @@
 package com.springles.controller.message;
 
+import com.springles.domain.constants.GamePhase;
+import com.springles.domain.constants.GameRole;
 import com.springles.domain.dto.vote.ConfirmResultResponseDto;
 import com.springles.domain.dto.vote.GameSessionVoteRequestDto;
 import com.springles.domain.dto.vote.VoteResultResponseDto;
@@ -33,8 +35,8 @@ public class VoteController {
     private void dayVote(SimpMessageHeaderAccessor accessor,
                          @DestinationVariable Long roomId,
                          @Payload GameSessionVoteRequestDto request) {
-        String userName = accessor.getUser().getName();
-        Long playerId = gameSessionManager.findMemberByMemberName(userName).getId();
+        String playerName = accessor.getUser().getName();
+        Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
 
         Map<Long, Long> voteResult = gameSessionVoteService.vote(roomId, playerId, request);
         if (voteResult == null) {
@@ -50,8 +52,8 @@ public class VoteController {
     private void confirmVote(SimpMessageHeaderAccessor accessor,
                          @DestinationVariable Long roomId,
                          @Payload GameSessionVoteRequestDto request) {
-        String userName = accessor.getUser().getName();
-        Long playerId = gameSessionManager.findMemberByMemberName(userName).getId();
+        String playerName = accessor.getUser().getName();
+        Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
 
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
 
@@ -76,6 +78,30 @@ public class VoteController {
             if (confirmCnt == alivePlayerCnt) { // 살아 있는 모두가 투표를 끝내면 투표 종료
                 gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
             }
+        }
+    }
+
+    @MessageMapping("/pub/chat/{roomId}/{roleName}/vote")
+    public void nightVote(SimpMessageHeaderAccessor accessor,
+                          @DestinationVariable Long roomId,
+                          @DestinationVariable GameRole role,
+                          @Payload GameSessionVoteRequestDto request) {
+        String playerName = accessor.getUser().getName();
+        Long playerID = gameSessionManager.findMemberByMemberName(playerName).getId();
+
+        if (request.getPhase() != GamePhase.NIGHT_VOTE) {
+            throw new CustomException(ErrorCode.GAME_PHASE_NOT_NIGHT_VOTE);
+        }
+
+        // 해당 롤의 투표
+        Map<Long, Long> voteResult = gameSessionVoteService.nightVote(roomId, playerID, request, role);
+        // 관찰자들을 위한 투표 결과 반환
+        Map<Long, Long> forObserver = gameSessionVoteService.getVoteResult(roomId, request);
+        if (voteResult != null) {
+            // 해당 role에게 전송
+            simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId + "/" + role, VoteResultResponseDto.of(voteResult));
+            // 관찰자에게 전송
+            simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId + "/" + GameRole.OBSERVER, VoteResultResponseDto.of(voteResult));
         }
     }
 }

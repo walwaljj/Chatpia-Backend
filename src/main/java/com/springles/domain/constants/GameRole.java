@@ -9,7 +9,8 @@ public enum GameRole {
     CIVILIAN("civilian"),
     POLICE("police"),
     DOCTOR("doctor"),
-    NONE("none");
+    NONE("none"),
+    OBSERVER("observer");
 
     GameRole(String val) {
         this.val = val;

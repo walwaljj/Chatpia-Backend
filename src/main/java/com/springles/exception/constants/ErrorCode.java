@@ -80,7 +80,8 @@ public enum ErrorCode {
     VOTE_NOT_VALID(HttpStatus.BAD_REQUEST, "유효하지 않은 투표 정보입니다."),
     ENDED_VOTE(HttpStatus.BAD_REQUEST, "이미 종료된 투표입니다."),
     FAIL_VOTE(HttpStatus.INTERNAL_SERVER_ERROR, "투표 처리를 실패했습니다."),
-    FAIL_CONFIRM_VOTE(HttpStatus.INTERNAL_SERVER_ERROR, "투표 확정에 실패했습니다.");
+    FAIL_CONFIRM_VOTE(HttpStatus.INTERNAL_SERVER_ERROR, "투표 확정에 실패했습니다."),
+    GAME_PHASE_NOT_NIGHT_VOTE(HttpStatus.BAD_REQUEST, "밤 투표를 진행하는 시간이 아닙니다.");
 
     private final HttpStatus status;
     private final String message;
