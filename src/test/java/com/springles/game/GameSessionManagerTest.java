@@ -86,7 +86,7 @@ class GameSessionManagerTest {
 
         //when
         for (long i = 1; i < testPlayerCount; i++) {
-            gameSessionManager.addUser(testRoomId, i);
+            gameSessionManager.addUser(testRoomId, memberJpaRepository.findById(i).get().getMemberName());
         }
 
         //then
@@ -103,12 +103,12 @@ class GameSessionManagerTest {
         ChatRoom chatRoom = chatRoomJpaRepository.findById(testRoomId).get();
         gameSessionManager.createGame(chatRoom);
         for (long i = 1; i < testPlayerCount; i++) {
-            gameSessionManager.addUser(testRoomId, i);
+            gameSessionManager.addUser(testRoomId, memberJpaRepository.findById(i).get().getMemberName());
         }
 
         //when
         for (long i = 1; i < testPlayerCount; i++) {
-            gameSessionManager.removePlayer(testRoomId, i);
+            gameSessionManager.removePlayer(testRoomId, memberJpaRepository.findById(i).get().getMemberName());
         }
 
         //then
@@ -127,7 +127,7 @@ class GameSessionManagerTest {
         gameSessionManager.createGame(chatRoom);
 
         for (long i = 1; i < testPlayerCount; i++) {
-            gameSessionManager.addUser(testRoomId, i);
+            gameSessionManager.addUser(testRoomId, memberJpaRepository.findById(i).get().getMemberName());
         }
 
         //when
@@ -148,7 +148,7 @@ class GameSessionManagerTest {
         ChatRoom chatRoom = chatRoomJpaRepository.findById(testRoomId).get();
         gameSessionManager.createGame(chatRoom);
         for (long i = 1; i < testPlayerCount; i++) {
-            gameSessionManager.addUser(testRoomId, i);
+            gameSessionManager.addUser(testRoomId, memberJpaRepository.findById(i).get().getMemberName());
         }
         gameSessionManager.startGame(testRoomId);
 
@@ -171,13 +171,13 @@ class GameSessionManagerTest {
         ChatRoom chatRoom = chatRoomJpaRepository.findById(testRoomId).get();
         gameSessionManager.createGame(chatRoom);
         for (long i = 1; i < testPlayerCount; i++) {
-            gameSessionManager.addUser(testRoomId, i);
+            gameSessionManager.addUser(testRoomId, memberJpaRepository.findById(i).get().getMemberName());
         }
 
         for (long i = 1; i < testPlayerCount; i++) {
-            gameSessionManager.removePlayer(testRoomId, i);
+            gameSessionManager.removePlayer(testRoomId, memberJpaRepository.findById(i).get().getMemberName());
         }
-        gameSessionManager.removePlayer(testRoomId, chatRoom.getOwnerId());
+        gameSessionManager.removePlayer(testRoomId, memberJpaRepository.findById(chatRoom.getOwnerId()).get().getMemberName());
 
         //when
         gameSessionManager.removeGame(testRoomId);

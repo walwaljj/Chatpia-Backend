@@ -24,11 +24,14 @@ public class Player {
     @Enumerated(EnumType.STRING)
     private GameRole role;
 
-    public static Player of(Long memberId, Long roomId) {
+    private String memberName;
+
+    public static Player of(Long memberId, Long roomId, String memberName) {
         return Player.builder()
             .memberId(memberId)
             .roomId(roomId)
             .role(GameRole.NONE)
+            .memberName(memberName)
             .build();
     }
 

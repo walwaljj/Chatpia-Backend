@@ -41,6 +41,7 @@ public enum ErrorCode {
     OPEN_PASSWORD(HttpStatus.BAD_REQUEST, "공개방은 비밀번호를 입력할 수 없습니다."),
     NOT_FOUND_ROOM(HttpStatus.NOT_FOUND, "방을 찾을 수 없습니다."),
     USER_NOT_OWNER(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다."),
+    NOT_FOUND_QUICK_ENTRY_ROOM(HttpStatus.NOT_FOUND, "빠른 입장이 가능한 방을 찾을 수 없습니다."),
 
     /* MEMBER */
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "등록되지 않은 회원입니다."),
@@ -63,6 +64,7 @@ public enum ErrorCode {
     NOT_FOUND_INPUT_VALUE_MEMBER(HttpStatus.NOT_FOUND, "입력한 정보와 일치하는 회원정보가 없습니다."),
     NOT_FOUND_GAME_INFO(HttpStatus.NOT_FOUND, "등록된 게임정보(프로필)이 없습니다."),
     NO_IN_GAME_ROLE(HttpStatus.BAD_REQUEST, "부여된 GameRole이 없습니다."),
+    NOT_FOUND_MEMBER_RECORD(HttpStatus.NOT_FOUND, "해당 회원 게임 기록이 없습니다."),
 
     /* PLAYER */
     PLAYER_HEAD_ERROR(HttpStatus.BAD_REQUEST, "5명 이상 10명 이하로 플레이 가능합니다."),
