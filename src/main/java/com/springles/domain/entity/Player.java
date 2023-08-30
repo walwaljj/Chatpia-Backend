@@ -24,6 +24,8 @@ public class Player {
     @Enumerated(EnumType.STRING)
     private GameRole role;
 
+    private boolean alive;
+
     private String memberName;
 
     public static Player of(Long memberId, Long roomId, String memberName) {
@@ -31,6 +33,7 @@ public class Player {
             .memberId(memberId)
             .roomId(roomId)
             .role(GameRole.NONE)
+            .alive(true)
             .memberName(memberName)
             .build();
     }

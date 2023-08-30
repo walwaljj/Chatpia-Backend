@@ -1,18 +1,13 @@
 package com.springles.controller.ui;
 
 import com.google.gson.Gson;
-import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.exception.CustomException;
-import com.springles.exception.constants.ErrorCode;
 import com.springles.service.ChatRoomService;
 import com.springles.service.MemberService;
-import com.springles.service.impl.ChatRoomServiceImpl;
-import com.springles.websocket.SimpleChatHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 @Slf4j
 public class ChatUiController {
-    private final SimpleChatHandler simpleChatHandler;
     private final Gson gson;
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
