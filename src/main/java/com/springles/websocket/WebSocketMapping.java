@@ -1,6 +1,7 @@
+/*
 package com.springles.websocket;
 
-import com.springles.domain.dto.chatting.MessageRequestDto;
+import com.springles.game.ChatMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -24,7 +25,7 @@ public class WebSocketMapping {
     // 전달하는 /chat 인자는 이전에 Configuration 구성 중 작성한 /app 뒤에 붙임
     // 즉 사용자가 STOMP 클라이언트를 사용하면 /app/chat 으로 요청 전송
     @MessageMapping("/chat")
-    public void sendChat(MessageRequestDto chatMessage){
+    public void sendChat(ChatMessage chatMessage){
         log.info(chatMessage.toString());
         String time = new SimpleDateFormat("HH:mm").format(new Date());
         chatMessage.setTime(time);
@@ -34,3 +35,4 @@ public class WebSocketMapping {
         );
     }
 }
+*/
