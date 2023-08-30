@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error page</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+<script>
+    let url = "[[${nextUrl}]]"
+    let msg = "[[${errorMessage}]]"
+    if(confirm(msg + "\n방을 생성 하시겠습니까 ? ") == true){
+        window.location.href = url;
+    }else {
+        window.location.href = "/v1/index";
+    }
+</script>
+</body>
+</html>
