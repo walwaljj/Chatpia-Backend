@@ -6,9 +6,6 @@ import com.springles.repository.custom.ChatRoomCustomRepository;
 import com.springles.repository.support.Querydsl4RepositorySupport;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -35,18 +32,16 @@ public class ChatRoomRepositoryImpl extends Querydsl4RepositorySupport implement
     }
 
     @Override
-    public Page<ChatRoom> findAllByCloseFalseAndState(ChatRoomCode chatRoomCode, Pageable pageable) {
+    public Optional<List<ChatRoom>> findAllByCloseFalseAndState(ChatRoomCode chatRoomCode) {
         List<ChatRoom> chatRoomList = selectFrom(chatRoom)
                 .where(
                         chatRoom.close.isFalse(),
                         chatRoom.state.eq(chatRoomCode.WAITING)
                 )
                 .orderBy(chatRoom.capacity.subtract(chatRoom.head).asc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(chatRoomList, pageable, chatRoomList.size());
+        return Optional.of(chatRoomList);
     }
 
 }

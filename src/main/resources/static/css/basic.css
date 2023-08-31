@@ -5,7 +5,6 @@ html {
 }
 body {
     background-color:#F5F5F5
-;
 }
 
 .navbar {
@@ -84,6 +83,7 @@ body {
     border: none;
 }
 
+
 .search_thumbnail {
     width:20px;
     height:20px;
@@ -98,15 +98,9 @@ body {
 
 
 .nick-name-box {
-    /*width: 20vw;*/
-    /*height: 37vh;*/
     display: flex;
-    /*flex-direction: row;*/
     justify-content: center;
     align-items: center;
-    /*overflow:hidden;*/
-    /*margin:1px auto;*/
-    /*background-color: olive;*/
 }
 
 .text-white {
@@ -116,10 +110,7 @@ body {
 .nick-name {
     font-size: large;
     float: none;
-    /*margin: 2px auto;*/
-    /*background-color: blueviolet;*/
 }
-
 
 .my_btn {
     width: 80%;
@@ -157,8 +148,22 @@ body {
     text-align: center;
 }
 .content{
-    /*width: 100vw;*/
-    /*height: 100vh;*/
-    /*padding: 40px;*/
+    height: 80vh;
 }
 
+.chat_ui {
+    padding: 3vh;
+    height:75vh;
+    width:100%;
+    overflow-y: scroll;
+}
+
+.chat_input_ui {
+    height:5vh;
+    width: 100%;
+}
+
+.chatroom_list_ui {
+    height:30vh;
+    overflow-y: scroll;
+}
