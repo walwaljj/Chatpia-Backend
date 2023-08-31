@@ -62,7 +62,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     if (jwtTokenUtils.validate(accessToken) == 2) {
                         for (Cookie cookie : cookies) {
                             // 쿠키에서 refreshTokenId 추출
-                            if ("refresehTokenId".equals(cookie.getName())) {
+                            if ("refreshTokenId".equals(cookie.getName())) {
                                 refreshTokenId = cookie.getValue();
                                 request.setAttribute("refreshTokenId", refreshTokenId);
                                 log.info("uri : " + request.getRequestURI());
@@ -72,8 +72,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                 request.setAttribute("accessToken", accessToken);
                                 log.info("newAccessToken : " + accessToken);
                             }
-                            // refreshToken이 없을 경우
-                            throw new CustomException(ErrorCode.NO_JWT_TOKEN);
                         }
                     }
                     SecurityContext context = SecurityContextHolder.createEmptyContext();
