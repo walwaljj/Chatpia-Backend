@@ -6,16 +6,15 @@ import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
 import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.exception.CustomException;
 import com.springles.service.ChatRoomService;
-import com.springles.service.impl.ChatRoomServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @Controller
@@ -67,8 +66,6 @@ public class ChatRoomUiController {
     // 채팅방 목록 페이지 (전체 조회)
     @GetMapping("index")
     public String chatRoomList(Model model,
-                               @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
-                               @RequestParam(value = "size", defaultValue = "5", required = false) Integer size,
                                HttpServletRequest request,
                                @RequestParam(value = "search-content", required = false, defaultValue = "") String searchContent
     ) {
@@ -81,7 +78,7 @@ public class ChatRoomUiController {
 
         // 채팅방 검색
         try {
-            Page<ChatRoomListResponseDto> allByTitleAndNickname = chatRoomService.findAllByTitleAndNickname(searchContent, page, size);
+            List<ChatRoomListResponseDto> allByTitleAndNickname = chatRoomService.findAllByTitleAndNickname(searchContent);
             model.addAttribute("allChatRooms", allByTitleAndNickname);
 
         } catch (CustomException e) {
@@ -96,7 +93,7 @@ public class ChatRoomUiController {
                 model.addAttribute("errorMessage", String.format("'%s'에 해당하는 유저 또는 방을 찾지 못해 전체 목록을 불러옵니다.",searchContent) );
             }
 
-            Page<ChatRoomListResponseDto> allChatRooms = chatRoomService.findAllChatRooms(page, size);
+            List<ChatRoomListResponseDto> allChatRooms = chatRoomService.findAllChatRooms();
             model.addAttribute("allChatRooms", allChatRooms);
         }
 

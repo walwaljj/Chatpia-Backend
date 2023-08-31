@@ -16,12 +16,12 @@ public interface ChatRoomService {
     ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto chatRoomUpdateReqDto, Long chatroomId);
     void deleteChatRoom(Long memberId, Long chatRoomId);
 
-    Page<ChatRoomListResponseDto> findAllByCloseFalseAndState(Integer pageNumber, Integer size);
+    List<ChatRoomListResponseDto> findAllByCloseFalseAndState();
     List<ChatRoomListResponseDto> findChatRoomByTitle(String title);
     List<ChatRoomListResponseDto> findChatRoomByNickname(String nickname);
     ChatRoomResponseDto findChatRoomByChatRoomId(Long id);
-    Page<ChatRoomListResponseDto> findAllByTitleAndNickname(String searchContent, Integer page,Integer size);
-    Page<ChatRoomListResponseDto> findAllChatRooms(Integer pageNumber, Integer size);
+    List<ChatRoomListResponseDto> findAllByTitleAndNickname(String searchContent);
+    List<ChatRoomListResponseDto> findAllChatRooms();
     ChatRoomResponseDto enterChatRoom(Long roomId);
     ChatRoomResponseDto chatRoomCondition(Long roomId);
     ChatRoomResponseDto quickEnter();

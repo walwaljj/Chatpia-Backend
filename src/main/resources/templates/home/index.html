@@ -104,29 +104,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-------------------------페이지 ------------------------>
-                <div th:unless="${allChatRooms.isEmpty}">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item" th:classappend="${!allChatRooms.hasPrevious} ? 'disabled'">
-                            <a class="page-link"
-                               th:href="@{|?page=${allChatRooms.number-1}|}">
-                                <span>이전</span>
-                            </a>
-                        </li>
-                        <li th:each="page: ${#numbers.sequence(0, allChatRooms.totalPages-1)}"
-                            th:classappend="${page == allChatRooms.number} ? 'active'"
-                            class="page-item">
-                            <a th:text="${page}" class="page-link"
-                               th:href="@{|?page=${page}&search-conten=${searchContent}|}"></a>
-                        </li>
-                        <li class="page-item" th:classappend="${!allChatRooms.hasNext} ? 'disabled'">
-                            <a class="page-link" th:href="@{|?page=${allChatRooms.number+1}|}">
-                                <span>다음</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
             </div>
 
             <!---------------------- script ----------------------->
@@ -136,7 +113,7 @@
                     const checkBtn = document.getElementById('checkbox');
                     let allChatRooms = [[${allChatRooms}]];
                     if (allChatRooms.length === 0) return;
-                    allChatRooms = [[${allChatRooms.getContent()}]];
+                    allChatRooms = [[${allChatRooms}]];
                     console.log("allChatRooms : " + allChatRooms);
                     // 필터를 적용해야하는 경우라면
                     if (checkBtn.checked) {

@@ -16,10 +16,6 @@ import com.springles.service.ChatRoomService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,11 +57,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      * 입장 가능한 채팅방 보여주기
      */
     @Override
-    public Page<ChatRoomListResponseDto> findAllByCloseFalseAndState(Integer pageNumber, Integer size) {
+    public List<ChatRoomListResponseDto> findAllByCloseFalseAndState() {
 
-        Pageable pageable = PageRequest.of(pageNumber, size);
-        Page<ChatRoom> allByCloseFalseAndState = chatRoomJpaRepository.findAllByCloseFalseAndState(ChatRoomCode.WAITING, pageable);
-        return allByCloseFalseAndState.map(ChatRoomListResponseDto::fromEntity);
+        List<ChatRoom> allByCloseFalseAndState = chatRoomJpaRepository.findAllByCloseFalseAndState(ChatRoomCode.WAITING)
+                .orElseThrow( () -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+        return allByCloseFalseAndState.stream().map(ChatRoomListResponseDto::fromEntity).toList();
 
     }
 
@@ -76,11 +72,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      * 전체 채팅방 보여주기 (대기 중 , 비밀 방 모두 포함)
      */
     @Override
-    public Page<ChatRoomListResponseDto> findAllChatRooms(Integer pageNumber, Integer size) {
+    public List<ChatRoomListResponseDto> findAllChatRooms() {
 
-        Pageable pageable = PageRequest.of(pageNumber, size);
-        Page<ChatRoom> findAllChatRooms = chatRoomJpaRepository.findAll(pageable);
-        return findAllChatRooms.map(ChatRoomListResponseDto::fromEntity);
+        List<ChatRoom> findAllChatRooms = chatRoomJpaRepository.findAll();
+        return findAllChatRooms.stream().map(ChatRoomListResponseDto::fromEntity).toList();
 
     }
 
@@ -203,7 +198,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     // 타이틀 + 이름으로 검색
-    public Page<ChatRoomListResponseDto> findAllByTitleAndNickname(String searchContent, Integer page, Integer size) {
+    public List<ChatRoomListResponseDto> findAllByTitleAndNickname(String searchContent) {
 
         List<ChatRoomListResponseDto> list = new ArrayList<>();
 
@@ -219,9 +214,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // 검색 결과가 비어있다면 NOT_FOUND_ROOM 반환
         if (list.isEmpty()) throw new CustomException(ErrorCode.NOT_FOUND_ROOM);
 
-        Pageable pageable = PageRequest.of(page, size);
-
-        return new PageImpl<>(list.stream().distinct().toList(), pageable, list.size());
+        return list.stream().distinct().toList();
 
     }
 

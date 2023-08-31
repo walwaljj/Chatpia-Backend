@@ -54,11 +54,9 @@ class ChatRoomControllerTest {
 
         // when
         mockMvc.perform(get("/v1/chatrooms")
-                        .param("page", "1")
-                        .param("size", "2")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.content[0].title").value("gameRoom4"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].title").value("gameRoom4"))
                 .andDo(print());
     }
 

@@ -14,7 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -63,12 +62,11 @@ class ChatRoomServiceImplTest {
         ChatRoom gameRoom4 = chatRoomRepository.save(new ChatRoom(4L, "gameRoom4", null, 4L, ChatRoomCode.WAITING, 8L, 5L, false));// 오픈방, 대기중, 시작 3명남음.
 
         // when
-        Page<ChatRoomListResponseDto> allChatRooms = chatRoomService.findAllChatRooms(0, 10);
-        List<ChatRoomListResponseDto> content = allChatRooms.getContent();
+        List<ChatRoomListResponseDto> allChatRooms = chatRoomService.findAllChatRooms();
 
         // then
-        assertThat(content.size()).isEqualTo(3); // 오픈된 방 3개
-        assertThat(content.stream().findFirst().get().getTitle()).isEqualTo(gameRoom4.getTitle()); // 빠른시작 가능한 방이 가장 위에 정렬 되는지 테스트
+        assertThat(allChatRooms.size()).isEqualTo(3); // 오픈된 방 3개
+        assertThat(allChatRooms.stream().findFirst().get().getTitle()).isEqualTo(gameRoom4.getTitle()); // 빠른시작 가능한 방이 가장 위에 정렬 되는지 테스트
 
     }
 
