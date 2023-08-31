@@ -2,7 +2,7 @@ package com.springles.controller.ui;
 
 
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
-import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
+import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.exception.CustomException;
 import com.springles.service.ChatRoomService;
@@ -78,7 +78,7 @@ public class ChatRoomUiController {
 
         // 채팅방 검색
         try {
-            List<ChatRoomListResponseDto> allByTitleAndNickname = chatRoomService.findAllByTitleAndNickname(searchContent);
+            List<ChatRoomResponseDto> allByTitleAndNickname = chatRoomService.findAllByTitleAndNickname(searchContent);
             model.addAttribute("allChatRooms", allByTitleAndNickname);
 
         } catch (CustomException e) {
@@ -93,7 +93,7 @@ public class ChatRoomUiController {
                 model.addAttribute("errorMessage", String.format("'%s'에 해당하는 유저 또는 방을 찾지 못해 전체 목록을 불러옵니다.",searchContent) );
             }
 
-            List<ChatRoomListResponseDto> allChatRooms = chatRoomService.findAllChatRooms();
+            List<ChatRoomResponseDto> allChatRooms = chatRoomService.findAllChatRooms();
             model.addAttribute("allChatRooms", allChatRooms);
         }
 

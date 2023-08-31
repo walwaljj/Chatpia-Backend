@@ -1,7 +1,7 @@
 package com.springles.service.impl;
 
 import com.springles.domain.constants.ChatRoomCode;
-import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
+import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.member.MemberCreateRequest;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.repository.ChatRoomJpaRepository;
@@ -62,7 +62,7 @@ class ChatRoomServiceImplTest {
         ChatRoom gameRoom4 = chatRoomRepository.save(new ChatRoom(4L, "gameRoom4", null, 4L, ChatRoomCode.WAITING, 8L, 5L, false));// 오픈방, 대기중, 시작 3명남음.
 
         // when
-        List<ChatRoomListResponseDto> allChatRooms = chatRoomService.findAllChatRooms();
+        List<ChatRoomResponseDto> allChatRooms = chatRoomService.findAllChatRooms();
 
         // then
         assertThat(allChatRooms.size()).isEqualTo(3); // 오픈된 방 3개
@@ -78,7 +78,7 @@ class ChatRoomServiceImplTest {
         String title = "gameRoom";
 
         // when
-        List<ChatRoomListResponseDto> findAllByTitle = chatRoomService.findChatRoomByTitle(title);
+        List<ChatRoomResponseDto> findAllByTitle = chatRoomService.findChatRoomByTitle(title);
 
         // then
         assertThat(findAllByTitle.size()).isEqualTo(2);
@@ -94,10 +94,10 @@ class ChatRoomServiceImplTest {
 
         // when
 
-        List<ChatRoomListResponseDto> chatRoomList = chatRoomService.findChatRoomByNickname(testUser1);
+        List<ChatRoomResponseDto> chatRoomList = chatRoomService.findChatRoomByNickname(testUser1);
 
         //then
-        ChatRoomListResponseDto result = chatRoomList.stream().findAny().get();
+        ChatRoomResponseDto result = chatRoomList.stream().findAny().get();
         assertThat(result.getTitle()).isEqualTo("gameRoom1");
 
     }

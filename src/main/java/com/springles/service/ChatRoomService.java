@@ -3,7 +3,7 @@ package com.springles.service;
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
-import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
+import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +16,12 @@ public interface ChatRoomService {
     ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto chatRoomUpdateReqDto, Long chatroomId);
     void deleteChatRoom(Long memberId, Long chatRoomId);
 
-    List<ChatRoomListResponseDto> findAllByCloseFalseAndState();
-    List<ChatRoomListResponseDto> findChatRoomByTitle(String title);
-    List<ChatRoomListResponseDto> findChatRoomByNickname(String nickname);
+    List<ChatRoomResponseDto> findAllByCloseFalseAndState();
+    List<ChatRoomResponseDto> findChatRoomByTitle(String title);
+    List<ChatRoomResponseDto> findChatRoomByNickname(String nickname);
     ChatRoomResponseDto findChatRoomByChatRoomId(Long id);
-    List<ChatRoomListResponseDto> findAllByTitleAndNickname(String searchContent);
-    List<ChatRoomListResponseDto> findAllChatRooms();
+    List<ChatRoomResponseDto> findAllByTitleAndNickname(String searchContent);
+    List<ChatRoomResponseDto> findAllChatRooms();
     ChatRoomResponseDto enterChatRoom(Long roomId);
     ChatRoomResponseDto chatRoomCondition(Long roomId);
     ChatRoomResponseDto quickEnter();

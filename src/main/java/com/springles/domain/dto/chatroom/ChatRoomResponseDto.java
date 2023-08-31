@@ -1,7 +1,10 @@
 package com.springles.domain.dto.chatroom;
 
 import com.springles.domain.constants.ChatRoomCode;
+import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.domain.entity.ChatRoom;
+import com.springles.exception.CustomException;
+import com.springles.exception.constants.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,4 +37,5 @@ public class ChatRoomResponseDto {
             .close(chatRoom.getClose())
             .build();
     }
+
 }
