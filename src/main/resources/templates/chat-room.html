@@ -3,39 +3,64 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       lang="en" layout:decorate="~{layouts/basic}">
 
-
 <div layout:fragment="content">
+    <!------------navigation ---------------------->
+<!--    <div class="nav-container" >-->
+<!--        <div class="nav-left">-->
+<!--            <p class="nav" aria-current="page" href="#">방 제목입니다</p>-->
+<!--        </div>-->
+<!--        <div class="nav-left">-->
+<!--            <a class="nav-link active" aria-current="page" onclick="openRoomDetail()">!!</a>-->
+<!--        </div>-->
+<!--        <div class="nav-right">-->
+<!--            <ul class="nav justify-content-end">-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link active" aria-current="page" href="#">게임시작</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="#">게임룰</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="#">나가기</a>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--    </div>-->
 
-    <div class="nav-container" >
-        <div class="nav-left">
-            <p class="nav" aria-current="page" href="#">방 제목입니다</p>
+    <div class="row" style="border-radius: 10px;
+    border: solid 1px silver;
+    margin: 4vw;
+    padding: 0;
+    height: 80vh">
+        <div class="col-3" style="height:100%; background-color: gray; padding:20px">
+            <!---------------참여인원 / 정원 -------------------->
+            <h3>참여자</h3>
+            <span th:text="${chatroom.getHead()}"></span>/<span th:text="${chatroom.getCapacity()}"></span>
+            <div>
+                <!--------------참여자 목록 ------------------------>
+                <div>사람 이름이 여기 나와야하눈뎅,,</div>
+                <div th:each="player : ${players}">
+                    <div th:text="${player.getMemberId()}"></div>
+                    <div th:text="${player.getRole()}"></div>
+                </div>
+            </div>
         </div>
-        <div class="nav-left">
-            <a class="nav-link active" aria-current="page" onclick="openRoomDetail()">!!</a>
-        </div>
-        <div class="nav-right">
-            <ul class="nav justify-content-end">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">게임시작</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">게임룰</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">나가기</a>
-                </li>
-            </ul>
+        <!------------------- 채팅----------------------------------------------------------------------------------->
+        <div class="col-9" style="padding:0; height:80%">
+            <!----------채팅 화면 스크롤 ----------------->
+            <div id="conversationDiv">
+                <div class="chat_ui">
+                    <a href="/chat"></a>
+                    <p id="response"></p>
+                </div>
+            <!---------채팅 입력 input ----------------->
+                <form class="container row" id="message-form">
+                    <input class="chat_input_ui col-11" style="margin:0;" type="text" id="message"/>
+                    <button class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px" type="submit">보내기</button>
+                </form>
+            </div>
         </div>
     </div>
-    <div id="conversationDiv">
-        <form id="message-form">
-            <input type="text" id="message" placeholder="Write a message..."/>
-            <button type="submit">Send</button>
-        </form>
-        <a href="/chat"></a>
-        <p id="response"></p>
-    </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="/js/stomp.js"></script>
@@ -112,7 +137,6 @@
         var roomUrl = `/chat/${roomId}/detail`;
 
         window.open(roomUrl, 'popup-test', 'width='+ _width +', height='+ _height +', left=' + _left + ', top='+ _top );
-
     }
 
 </script>

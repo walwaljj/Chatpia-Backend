@@ -3,8 +3,10 @@ package com.springles.controller.ui;
 import com.google.gson.Gson;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.member.MemberInfoResponse;
+import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
+import com.springles.game.GameSessionManager;
 import com.springles.service.ChatRoomService;
 import com.springles.service.MemberService;
 import com.springles.service.impl.ChatRoomServiceImpl;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("chat")
 @RequiredArgsConstructor
@@ -30,6 +34,7 @@ public class ChatUiController {
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
     private final MemberUiController memberUiController;
+    private final GameSessionManager gameSessionManager;
 
     @GetMapping("rooms")
     public String rooms() {
@@ -51,13 +56,24 @@ public class ChatUiController {
         return "chat-room";
     }
 
-    @GetMapping("{room-id}/{nick-name}")
-    public String enterRoom2(HttpServletRequest request, Model model){
+    // 채팅방 입장
+    @GetMapping("{roomId}/{nickName}")
+    public String enterRoom2(HttpServletRequest request, Model model, @PathVariable Long roomId){
 
+        // 멤버 정보
         String accessToken = (String)request.getAttribute("accessToken");
         MemberInfoResponse memberInfo = memberUiController.info(accessToken);
-
         model.addAttribute("member",memberInfo);
+
+        // Player list 조회
+        List<Player> players = gameSessionManager.findPlayersByRoomId(roomId);
+        model.addAttribute("players",players);
+        log.info(players.toString());
+
+        // 채팅 정보
+        ChatRoomResponseDto chatRoomInfo = chatRoomService.enterChatRoom(roomId);
+        model.addAttribute("chatroom",chatRoomInfo);
+
         log.info("member name = {}", memberInfo.getMemberName());
         // 입장 시 방 condition 을 확인함.
         try {

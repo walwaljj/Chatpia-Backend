@@ -191,5 +191,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     }
 
-
+    // 채팅방 입장 시 채팅 정보 받아오기
+    public ChatRoomResponseDto enterChatRoom(Long roomId){
+        ChatRoom findChatRoom = chatRoomJpaRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+        return ChatRoomResponseDto.of(findChatRoom);
+    }
 }
