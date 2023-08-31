@@ -3,13 +3,8 @@ package com.springles.service;
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
-import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ChatRoomService {
     ChatRoomResponseDto createChatRoom(ChatRoomReqDTO chatRoomReqDTO, Long id);
