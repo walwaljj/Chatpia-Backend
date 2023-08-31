@@ -56,7 +56,7 @@ public class MemberUiController {
         setCookie("accessToken", accessToken, response);
         // RefreshToken id값 Cookie에 저장
         String refreshTokenId = memberLoginResponse.getRefreshToken().getId();
-        setCookie("refresehTokenId", refreshTokenId, response);
+        setCookie("refreshTokenId", refreshTokenId, response);
 
         return "redirect:index";
     }
