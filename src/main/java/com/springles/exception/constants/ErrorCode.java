@@ -41,6 +41,7 @@ public enum ErrorCode {
     OPEN_PASSWORD(HttpStatus.BAD_REQUEST, "공개방은 비밀번호를 입력할 수 없습니다."),
     NOT_FOUND_ROOM(HttpStatus.NOT_FOUND, "방을 찾을 수 없습니다."),
     USER_NOT_OWNER(HttpStatus.UNAUTHORIZED, "수정 권한이 없습니다."),
+    NOT_FOUND_QUICK_ENTRY_ROOM(HttpStatus.NOT_FOUND, "빠른 입장이 가능한 방을 찾을 수 없습니다."),
 
     /* MEMBER */
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "등록되지 않은 회원입니다."),
@@ -63,6 +64,7 @@ public enum ErrorCode {
     NOT_FOUND_INPUT_VALUE_MEMBER(HttpStatus.NOT_FOUND, "입력한 정보와 일치하는 회원정보가 없습니다."),
     NOT_FOUND_GAME_INFO(HttpStatus.NOT_FOUND, "등록된 게임정보(프로필)이 없습니다."),
     NO_IN_GAME_ROLE(HttpStatus.BAD_REQUEST, "부여된 GameRole이 없습니다."),
+    NOT_FOUND_MEMBER_RECORD(HttpStatus.NOT_FOUND, "해당 회원 게임 기록이 없습니다."),
 
     /* PLAYER */
     PLAYER_HEAD_ERROR(HttpStatus.BAD_REQUEST, "5명 이상 10명 이하로 플레이 가능합니다."),
@@ -72,9 +74,15 @@ public enum ErrorCode {
     /* GAME SESSION */
     GAME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게임입니다."),
     GAME_HEAD_FULL(HttpStatus.BAD_REQUEST, "정원이 초과되었습니다."),
-    GAME_PLAYER_EXISTS(HttpStatus.BAD_REQUEST, "아직 플레이어가 존재하는 게임은 삭제할 수 없습니다");
+    GAME_PLAYER_EXISTS(HttpStatus.BAD_REQUEST, "아직 플레이어가 존재하는 게임은 삭제할 수 없습니다"),
 
-    
+    /* VOTE SESSION */
+    VOTE_NOT_VALID(HttpStatus.BAD_REQUEST, "유효하지 않은 투표 정보입니다."),
+    ENDED_VOTE(HttpStatus.BAD_REQUEST, "이미 종료된 투표입니다."),
+    FAIL_VOTE(HttpStatus.INTERNAL_SERVER_ERROR, "투표 처리를 실패했습니다."),
+    FAIL_CONFIRM_VOTE(HttpStatus.INTERNAL_SERVER_ERROR, "투표 확정에 실패했습니다."),
+    GAME_PHASE_NOT_NIGHT_VOTE(HttpStatus.BAD_REQUEST, "밤 투표를 진행하는 시간이 아닙니다.");
+
     private final HttpStatus status;
     private final String message;
 

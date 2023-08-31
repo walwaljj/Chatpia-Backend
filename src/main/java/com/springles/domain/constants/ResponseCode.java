@@ -30,6 +30,8 @@ public enum ResponseCode {
     MEMBER_PROFILE_UPDATE(HttpStatus.OK,"200","프로필 수정 완료"),
     MEMBER_PROFILE_READ(HttpStatus.OK,"200","프로필 조회 완료"),
     MEMBER_LEVEL_UP(HttpStatus.OK,"200","경험치 증가 완료"),
+    MEMBER_GAME_RECORD_UPDATE(HttpStatus.OK, "200", "게임기록 업데이트 완료"),
+    MEMBER_GAME_RECORD_READ(HttpStatus.OK, "200", "게임기록 조회 완료"),
 
     /* CHATROOM */
     CHATROOM_SEARCH(HttpStatus.OK,"200","채팅방 목록 조회 성공"),

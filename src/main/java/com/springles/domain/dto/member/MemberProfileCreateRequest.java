@@ -48,6 +48,7 @@ public class MemberProfileCreateRequest {
                 .level(Level.BEGINNER)
                 .exp(0L)
                 .inGameRole(GameRole.NONE)
+                .isObserver(false)
                 .memberId(memberId)
                 .build();
     }

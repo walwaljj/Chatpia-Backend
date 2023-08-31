@@ -2,9 +2,17 @@ package com.springles.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springles.controller.api.MemberController;
+import com.springles.domain.constants.GameRole;
+import com.springles.domain.constants.Level;
+import com.springles.domain.constants.ProfileImg;
+import com.springles.domain.constants.ResponseCode;
 import com.springles.domain.dto.member.*;
+import com.springles.domain.dto.response.ResResult;
 import com.springles.domain.entity.Member;
+import com.springles.domain.entity.MemberRecord;
+import com.springles.domain.entity.RefreshToken;
 import com.springles.service.MemberService;
+import jakarta.validation.Valid;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,10 +21,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -119,7 +129,7 @@ class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("로그아웃 테스트 - CASE.성공")
+    @DisplayName("회원탈퇴 테스트 - CASE.성공")
     void signOut() throws Exception {
         // given
         MemberDeleteRequest memberDto = MemberDeleteRequest.builder()
@@ -151,15 +161,18 @@ class MemberControllerTest {
                 .password("password1!")
                 .build();
 
-        String returnValue =
-                "memberName : " + memberDto.getMemberName()
-                        + ", accessToken : " + "accessTokenValue"
-                        + ", refreshToken : "
-                        + "{ "
-                        + "id : " + 1L
-                        + ", refreshToken : " + "refreshTokenValue"
-                        + ", expiryDate : " + 60
-                        + " }";
+        MemberLoginResponse returnValue = MemberLoginResponse.builder()
+                .accessToken("accessTokenValue")
+                .refreshToken(
+                        RefreshToken.builder()
+                                .Id("refreshTokenId")
+                                .refreshToken("refreshTokenValue")
+                                .expiration(60L)
+                                .memberName("mafia1")
+                                .build()
+                )
+                .memberName("mafia1")
+                .build();
 
         // when
         when(memberService.login(any(MemberLoginRequest.class)).thenReturn(returnValue);
@@ -172,7 +185,9 @@ class MemberControllerTest {
                 .andExpectAll(
                         status().is2xxSuccessful(), // 상태코드 200
                         content().contentType(MediaType.APPLICATION_JSON),
-                        MockMvcResultMatchers.jsonPath("$.data").value(returnValue)
+                        MockMvcResultMatchers.jsonPath("$.data.memberName").value("mafia1"),
+                        MockMvcResultMatchers.jsonPath("$.data.accessToken").value("accessTokenValue"),
+                        MockMvcResultMatchers.jsonPath("$.data.refreshToken.refreshToken").value("refreshTokenValue")
                 );
     }
 
@@ -247,6 +262,224 @@ class MemberControllerTest {
                         status().is2xxSuccessful(), // 상태코드 200
                         content().contentType(MediaType.APPLICATION_JSON),
                         jsonPath("$.data").value(returnValue)
+                );
+    }
+
+    @Test
+    @DisplayName("프로필 생성 테스트 - CASE.성공")
+    void createProfile() throws Exception {
+        // given
+        MemberProfileCreateRequest memberDto = MemberProfileCreateRequest.builder()
+                .nickname("나는야마피아")
+                .profileImgNum(1)
+                .build();
+
+        MemberProfileResponse returnValue = MemberProfileResponse.builder()
+                .memberId(1L)
+                .nickname("나는야마피아")
+                .profileImg(ProfileImg.PROFILE01)
+                .level(Level.BEGINNER)
+                .exp(0L)
+                .inGameRole(GameRole.NONE)
+                .isObserver(false)
+                .build();
+
+        // when
+        when(memberService.createProfile(any(MemberProfileCreateRequest.class), eq(authHeader))).thenReturn(returnValue);
+
+        // then
+        mockMvc.perform(post("/member/info/profile")
+                        .content(objectMapper.writeValueAsString(memberDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", authHeader)
+                )
+                .andExpectAll(
+                        status().is2xxSuccessful(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        MockMvcResultMatchers.jsonPath("$.data.nickname").value("나는야마피아"),
+                        MockMvcResultMatchers.jsonPath("$.data.profileImg").value("PROFILE01"),
+                        MockMvcResultMatchers.jsonPath("$.data.level").value("BEGINNER"),
+                        MockMvcResultMatchers.jsonPath("$.data.exp").value("0"),
+                        MockMvcResultMatchers.jsonPath("$.data.inGameRole").value("NONE"),
+                        MockMvcResultMatchers.jsonPath("$.data.observer").value(false),
+                        MockMvcResultMatchers.jsonPath("$.data.memberId").value(1L)
+                );
+    }
+
+
+    @Test
+    @DisplayName("프로필 수정 테스트 - CASE.성공")
+    void updateProfile() throws Exception {
+        // given
+        MemberProfileUpdateRequest memberDto = MemberProfileUpdateRequest.builder()
+                .nickname("나는야시민")
+                .profileImgNum(2)
+                .build();
+
+        MemberProfileResponse returnValue = MemberProfileResponse.builder()
+                .memberId(1L)
+                .nickname("나는야시민")
+                .profileImg(ProfileImg.PROFILE02)
+                .level(Level.BEGINNER)
+                .exp(0L)
+                .inGameRole(GameRole.NONE)
+                .isObserver(false)
+                .build();
+
+        // when
+        when(memberService.updateProfile(any(MemberProfileUpdateRequest.class), eq(authHeader))).thenReturn(returnValue);
+
+        // then
+        mockMvc.perform(patch("/member/info/profile")
+                        .content(objectMapper.writeValueAsString(memberDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", authHeader)
+                )
+                .andExpectAll(
+                        status().is2xxSuccessful(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        MockMvcResultMatchers.jsonPath("$.data.nickname").value("나는야시민"),
+                        MockMvcResultMatchers.jsonPath("$.data.profileImg").value("PROFILE02"),
+                        MockMvcResultMatchers.jsonPath("$.data.level").value("BEGINNER"),
+                        MockMvcResultMatchers.jsonPath("$.data.exp").value("0"),
+                        MockMvcResultMatchers.jsonPath("$.data.inGameRole").value("NONE"),
+                        MockMvcResultMatchers.jsonPath("$.data.observer").value(false),
+                        MockMvcResultMatchers.jsonPath("$.data.memberId").value(1L)
+                );
+    }
+
+    @Test
+    @DisplayName("프로필 조회 테스트 - CASE.성공")
+    void readProfile() throws Exception {
+        // given
+        MemberProfileRead returnValue = MemberProfileRead.builder()
+                .nickname("나는야마피아")
+                .profileImg(ProfileImg.PROFILE01)
+                .level("BEGINNER")
+                .exp(0L)
+                .nextLevel("ASSOCIATE")
+                .rank(1L)
+                .build();
+
+        // when
+        when(memberService.readProfile(authHeader)).thenReturn(returnValue);
+
+        // then
+        mockMvc.perform(get("/member/info/profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", authHeader)
+                )
+                .andExpectAll(
+                        status().is2xxSuccessful(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        MockMvcResultMatchers.jsonPath("$.data.nickname").value("나는야마피아"),
+                        MockMvcResultMatchers.jsonPath("$.data.profileImg").value("PROFILE01"),
+                        MockMvcResultMatchers.jsonPath("$.data.level").value("BEGINNER"),
+                        MockMvcResultMatchers.jsonPath("$.data.exp").value("0"),
+                        MockMvcResultMatchers.jsonPath("$.data.nextLevel").value("ASSOCIATE"),
+                        MockMvcResultMatchers.jsonPath("$.data.rank").value(1L)
+                );
+    }
+
+
+    @Test
+    @DisplayName("레벨업 테스트 - CASE.성공")
+    void levelup() throws Exception {
+        // given
+        MemberProfileResponse returnValue = MemberProfileResponse.builder()
+                .memberId(1L)
+                .nickname("나는야마피아")
+                .profileImg(ProfileImg.PROFILE01)
+                .level(Level.ASSOCIATE)
+                .exp(2000L)
+                .inGameRole(GameRole.NONE)
+                .isObserver(false)
+                .build();
+
+        // when
+        when(memberService.levelUp(1L)).thenReturn(returnValue);
+
+        // then
+        mockMvc.perform(patch("/member/levelup")
+                .param("memberId", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+                .andExpectAll(
+                        status().is2xxSuccessful(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        MockMvcResultMatchers.jsonPath("$.data.nickname").value("나는야마피아"),
+                        MockMvcResultMatchers.jsonPath("$.data.profileImg").value("PROFILE01"),
+                        MockMvcResultMatchers.jsonPath("$.data.level").value("ASSOCIATE"),
+                        MockMvcResultMatchers.jsonPath("$.data.exp").value(2000L),
+                        MockMvcResultMatchers.jsonPath("$.data.inGameRole").value("NONE"),
+                        MockMvcResultMatchers.jsonPath("$.data.observer").value(false),
+                        MockMvcResultMatchers.jsonPath("$.data.memberId").value(1L)
+                );
+    }
+
+
+    @Test
+    @DisplayName("멤버 게임 기록 조회 테스트 - CASE.성공")
+    void readRecord() throws Exception {
+        // given
+        MemberRecordResponse returnValue = MemberRecordResponse.builder().id(1L).memberId(1L)
+                .mafiaCnt(1L).citizenCnt(0L).policeCnt(0L).doctorCnt(0L).citizenWinCnt(0L).mafiaWinCnt(1L)
+                .saveCnt(0L).killCnt(2L).totalCnt(1L).totalTime(30L).build();
+
+        // when
+        when(memberService.readRecord(authHeader)).thenReturn(returnValue);
+
+        // then
+        mockMvc.perform(get("/member/record")
+                        .header("Authorization", authHeader)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpectAll(
+                        status().is2xxSuccessful(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        MockMvcResultMatchers.jsonPath("data.mafiaCnt").value(1L),
+                        MockMvcResultMatchers.jsonPath("data.citizenCnt").value(0L),
+                        MockMvcResultMatchers.jsonPath("data.policeCnt").value(0L),
+                        MockMvcResultMatchers.jsonPath("data.doctorCnt").value(0L),
+                        MockMvcResultMatchers.jsonPath("data.citizenWinCnt").value(0L),
+                        MockMvcResultMatchers.jsonPath("data.mafiaWinCnt").value(1L),
+                        MockMvcResultMatchers.jsonPath("data.saveCnt").value(0L),
+                        MockMvcResultMatchers.jsonPath("data.killCnt").value(2L),
+                        MockMvcResultMatchers.jsonPath("data.totalCnt").value(1L),
+                        MockMvcResultMatchers.jsonPath("data.totalTime").value(30L)
+                );
+    }
+
+
+    @Test
+    @DisplayName("멤버 게임 기록 업데이트 테스트 - CASE.성공")
+    void updateRecord() throws Exception {
+        // given
+        MemberRecordResponse returnValue = MemberRecordResponse.builder().id(1L).memberId(1L)
+                .mafiaCnt(1L).citizenCnt(0L).policeCnt(0L).doctorCnt(0L).citizenWinCnt(0L).mafiaWinCnt(1L)
+                .saveCnt(0L).killCnt(2L).totalCnt(1L).totalTime(30L).build();
+
+        // when
+        when(memberService.updateRecord(1L)).thenReturn(returnValue);
+
+        // then
+        mockMvc.perform(patch("/member/record")
+                        .param("memberId", "1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpectAll(
+                        status().is2xxSuccessful(),
+                        content().contentType(MediaType.APPLICATION_JSON),
+                        MockMvcResultMatchers.jsonPath("data.mafiaCnt").value(1L),
+                        MockMvcResultMatchers.jsonPath("data.citizenCnt").value(0L),
+                        MockMvcResultMatchers.jsonPath("data.policeCnt").value(0L),
+                        MockMvcResultMatchers.jsonPath("data.doctorCnt").value(0L),
+                        MockMvcResultMatchers.jsonPath("data.citizenWinCnt").value(0L),
+                        MockMvcResultMatchers.jsonPath("data.mafiaWinCnt").value(1L),
+                        MockMvcResultMatchers.jsonPath("data.saveCnt").value(0L),
+                        MockMvcResultMatchers.jsonPath("data.killCnt").value(2L),
+                        MockMvcResultMatchers.jsonPath("data.totalCnt").value(1L),
+                        MockMvcResultMatchers.jsonPath("data.totalTime").value(30L)
                 );
     }
 }

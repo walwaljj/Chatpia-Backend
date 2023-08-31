@@ -20,12 +20,13 @@ public class VoteRedisRepository {
     private HashOperations<String, Long, Vote> opsHashVote;
     private static final String key = "Vote";
 
+    // 의존성 주입하고 초기 세팅
     public VoteRedisRepository(RedisTemplate<String, Vote> redisTemplate) {
         this.redisTemplate = redisTemplate;
         this.opsHashVote = redisTemplate.opsForHash();
     }
 
-
+    // 투표 생성을 위해 <"Vote", playerId, Vote> 형태로 Vote는 비워 둔 채 hash 저드
     public Map<Long, Vote> startVote(List<Long> players, GamePhase phase) {
         Map<Long, Vote> voteResult = new HashMap<Long, Vote>();
         players.forEach((playerId) -> {
@@ -76,5 +77,37 @@ public class VoteRedisRepository {
             voteResult.put(playerId, getVote(playerId));
         });
         return voteResult;
+    }
+
+    // 투표를 하는 메소드
+    public void vote(Long playerId, Long vote) {
+        // 투표를 시작할 때 Vote 객체 다 만들고 초기화했으니까 새로 생성하지 않고 불러들임
+        Vote voteDao = getVote(playerId);
+        voteDao.setVote(vote);
+        updateVote(playerId, voteDao);
+    }
+
+    // 투표를 확정하는 메소드
+    public boolean confirmVote(Long playerId) {
+        Vote voteDao = getVote(playerId);
+        if (!voteDao.isConfirm()) {
+            voteDao.setConfirm(true);
+            updateVote(playerId, voteDao);
+            return true;
+        }
+        return false;
+    }
+
+    public void endVote(List<Long> players, GamePhase phase) {
+        players.forEach((playerId) -> {
+            Vote voteDao = getVote(playerId);
+            if(voteDao.getPhase() == phase) {
+                deleteVote(playerId);
+            }
+        });
+    }
+
+    public void removeVote(Long playerId) {
+        deleteVote(playerId);
     }
 }

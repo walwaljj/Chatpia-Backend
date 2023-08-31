@@ -25,11 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.springles.domain.dto.chatroom.ChatRoomReqDTO.createToEntity;
 import static com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto.updateToEntity;
-import static com.springles.exception.constants.ErrorCode.CLOSE_ROOM_ERROR;
-import static com.springles.exception.constants.ErrorCode.OPEN_ROOM_ERROR;
-
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -71,6 +69,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     }
 
+
+
+
     /**
      * 전체 채팅방 보여주기 (대기 중 , 비밀 방 모두 포함)
      */
@@ -80,6 +81,39 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         Pageable pageable = PageRequest.of(pageNumber, size);
         Page<ChatRoom> findAllChatRooms = chatRoomJpaRepository.findAll(pageable);
         return findAllChatRooms.map(ChatRoomListResponseDto::fromEntity);
+
+    }
+
+    @Override
+    public  ChatRoomResponseDto chatRoomCondition(Long roomId){
+
+        ChatRoomResponseDto chatRoomResponseDto = findChatRoomByChatRoomId(roomId);
+        // 입장 시도 시 정원이 다 찼을 때
+        if(chatRoomResponseDto.getHead() >= chatRoomResponseDto.getCapacity()) throw new CustomException(ErrorCode.GAME_HEAD_FULL);
+        // 비밀 방 일 때
+        if(chatRoomResponseDto.getClose()) throw new CustomException(ErrorCode.CLOSE_ROOM_ERROR);
+        // 이미 진행 중 일 때
+        if(chatRoomResponseDto.getState().getValue().equals("PLAYING")) throw new CustomException(ErrorCode.PLAYER_STILL_INGAME);
+
+        return chatRoomResponseDto;
+    }
+
+    /**
+     * 빠른 입장
+     * 
+     */
+    @Override
+    public ChatRoomResponseDto quickEnter() {
+        List<ChatRoomResponseDto> chatRoomResponseDtoList = chatRoomJpaRepository.findAllByCloseFalseAndState(ChatRoomCode.WAITING) // 오픈된 방이고 , 대기중인 리스트
+                .get()
+                .stream()
+                .sorted(Comparator.comparingLong(o -> (o.getCapacity() - o.getHead())))
+                .map(ChatRoomResponseDto::of).collect(Collectors.toList());
+        try {
+            return chatRoomResponseDtoList.get(0);// 정원수 - 입장 인원 수 중 가장 상단에 있는 방
+        } catch (IndexOutOfBoundsException e) {
+            throw new CustomException(ErrorCode.NOT_FOUND_QUICK_ENTRY_ROOM);
+        }
 
     }
 

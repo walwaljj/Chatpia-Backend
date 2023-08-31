@@ -3,14 +3,15 @@ package com.springles.game;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.domain.entity.GameSession;
+import com.springles.domain.entity.Member;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.repository.GameSessionRedisRepository;
+import com.springles.repository.MemberJpaRepository;
 import com.springles.repository.PlayerRedisRepository;
 import groovy.util.logging.Slf4j;
 import jakarta.transaction.Transactional;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -26,15 +27,18 @@ public class GameSessionManager {
     private final GameSessionRedisRepository gameSessionRedisRepository;
     private final PlayerRedisRepository playerRedisRepository;
     private final RoleManager roleManager;
+    private final MemberJpaRepository memberJpaRepository;
 
     /* 게임 세션 생성 */
     public void createGame(ChatRoom chatRoom) {
-        GameSession gameSession = gameSessionRedisRepository.save(GameSession.of(chatRoom));
-        addUser(chatRoom.getId(), chatRoom.getOwnerId());
+        gameSessionRedisRepository.save(GameSession.of(chatRoom));
+        Member member = memberJpaRepository.findById(chatRoom.getOwnerId())
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        addUser(chatRoom.getId(), member.getMemberName());
     }
 
     /* 게임 시작 */
-    public void startGame(Long roomId) {
+    public List<Player> startGame(Long roomId) {
         List<Player> players = findPlayersByRoomId(roomId);
         if (players.size() < 5 || players.size() > 10) {
             throw new CustomException(ErrorCode.PLAYER_HEAD_ERROR);
@@ -42,7 +46,7 @@ public class GameSessionManager {
         roleManager.assignRole(players);
         GameSession gameSession = findGameByRoomId(roomId);
         gameSessionRedisRepository.save(gameSession.start(players.size()));
-        // 메세지 보내기
+        return players;
     }
 
     /* 게임 종료 -> 준비 상태로 돌아가기 */
@@ -68,17 +72,18 @@ public class GameSessionManager {
     }
 
     /* 게임에서 유저 제거 */
-    public void removePlayer(Long roomId, Long playerId) {
-        Player player = findPlayerByMemeberId(playerId);
+    public void removePlayer(Long roomId, String memberName) {
+        Player player = findPlayerByMemberName(memberName);
         GameSession gameSession = findGameByRoomId(roomId);
-        playerRedisRepository.deleteById(playerId);
+        Member member = findMemberByMemberName(memberName);
+        playerRedisRepository.deleteById(member.getId());
         List<Player> players = findPlayersByRoomId(roomId);
         // 아무도 없다면 방삭제
         if (players.isEmpty()) {
             removeGame(roomId);
         }
         // 남은 플레이어가 존재하고 방장이 나갔다면 랜덤으로 방장 넘겨주기
-        else if (Objects.equals(gameSession.getHostId(), playerId)) {
+        else if (Objects.equals(gameSession.getHostId(), member.getId())) {
             Random random = new Random();
             gameSession.changeHost(players.get(random.nextInt(players.size())).getMemberId());
             gameSessionRedisRepository.save(gameSession);
@@ -86,16 +91,16 @@ public class GameSessionManager {
     }
 
     /* 게임에 유저 추가 */
-    public void addUser(Long roomId, Long memberId) {
+    public void addUser(Long roomId, String memberName) {
         if (playerRedisRepository.findByRoomId(roomId).size() > 10) {
             throw new CustomException(ErrorCode.GAME_HEAD_FULL);
         }
         GameSession gameSession = findGameByRoomId(roomId);
-        // 아직 다른 방에 참가중이라면 -> 게임 중간에 나갔을 경우 발생 가능 -> 중간에 나갔을 경우를 처리해야 함.
-        if (playerRedisRepository.existsByMemberId(memberId)) {
+        Member member = findMemberByMemberName(memberName);
+        if (playerRedisRepository.existsByMemberName(memberName)) {
             throw new CustomException(ErrorCode.PLAYER_STILL_INGAME);
         }
-        playerRedisRepository.save(Player.of(memberId, roomId));
+        playerRedisRepository.save(Player.of(member.getId(), roomId, memberName));
     }
 
     public GameSession findGameByRoomId(Long roomId) {
@@ -112,9 +117,14 @@ public class GameSessionManager {
         return playerRedisRepository.findByRoomId(roomId);
     }
 
-    public Player findPlayerByMemeberId(Long memberId) {
-        return playerRedisRepository.findById(memberId)
+    public Player findPlayerByMemberName(String memberName) {
+        return playerRedisRepository.findByMemberName(memberName)
             .orElseThrow(() -> new CustomException(ErrorCode.PLAYER_NOT_FOUND));
+    }
+
+    public Member findMemberByMemberName(String memberName) {
+        return memberJpaRepository.findByMemberName(memberName)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
 }
