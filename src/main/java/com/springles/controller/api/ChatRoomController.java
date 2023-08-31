@@ -1,6 +1,7 @@
 package com.springles.controller.api;
 
 import com.springles.domain.constants.ResponseCode;
+import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 import com.springles.domain.dto.response.ResResult;
 import com.springles.service.ChatRoomService;
