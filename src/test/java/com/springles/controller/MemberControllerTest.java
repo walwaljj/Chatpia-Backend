@@ -162,7 +162,7 @@ class MemberControllerTest {
                         + " }";
 
         // when
-        when(memberService.login(any(MemberLoginRequest.class))).thenReturn(returnValue);
+        when(memberService.login(any(MemberLoginRequest.class)).thenReturn(returnValue);
 
         // then
         mockMvc.perform(post("/member/login")
