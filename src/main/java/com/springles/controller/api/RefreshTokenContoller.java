@@ -2,7 +2,8 @@ package com.springles.controller.api;
 
 import com.springles.domain.constants.ResponseCode;
 import com.springles.domain.dto.response.ResResult;
-import com.springles.service.RefreshTokenService;
+import com.springles.jwt.JwtTokenUtils;
+//import com.springles.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class RefreshTokenContoller {
 
-    private final RefreshTokenService refreshTokenService;
+    private final JwtTokenUtils jwtTokenUtils;
 
     // accessToken 재발급
     @PostMapping("/token/reissue")
@@ -26,7 +27,7 @@ public class RefreshTokenContoller {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data("accessToken : " + refreshTokenService.reissue(refreshTokenId))
+                        .data("accessToken : " + jwtTokenUtils.reissue(refreshTokenId))
                         .build());
     }
 }
