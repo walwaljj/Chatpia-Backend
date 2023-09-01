@@ -34,4 +34,5 @@ public class ChatRoomResponseDto {
             .close(chatRoom.getClose())
             .build();
     }
+
 }
