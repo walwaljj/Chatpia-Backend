@@ -24,6 +24,11 @@
                 </table>
             </form>
         </div>
+        <script th:if="${param.error}">
+            window.onload = function() {
+                alert('다시 로그인해주세요.');
+            }
+        </script>
     </div>
 </div>
 </html>
