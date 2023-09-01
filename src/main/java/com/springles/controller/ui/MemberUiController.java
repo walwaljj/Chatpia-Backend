@@ -35,11 +35,11 @@ public class MemberUiController {
     ) {
         model.addAttribute("memberDto", memberDto);
         memberService.signUp(memberDto);
-        return "redirect:login";
+        return "redirect:login-page";
     }
 
     // 로그인 페이지 조회
-    @GetMapping("/login")
+    @GetMapping("/login-page")
     public String loginPage(Model model, MemberLoginRequest memberDto) {
         model.addAttribute("memberDto", memberDto);
         return "member/login";
