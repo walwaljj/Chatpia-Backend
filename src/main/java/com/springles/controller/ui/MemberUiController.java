@@ -53,10 +53,10 @@ public class MemberUiController {
         MemberLoginResponse memberLoginResponse = memberService.login(memberDto);
         // AccessToken Cookie에 저장
         String accessToken = memberLoginResponse.getAccessToken();
-        setCookie("accessToken", accessToken, response);
+        setAtkCookie("accessToken", accessToken, response);
         // RefreshToken id값 Cookie에 저장
         String refreshTokenId = memberLoginResponse.getRefreshToken().getId();
-        setCookie("refreshTokenId", refreshTokenId, response);
+        setRtkCookie("refreshTokenId", refreshTokenId, response);
 
         return "redirect:index";
     }

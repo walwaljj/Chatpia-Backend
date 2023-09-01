@@ -1,6 +1,7 @@
 package com.springles.config;
 
 //import com.springles.jwt.AccessTokenInterceptor;
+import com.springles.jwt.JwtExceptionFilter;
 import com.springles.jwt.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebSecurityConfig implements WebMvcConfigurer {
 
     private final JwtTokenFilter jwtTokenFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
 //    private final AccessTokenInterceptor accessTokenInterceptor;
 //    @Override
 //    public void addInterceptors(InterceptorRegistry registry) {
@@ -49,7 +51,8 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         sessionManagement -> sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtTokenFilter, AuthorizationFilter.class);
+                .addFilterBefore(jwtTokenFilter, AuthorizationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtTokenFilter.class);
         return http.build();
     }
 
