@@ -1,6 +1,7 @@
 package com.springles.config;
 
 //import com.springles.jwt.AccessTokenInterceptor;
+import com.springles.jwt.JwtExceptionFilter;
 import com.springles.jwt.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -21,6 +21,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebSecurityConfig implements WebMvcConfigurer {
 
     private final JwtTokenFilter jwtTokenFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
 //    private final AccessTokenInterceptor accessTokenInterceptor;
 //    @Override
 //    public void addInterceptors(InterceptorRegistry registry) {
@@ -42,14 +43,27 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                                 .anyRequest().permitAll()
                                 /** 실제 권한 코드 */
 //                                .requestMatchers(new AntPathRequestMatcher("/v1/signup")).permitAll()
+//                                .requestMatchers(new AntPathRequestMatcher("/member/signup")).permitAll()
+//                                .requestMatchers(new AntPathRequestMatcher("/v1/login-page")).permitAll()
 //                                .requestMatchers(new AntPathRequestMatcher("/v1/login")).permitAll()
+//                                .requestMatchers(new AntPathRequestMatcher("/member/login")).permitAll()
+//                                .requestMatchers(new AntPathRequestMatcher("/v1/login-page?error")).permitAll()
+//                                .requestMatchers(new AntPathRequestMatcher("/css/*")).permitAll()
 //                                .anyRequest().authenticated()
+                )
+                .formLogin(
+                        login -> login
+                                .loginPage("/v1/login-page")
+                                .successHandler(new LoginSuccessHandler())
+                                .failureHandler(new LoginFailureHandler())
+                                .permitAll()
                 )
                 .sessionManagement(
                         sessionManagement -> sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtTokenFilter, AuthorizationFilter.class);
+                .addFilterBefore(jwtTokenFilter, AuthorizationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtTokenFilter.class);
         return http.build();
     }
 

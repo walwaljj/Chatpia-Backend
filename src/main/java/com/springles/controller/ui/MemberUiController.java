@@ -35,11 +35,11 @@ public class MemberUiController {
     ) {
         model.addAttribute("memberDto", memberDto);
         memberService.signUp(memberDto);
-        return "redirect:login";
+        return "redirect:login-page";
     }
 
     // 로그인 페이지 조회
-    @GetMapping("/login")
+    @GetMapping("/login-page")
     public String loginPage(Model model, MemberLoginRequest memberDto) {
         model.addAttribute("memberDto", memberDto);
         return "member/login";
@@ -53,10 +53,10 @@ public class MemberUiController {
         MemberLoginResponse memberLoginResponse = memberService.login(memberDto);
         // AccessToken Cookie에 저장
         String accessToken = memberLoginResponse.getAccessToken();
-        setCookie("accessToken", accessToken, response);
+        setAtkCookie("accessToken", accessToken, response);
         // RefreshToken id값 Cookie에 저장
         String refreshTokenId = memberLoginResponse.getRefreshToken().getId();
-        setCookie("refreshTokenId", refreshTokenId, response);
+        setRtkCookie("refreshTokenId", refreshTokenId, response);
 
         return "redirect:index";
     }
@@ -81,11 +81,33 @@ public class MemberUiController {
     }
 
     // 쿠키 설정
-    public void setCookie(String name, String value, HttpServletResponse response) {
+//    public void setCookie(String name, String value, HttpServletResponse response) {
+//        Cookie cookie = new Cookie(name, value);
+//        cookie.setDomain("localhost");
+//        cookie.setPath("/");
+//        cookie.setMaxAge(60*60);
+//        cookie.setHttpOnly(true);
+//        cookie.setSecure(true);
+//        response.addCookie(cookie);
+//    }
+
+    // accessToken 쿠키 설정
+    public void setAtkCookie(String name, String value, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, value);
         cookie.setDomain("localhost");
         cookie.setPath("/");
-        cookie.setMaxAge(60*60);
+        cookie.setMaxAge(60 * 60);  // 1시간(테스트용)
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+    }
+
+    // refreshToken 쿠키 설정
+    public void setRtkCookie(String name, String value, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setDomain("localhost");
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24 * 14);    // 2주
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);

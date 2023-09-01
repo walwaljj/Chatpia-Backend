@@ -8,6 +8,8 @@ import com.springles.repository.MemberJpaRepository;
 import com.springles.repository.RefreshTokenRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -49,7 +51,7 @@ public class JwtTokenUtils {
         Claims jwtClaims = Jwts.claims()
                 .setSubject(memberName)
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plusSeconds(60 * 1))); // 3분(test용)
+                .setExpiration(Date.from(Instant.now().plusSeconds(60 * 60))); // 테스트용 1시간
         return Jwts.builder()
                 .setClaims(jwtClaims)
                 .signWith(singleKey)
@@ -61,8 +63,7 @@ public class JwtTokenUtils {
         return RefreshToken.builder()
                 .memberName(memberName)
                 .refreshToken(String.valueOf(UUID.randomUUID()))
-//                .expiration(60 * 60 * 24 * 14L)   // 2주
-                .expiration(60 * 2L)   // 2분(test용)
+                .expiration(60 * 60 * 24 * 14L)   // 2주
                 .build();
     }
 
@@ -72,13 +73,16 @@ public class JwtTokenUtils {
         // refreshToken이 있는지 확인
         Optional<RefreshToken> optionalRefreshToken = refreshTokenRedisRepository.findById(refreshTokenId);
         if(optionalRefreshToken.isEmpty()) {
-            log.warn("refresh token이 존재하지 않음");
-            throw new CustomException(ErrorCode.NO_JWT_TOKEN);
+            log.warn("refresh token이 DB에 존재하지 않음");
+//            throw new CustomException(ErrorCode.NO_JWT_TOKEN);
+            return "";
         }
 
         // refreshToken이 유효한지 확인
         if(!memberJpaRepository.existsByMemberName(optionalRefreshToken.get().getMemberName())) {
-            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+            log.warn("refresh token이 유효하지 않음");
+//            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+            return "";
         }
 
         // accessToken 재발급
@@ -135,5 +139,16 @@ public class JwtTokenUtils {
             log.warn("로그아웃 된 토큰");
             return false;
         }
+    }
+
+    // accessToken 쿠키 설정
+    public void setAtkCookie(String name, String value, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setDomain("localhost");
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60);  // 테스트용 1시간
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
     }
 }
