@@ -96,7 +96,7 @@ public class MemberUiController {
         Cookie cookie = new Cookie(name, value);
         cookie.setDomain("localhost");
         cookie.setPath("/");
-        cookie.setMaxAge(60);
+        cookie.setMaxAge(60 * 60);  // 1시간(테스트용)
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);
@@ -107,7 +107,7 @@ public class MemberUiController {
         Cookie cookie = new Cookie(name, value);
         cookie.setDomain("localhost");
         cookie.setPath("/");
-        cookie.setMaxAge(60*2);
+        cookie.setMaxAge(60 * 60 * 24 * 14);    // 2주
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);

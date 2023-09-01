@@ -51,7 +51,7 @@ public class JwtTokenUtils {
         Claims jwtClaims = Jwts.claims()
                 .setSubject(memberName)
                 .setIssuedAt(Date.from(Instant.now()))
-                .setExpiration(Date.from(Instant.now().plusSeconds(60 * 1))); // 3분(test용)
+                .setExpiration(Date.from(Instant.now().plusSeconds(60 * 60))); // 테스트용 1시간
         return Jwts.builder()
                 .setClaims(jwtClaims)
                 .signWith(singleKey)
@@ -63,8 +63,7 @@ public class JwtTokenUtils {
         return RefreshToken.builder()
                 .memberName(memberName)
                 .refreshToken(String.valueOf(UUID.randomUUID()))
-//                .expiration(60 * 60 * 24 * 14L)   // 2주
-                .expiration(60 * 2L)   // 2분(test용)
+                .expiration(60 * 60 * 24 * 14L)   // 2주
                 .build();
     }
 
@@ -147,7 +146,7 @@ public class JwtTokenUtils {
         Cookie cookie = new Cookie(name, value);
         cookie.setDomain("localhost");
         cookie.setPath("/");
-        cookie.setMaxAge(60);
+        cookie.setMaxAge(60 * 60);  // 테스트용 1시간
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);
