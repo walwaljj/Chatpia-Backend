@@ -48,6 +48,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 //                                .requestMatchers(new AntPathRequestMatcher("/v1/login")).permitAll()
 //                                .requestMatchers(new AntPathRequestMatcher("/member/login")).permitAll()
 //                                .requestMatchers(new AntPathRequestMatcher("/v1/login-page?error")).permitAll()
+//                                .requestMatchers(new AntPathRequestMatcher("/css/*")).permitAll()
 //                                .anyRequest().authenticated()
                 )
                 .formLogin(
