@@ -43,8 +43,19 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                                 .anyRequest().permitAll()
                                 /** 실제 권한 코드 */
 //                                .requestMatchers(new AntPathRequestMatcher("/v1/signup")).permitAll()
+//                                .requestMatchers(new AntPathRequestMatcher("/member/signup")).permitAll()
+//                                .requestMatchers(new AntPathRequestMatcher("/v1/login-page")).permitAll()
 //                                .requestMatchers(new AntPathRequestMatcher("/v1/login")).permitAll()
+//                                .requestMatchers(new AntPathRequestMatcher("/member/login")).permitAll()
+//                                .requestMatchers(new AntPathRequestMatcher("/v1/login-page?error")).permitAll()
 //                                .anyRequest().authenticated()
+                )
+                .formLogin(
+                        login -> login
+                                .loginPage("/v1/login-page")
+                                .successHandler(new LoginSuccessHandler())
+                                .failureHandler(new LoginFailureHandler())
+                                .permitAll()
                 )
                 .sessionManagement(
                         sessionManagement -> sessionManagement
