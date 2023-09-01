@@ -4,7 +4,7 @@ package com.springles.service.impl;
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.constants.ChatRoomCode;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
-import com.springles.domain.dto.chatting.ChatRoomListResponseDto;
+import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.domain.entity.Member;
@@ -57,11 +57,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      * 입장 가능한 채팅방 보여주기
      */
     @Override
-    public List<ChatRoomListResponseDto> findAllByCloseFalseAndState() {
+    public List<ChatRoomResponseDto> findAllByCloseFalseAndState() {
 
         List<ChatRoom> allByCloseFalseAndState = chatRoomJpaRepository.findAllByCloseFalseAndState(ChatRoomCode.WAITING)
                 .orElseThrow( () -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
-        return allByCloseFalseAndState.stream().map(ChatRoomListResponseDto::fromEntity).toList();
+        return allByCloseFalseAndState.stream().map(ChatRoomResponseDto::of).toList();
 
     }
 
@@ -72,10 +72,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      * 전체 채팅방 보여주기 (대기 중 , 비밀 방 모두 포함)
      */
     @Override
-    public List<ChatRoomListResponseDto> findAllChatRooms() {
+    public List<ChatRoomResponseDto> findAllChatRooms() {
 
         List<ChatRoom> findAllChatRooms = chatRoomJpaRepository.findAll();
-        return findAllChatRooms.stream().map(ChatRoomListResponseDto::fromEntity).toList();
+        return findAllChatRooms.stream().map(ChatRoomResponseDto::of).toList();
 
     }
 
@@ -117,13 +117,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      * 채팅방 이름으로 찾기
      */
     @Override
-    public List<ChatRoomListResponseDto> findChatRoomByTitle(String title) {
+    public List<ChatRoomResponseDto> findChatRoomByTitle(String title) {
         List<ChatRoom> chatRooms = chatRoomJpaRepository.findAll().stream()
                 .filter(chatRoom -> chatRoom.getTitle().contains(title))
                 .collect(Collectors.toList());
 
         return chatRooms.stream()
-                .map(ChatRoomListResponseDto::fromEntity)
+                .map(ChatRoomResponseDto::of)
                 .collect(Collectors.toList());
 
     }
@@ -132,19 +132,19 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      * 방장 이름으로 찾기
      */
     @Override
-    public List<ChatRoomListResponseDto> findChatRoomByNickname(String nickname) {
+    public List<ChatRoomResponseDto> findChatRoomByNickname(String nickname) {
         // 닉네임이 포함된 멤버 모두 찾기 (대 소문자 구분하지 않음)
         List<Member> members = memberJpaRepository.findAllByMemberNameContainingIgnoreCase(nickname)
                 .get().stream()
                 .collect(Collectors.toList());
 
-        List<ChatRoomListResponseDto> chatRoomResponseDtoList = new ArrayList<>();
+        List<ChatRoomResponseDto> chatRoomResponseDtoList = new ArrayList<>();
 
         for (Member member : members) {
             Optional<List<ChatRoom>> optionalChatRoomList = chatRoomJpaRepository.findAllByOwnerId(member.getId());
             if (optionalChatRoomList.isPresent()) {
                 for (ChatRoom chatRoom : optionalChatRoomList.get()) {
-                    chatRoomResponseDtoList.add(ChatRoomListResponseDto.fromEntity(chatRoom));
+                    chatRoomResponseDtoList.add(ChatRoomResponseDto.of(chatRoom));
                 }
             }
 
@@ -198,15 +198,15 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     // 타이틀 + 이름으로 검색
-    public List<ChatRoomListResponseDto> findAllByTitleAndNickname(String searchContent) {
+    public List<ChatRoomResponseDto> findAllByTitleAndNickname(String searchContent) {
 
-        List<ChatRoomListResponseDto> list = new ArrayList<>();
+        List<ChatRoomResponseDto> list = new ArrayList<>();
 
         // 만약 검색어가 없다면 NO_CONTENT 반환
         if (searchContent.isEmpty()) throw new CustomException(ErrorCode.NO_CONTENT);
 
-        List<ChatRoomListResponseDto> chatRoomByNickname = findChatRoomByNickname(searchContent);
-        List<ChatRoomListResponseDto> chatRoomByTitle = findChatRoomByTitle(searchContent);
+        List<ChatRoomResponseDto> chatRoomByNickname = findChatRoomByNickname(searchContent);
+        List<ChatRoomResponseDto> chatRoomByTitle = findChatRoomByTitle(searchContent);
 
         list.addAll(chatRoomByTitle);
         list.addAll(chatRoomByNickname);

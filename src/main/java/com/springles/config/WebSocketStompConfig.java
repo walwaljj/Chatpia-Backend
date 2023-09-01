@@ -1,6 +1,8 @@
 package com.springles.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -39,4 +41,5 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
         // /app로 시작하는 메시지만 메시지 헨들러로 라우팅한다고 정의
         registry.setApplicationDestinationPrefixes("/pub");
     }
+
 }
