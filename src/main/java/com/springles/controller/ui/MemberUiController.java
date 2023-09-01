@@ -81,11 +81,33 @@ public class MemberUiController {
     }
 
     // 쿠키 설정
-    public void setCookie(String name, String value, HttpServletResponse response) {
+//    public void setCookie(String name, String value, HttpServletResponse response) {
+//        Cookie cookie = new Cookie(name, value);
+//        cookie.setDomain("localhost");
+//        cookie.setPath("/");
+//        cookie.setMaxAge(60*60);
+//        cookie.setHttpOnly(true);
+//        cookie.setSecure(true);
+//        response.addCookie(cookie);
+//    }
+
+    // accessToken 쿠키 설정
+    public void setAtkCookie(String name, String value, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, value);
         cookie.setDomain("localhost");
         cookie.setPath("/");
-        cookie.setMaxAge(60*60);
+        cookie.setMaxAge(60);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+    }
+
+    // refreshToken 쿠키 설정
+    public void setRtkCookie(String name, String value, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setDomain("localhost");
+        cookie.setPath("/");
+        cookie.setMaxAge(60*2);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);
