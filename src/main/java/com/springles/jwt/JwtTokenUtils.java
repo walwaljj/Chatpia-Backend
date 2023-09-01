@@ -8,6 +8,8 @@ import com.springles.repository.MemberJpaRepository;
 import com.springles.repository.RefreshTokenRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -135,5 +137,16 @@ public class JwtTokenUtils {
             log.warn("로그아웃 된 토큰");
             return false;
         }
+    }
+
+    // accessToken 쿠키 설정
+    public void setAtkCookie(String name, String value, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setDomain("localhost");
+        cookie.setPath("/");
+        cookie.setMaxAge(60);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
     }
 }
