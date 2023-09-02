@@ -21,19 +21,19 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
 
-//    // 채팅방 생성
-//    @Operation(summary = "채팅방 생성", description = "채팅방 생성")
-//    @PostMapping(value = "/chatrooms", produces = "application/json;charset=UTF-8")
-//    public ResponseEntity<ResResult> createChatRoom(@Valid @RequestBody ChatRoomReqDTO chatRoomReqDTO){
-//        // 응답 메시지 return
-//        ResponseCode responseCode = ResponseCode.CHATROOM_CREATE;
-//        return new ResponseEntity<>(ResResult.builder()
-//                .responseCode(responseCode)
-//                .code(responseCode.getCode())
-//                .message(responseCode.getMessage())
-//                .data(chatRoomService.createChatRoom(chatRoomReqDTO))
-//                .build(), HttpStatus.OK);
-//    }
+    // 채팅방 생성
+    @Operation(summary = "채팅방 생성", description = "채팅방 생성")
+    @PostMapping(value = "/chatrooms", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<ResResult> createChatRoom(@Valid @RequestBody ChatRoomReqDTO chatRoomReqDTO){
+        // 응답 메시지 return
+        ResponseCode responseCode = ResponseCode.CHATROOM_CREATE;
+        return new ResponseEntity<>(ResResult.builder()
+                .responseCode(responseCode)
+                .code(responseCode.getCode())
+                .message(responseCode.getMessage())
+                .data(chatRoomService.createChatRoom(chatRoomReqDTO, 1L))
+                .build(), HttpStatus.OK);
+    }
 
     /**
      /chatrooms?title={title}
