@@ -1,11 +1,11 @@
+package com.springles.exception;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.springles.exception.ErrorResponse;
 import com.springles.exception.constants.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.NoHandlerFoundException;
+
+
 import java.io.IOException;
 
 
@@ -23,34 +25,43 @@ import java.io.IOException;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     private final HttpStatus HTTP_STATUS_OK = HttpStatus.OK;
 
-    /**
-     * [Exception] API 호출 시 '객체' 혹은 '파라미터' 데이터 값이 유효하지 않은 경우
-     *
-     * @param ex MethodArgumentNotValidException
-     * @return ResponseEntity<ErrorResponse>
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        log.error("handleMethodArgumentNotValidException", ex);
-        BindingResult bindingResult = ex.getBindingResult();
-        StringBuilder stringBuilder = new StringBuilder();
-        for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            stringBuilder.append(fieldError.getField()).append(":");
-            stringBuilder.append(fieldError.getDefaultMessage());
-            stringBuilder.append(", ");
-        }
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_VALID_ERROR, String.valueOf(stringBuilder));
-        return new ResponseEntity<>(response, HTTP_STATUS_OK);
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<?> handlerException(Exception e) {
+        log.error("Unexpected_Exception : " + e.getMessage());
+        return ResponseEntity.status(500).body("UNEXPECTED_EXCEPTION: " + e);
     }
 
     /**
+     * CustomException 적용
+     * @return "message": "공개방은 비밀번호를 입력할 수 없습니다.",
+     * "httpStatus": "BAD_REQUEST"
+     */
+    @ExceptionHandler(CustomException.class)
+    protected ResponseEntity<?> handlerCustomException(CustomException e) {
+        return new ResponseEntity<>(new ErrorResponse(e.getErrorCode()), e.getErrorCode().getStatus());
+    }
+
+    /**
+     * [Exception] API 호출 시 요청이 유효하지 않은 경우 (@Valid)
+     * "message": "방 제목은 4자 이상 15자 이하여야 합니다.",
+     * "httpStatus": "BAD_REQUEST"
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            stringBuilder.append(fieldError.getDefaultMessage());
+        }
+
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_VALID_ERROR, String.valueOf(stringBuilder));
+        return new ResponseEntity<>(response, ex.getStatusCode());
+
+    }
+    /**
      * [Exception] API 호출 시 'Header' 내에 데이터 값이 유효하지 않은 경우
      *
-     * @param ex MissingRequestHeaderException
-     * @return ResponseEntity<ErrorResponse>
      */
     @ExceptionHandler(MissingRequestHeaderException.class)
     protected ResponseEntity<ErrorResponse> handleMissingRequestHeaderException(MissingRequestHeaderException ex) {
@@ -153,22 +164,6 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleJsonProcessingException(JsonProcessingException ex) {
         log.error("handleJsonProcessingException", ex);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.REQUEST_BODY_MISSING_ERROR, ex.getMessage());
-        return new ResponseEntity<>(response, HTTP_STATUS_OK);
-    }
-
-
-    // ==================================================================================================================
-
-    /**
-     * [Exception] 모든 Exception 경우 발생
-     *
-     * @param ex Exception
-     * @return ResponseEntity<ErrorResponse>
-     */
-    @ExceptionHandler(Exception.class)
-    protected final ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
-        log.error("Exception", ex);
-        final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HTTP_STATUS_OK);
     }
 }

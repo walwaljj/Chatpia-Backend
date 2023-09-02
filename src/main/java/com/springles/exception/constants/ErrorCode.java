@@ -19,7 +19,7 @@ public enum ErrorCode {
     JACKSON_PROCESS_ERROR(HttpStatus.BAD_REQUEST, "com.fasterxml.jackson.core Exception"),
     NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "요청한 리소스가 존재하지 않습니다."),
     NULL_POINT_ERROR(HttpStatus.NOT_FOUND, "Null Point Exception"),
-    NOT_VALID_ERROR(HttpStatus.NOT_FOUND, " @RequestBody 및 @RequestParam, @PathVariable 값이 유효하지 않습니다."),
+    NOT_VALID_ERROR(HttpStatus.BAD_REQUEST, " @RequestBody 및 @RequestParam, @PathVariable 값이 유효하지 않습니다."),
     NOT_VALID_HEADER_ERROR(HttpStatus.NOT_FOUND, "Header에 데이터가 존재하지 않습니다. "),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 오류가 발생했습니다."),
     NOT_AUTHORIZED_CONTENT(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
