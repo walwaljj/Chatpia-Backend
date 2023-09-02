@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layouts/basic}">
 
 <div layout:fragment="content">
+    <div th:insert="fragments/header :: header"></div>
     <div class="form-container">
         <div class="form-item">
             <form th:action="@{/v1/login}" th:object="${memberDto}" method="post" >

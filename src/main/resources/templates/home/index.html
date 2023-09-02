@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layouts/basic}">
 <div layout:fragment="content">
+    <div th:insert="fragments/header::header"></div>
     <div class="index-container">
         <div class="row">
             <div class="col-3 center p-1 m-5">
