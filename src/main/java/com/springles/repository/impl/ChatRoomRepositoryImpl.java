@@ -3,6 +3,8 @@ package com.springles.repository.impl;
 import com.springles.domain.constants.ChatRoomCode;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.entity.ChatRoom;
+import com.springles.exception.CustomException;
+import com.springles.exception.constants.ErrorCode;
 import com.springles.repository.custom.ChatRoomCustomRepository;
 import com.springles.repository.support.Querydsl4RepositorySupport;
 import jakarta.transaction.Transactional;
@@ -44,7 +46,15 @@ public class ChatRoomRepositoryImpl extends Querydsl4RepositorySupport implement
             .orderBy(chatRoom.capacity.subtract(chatRoom.head).asc())
             .fetch()
             .stream().map(ChatRoomResponseDto::of).collect(Collectors.toList());
-        
+
+    }
+
+    @Override
+    public ChatRoom findByIdCustom(Long roomId) {
+        return Optional.ofNullable(selectFrom(chatRoom)
+            .where(chatRoom.id.eq(roomId))
+            .fetchOne()
+        ).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
     }
 
 }

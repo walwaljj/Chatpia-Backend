@@ -11,4 +11,6 @@ public interface ChatRoomCustomRepository {
     List<ChatRoomResponseDto> findAllByOwnerId(Long ownerId); //방장 이름으로 chatRoom 찾기에서 사용
     List<ChatRoomResponseDto> findAllByCloseFalseAndState(ChatRoomCode chatRoomCode);
 
+    ChatRoom findByIdCustom(Long roomId);
+
 }

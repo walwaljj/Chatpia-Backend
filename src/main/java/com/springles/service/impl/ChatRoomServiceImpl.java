@@ -43,7 +43,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     // 채팅방 생성
     @Transactional
     @Override
-    public ChatRoomResponseDto createChatRoom(ChatRoomReqDTO chatRoomReqDTO, Long id) {
+    public ChatRoom createChatRoom(ChatRoomReqDTO chatRoomReqDTO, Long id) {
         // request 자체가 빈 경우
         if (chatRoomReqDTO == null) {
             throw new CustomException(ErrorCode.REQUEST_EMPTY);
@@ -57,10 +57,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             throw new CustomException(ErrorCode.OPEN_PASSWORD);
         }
 
-        ChatRoom chatRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO, id));
-
         // 채팅방 생성하기
-        return ChatRoomResponseDto.of(chatRoom);
+        return chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO, id));
     }
 
     /**

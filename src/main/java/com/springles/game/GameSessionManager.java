@@ -10,6 +10,7 @@ import com.springles.domain.entity.Member;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
+import com.springles.repository.ChatRoomJpaRepository;
 import com.springles.repository.GameSessionRedisRepository;
 import com.springles.repository.MemberJpaRepository;
 import com.springles.repository.PlayerRedisRepository;
@@ -31,9 +32,11 @@ public class GameSessionManager {
     private final PlayerRedisRepository playerRedisRepository;
     private final RoleManager roleManager;
     private final MemberJpaRepository memberJpaRepository;
+    private final ChatRoomJpaRepository chatRoomJpaRepository;
 
     /* 게임 세션 생성 */
-    public void createGame(ChatRoom chatRoom) {
+    public void createGame(Long roomId) {
+        ChatRoom chatRoom = chatRoomJpaRepository.findByIdCustom(roomId);
         gameSessionRedisRepository.save(GameSession.of(chatRoom));
         Member member = memberJpaRepository.findById(chatRoom.getOwnerId())
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));

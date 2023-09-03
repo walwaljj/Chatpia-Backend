@@ -2,10 +2,12 @@ package com.springles.controller.message;
 
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
+import com.springles.domain.constants.ResponseCode;
 import com.springles.domain.entity.Player;
 import com.springles.game.ChatMessage;
 import com.springles.game.GameSessionManager;
 import com.springles.game.MessageManager;
+import com.springles.service.ChatRoomService;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +29,7 @@ public class MessageController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final GameSessionManager gameSessionManager;
     private final MessageManager messageManager;
+    private final ChatRoomService chatRoomService;
 
     // 메세지 전송
     @MessageMapping("/pub/chat/{roomId}")
@@ -38,6 +41,37 @@ public class MessageController {
          * */
         messageManager.sendMessage("/sub/chat/" + roomId, message, roomId,
             accessor.getUser().getName());
+    }
+
+    // 게임 생성
+    @MessageMapping("/pub/gameCreate/{roomId}")
+    public void sendMessage_GameCreate(@DestinationVariable Long roomId) {
+        gameSessionManager.createGame(roomId);
+    }
+
+    // 게임 참여
+    @MessageMapping("/pub/gameJoin/{roomId}")
+    public void sendMessage_GameJoin(SimpMessageHeaderAccessor accessor,
+        @DestinationVariable Long roomId) {
+        String memberName = accessor.getUser().getName();
+        gameSessionManager.addUser(roomId, memberName);
+        messageManager.sendMessage(
+            "/sub/chat/" + roomId,
+            memberName + "님이 입장하셨습니다.",
+            roomId, "admin");
+    }
+
+    // 게임 나가기
+    @MessageMapping("/pub/gameExit/{roomId}")
+    public void sendMessage_GameExit(SimpMessageHeaderAccessor accessor,
+        @DestinationVariable Long roomId) {
+        String memberName = accessor.getUser().getName();
+        gameSessionManager.removePlayer(roomId, memberName);
+        messageManager.sendMessage(
+            "/sub/chat/" + roomId,
+            memberName + "님이 퇴장하셨습니다.",
+            roomId, "admin"
+        );
     }
 
     // 게임 시작
@@ -75,6 +109,8 @@ public class MessageController {
             );
         });
     }
+
+    // 게임 정보 수정?
 
     public String getTimeString() {
         return new SimpleDateFormat("HH:mm").format(new Date());
