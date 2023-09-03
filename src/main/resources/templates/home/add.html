@@ -3,6 +3,9 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/basic}">
 <div layout:fragment="content">
+    <!-- nav -->
+    <div th:insert="fragments/header :: header"></div>
+
     <div class="form-container">
         <div class="form-item">
             <form id="form">
@@ -50,7 +53,6 @@
                         $('#password').attr('disabled',true).val("");
                     }
                 });
-
                 // ========================= 채팅방 생성 버튼 ==================================================================
                 $('.submit_btn').click((e) => {
                     const title = $('#title').val();
