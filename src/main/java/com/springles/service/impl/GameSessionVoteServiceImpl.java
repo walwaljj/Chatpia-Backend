@@ -3,6 +3,7 @@ package com.springles.service.impl;
 import com.springles.config.TimeConfig;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
+import com.springles.domain.dto.message.DayDiscussionMessage;
 import com.springles.domain.dto.vote.GameSessionVoteRequestDto;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
@@ -121,6 +122,15 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
     private void publishRedis(Long roomId, Map<Long, Long> vote) {
 
+    }
+
+    private void publishMessage(Long roomId, Map<Long, Long> vote) {
+        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+
+        if (gameSession.getGamePhase() == GamePhase.DAY_DISCUSSION) {
+            DayDiscussionMessage dayDiscussionMessage =
+                    new DayDiscussionMessage(roomId, getSuspiciousList(gameSession, vote));
+        }
     }
 
     // 후보자 반환 메소드

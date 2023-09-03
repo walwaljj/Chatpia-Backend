@@ -171,4 +171,8 @@ public class GameSessionManager {
         return memberJpaRepository.findByMemberName(memberName)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
+
+    public boolean existRoomByRoomId(Long roomId) {
+        return gameSessionRedisRepository.existsById(roomId);
+    }
 }
