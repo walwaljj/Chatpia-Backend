@@ -1,5 +1,6 @@
 package com.springles.domain.entity;
 
+import com.springles.config.TimeConfig;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRoleNum;
 import jakarta.persistence.EnumType;
@@ -7,9 +8,12 @@ import jakarta.persistence.Enumerated;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -35,12 +39,17 @@ public class GameSession {
 
     private int phaseCount; // 게임의 투표 턴 수
 
+    private int day; // 진행된 밤의 수
+
+    private LocalDateTime timer; // 현재 진행 중인 단계 타이머
+
     public static GameSession of(ChatRoom chatRoom) {
         return GameSession.builder()
             .roomId(chatRoom.getId())
             .hostId(chatRoom.getOwnerId())
             .gamePhase(GamePhase.READY)
             .phaseCount(0)
+            .day(1)
             .build();
     }
 
@@ -52,6 +61,7 @@ public class GameSession {
         this.alivePolice += gameRoleNum.getPolice();
         this.gamePhase = GamePhase.START;
         this.phaseCount = 0;
+        this.day = 1;
         return this;
     }
 
@@ -62,10 +72,21 @@ public class GameSession {
         this.aliveDoctor = 0;
         this.alivePolice = 0;
         this.phaseCount = 0;
+        this.day = 0;
     }
 
     public void changeHost(long playerId) {
         this.hostId = playerId;
+    }
+
+    public void changePhase(GamePhase phase, int timer) {
+        this.gamePhase = phase;
+        this.phaseCount++;
+        this.timer = TimeConfig.getFinTime(timer);
+    }
+
+    public void passADay() {
+        this.day++;
     }
 
 }
