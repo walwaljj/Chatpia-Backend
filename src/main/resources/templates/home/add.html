@@ -4,19 +4,24 @@
       layout:decorate="~{layouts/basic}">
 
 <div layout:fragment="content">
+    <!-- nav -->
+    <div th:insert="fragments/header :: header"></div>
+
     <div class="form-container">
         <div class="form-item">
 
-            <form th:action="@{/v1/add}" th:object="${requestDto}" method="post" >
+            <form th:action="@{/v1/add}" th:object="${requestDto}" method="post">
                 <table class="table">
                     <tbody>
                     <div>
                         <label for="title">방 제목</label>
-                        <input type="text" id="title" th:field="*{title}" class="title form-control" placeholder="이름을 입력하세요">
+                        <input type="text" id="title" th:field="*{title}" class="title form-control"
+                               placeholder="이름을 입력하세요">
                     </div>
                     <div>
                         <label for="capacity">인원</label>
-                        <input type="text" id="capacity" th:field="*{capacity}" class="capacity form-control" placeholder="인원을 입력하세요">
+                        <input type="text" id="capacity" th:field="*{capacity}" class="capacity form-control"
+                               placeholder="인원을 입력하세요">
                     </div>
                     <div class="checkbox">
                         <input type="checkbox"
@@ -27,10 +32,11 @@
                     </div>
                     <div>
                         <label for="password">비밀번호</label>
-                        <input type="text" id="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
+                        <input type="text" id="password" th:field="*{password}" class="form-control"
+                               placeholder="비밀번호를 입력하세요">
                     </div>
                     <div>
-                        <button id = "Send_Request" class="submit_btn" type="submit">등록</button>
+                        <button id="Send_Request" class="submit_btn" type="submit">등록</button>
                     </div>
                 </table>
                 <!-- javscript 코드, 비밀번호 input 입력 불가능이 기본 사항입니다. -->
@@ -42,38 +48,38 @@
         <script th:inline="javascript">
 
             // ======================== 비밀방 체크박스와 비밀번호 설정 =====================================================
-            $('#password').attr('disabled',true);
-            $('#close').on('click', function(){
+            $('#password').attr('disabled', true);
+            $('#close').on('click', function () {
                 const closeBtn = document.getElementById('close');
-                if( closeBtn.checked ){
+                if (closeBtn.checked) {
                     $('#password').removeAttr('disabled')
                 } else {
-                    $('#password').attr('disabled',true).val("");
+                    $('#password').attr('disabled', true).val("");
                 }
             });
 
             // ===================== 채팅방 생성 버튼 click ==============================================================
             $(function () {
-            $('.submit_btn').click((e) => {
-                const title = $('#title').val();
-                const capacity = $('#capacity').val();
-                const closeBtn = document.getElementById('close');
-                const password = $('#password').val();
+                $('.submit_btn').click((e) => {
+                    const title = $('#title').val();
+                    const capacity = $('#capacity').val();
+                    const closeBtn = document.getElementById('close');
+                    const password = $('#password').val();
 
-                if (title === '') {
-                    alert('방 제목을 입력해주세요');
-                    e.preventDefault();
-                }
-                if (capacity === '') {
-                    alert('인원은 5명에서 10명 사이여야 합니다.');
-                    e.preventDefault();
-                }
-                if (closeBtn.checked && password === '') {
-                    alert('비밀번호를 입력해주세요');
-                    e.preventDefault();
-                }
+                    if (title === '') {
+                        alert('방 제목을 입력해주세요');
+                        e.preventDefault();
+                    }
+                    if (capacity === '') {
+                        alert('인원은 5명에서 10명 사이여야 합니다.');
+                        e.preventDefault();
+                    }
+                    if (closeBtn.checked && password === '') {
+                        alert('비밀번호를 입력해주세요');
+                        e.preventDefault();
+                    }
+                });
             });
-        });
         </script>
     </th:block>
 </div>
