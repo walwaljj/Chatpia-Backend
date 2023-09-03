@@ -1,6 +1,9 @@
 package com.springles.game;
 
+import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
+import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
+import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Member;
@@ -37,14 +40,43 @@ public class GameSessionManager {
         addUser(chatRoom.getId(), member.getMemberName());
     }
 
+    /* 게임 세션 수정 */
+
+    /* 이름으로 채팅방 찾기(페이징) */
+
+
+    /* 방장 닉네임으로 채팅방 찾기 (페이징) */
+
+    /* 방Id로 채팅방 찾기 */
+
+    /* 닉네임과 제목 통합으로 채팅방 찾기 (페이징) */
+
+    /* 모든 채팅방 조회 */
+
+    /* 채팅방 조건 조회 */
+
+    /* 빠른 입장 */
+
+    /* 투표 세션마다 투표 대상 플레이어 리스트 조회 */
+    /*
+     * 전체 투표 : 전체
+     * 경찰 투표 : 전체
+     * 마피아 투표 : 마피아를 제외한 전체
+     * 의사 투표 : 전체
+     * */
+
     /* 게임 시작 */
-    public List<Player> startGame(Long roomId) {
+    public List<Player> startGame(Long roomId, String memberName) {
+        GameSession gameSession = findGameByRoomId(roomId);
+        Player player = findPlayerByMemberName(memberName);
+        if (!Objects.equals(gameSession.getHostId(), player.getMemberId())) {
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED_CONTENT);
+        }
         List<Player> players = findPlayersByRoomId(roomId);
         if (players.size() < 5 || players.size() > 10) {
             throw new CustomException(ErrorCode.PLAYER_HEAD_ERROR);
         }
         roleManager.assignRole(players);
-        GameSession gameSession = findGameByRoomId(roomId);
         gameSessionRedisRepository.save(gameSession.start(players.size()));
         return players;
     }
@@ -103,6 +135,19 @@ public class GameSessionManager {
         playerRedisRepository.save(Player.of(member.getId(), roomId, memberName));
     }
 
+    /* 게임 정보 업데이트 */
+    public void updateGame(Long roomId, String memberName, ChatRoomUpdateReqDto chatRoomUpdateReqDto) {
+        GameSession gameSession = findGameByRoomId(roomId);
+        if (!gameSession.getGamePhase().equals(GamePhase.READY)) {
+            // 게임 상태 익셉션 -> 게임 중 정보 변경 불가
+        }
+        Player player = findPlayerByMemberName(memberName);
+        if (!gameSession.getHostId().equals(player.getMemberId())) {
+            // 권한 익셉션 -> 방장만 정보를 변경할 수 있음
+        }
+
+    }
+
     public GameSession findGameByRoomId(Long roomId) {
         return gameSessionRedisRepository.findById(roomId)
             .orElseThrow(() -> new CustomException(ErrorCode.GAME_NOT_FOUND));
@@ -126,5 +171,4 @@ public class GameSessionManager {
         return memberJpaRepository.findByMemberName(memberName)
             .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
-
 }
