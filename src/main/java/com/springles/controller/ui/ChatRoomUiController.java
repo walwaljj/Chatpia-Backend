@@ -36,15 +36,14 @@ public class ChatRoomUiController {
 
     // 채팅방 만들기 페이지 (GET)
     @GetMapping("add")
-    public String writeRoom(Model model, ChatRoomReqDTO requestDto) {
-        model.addAttribute("requestDto", requestDto);
+    public String chatroom() {
         return "home/add";
     }
 
-
     // 채팅방 만들기 (POST)
     @PostMapping("add")
-    public String createRoom(@ModelAttribute("requestDto") @Valid ChatRoomReqDTO requestDto, HttpServletRequest request){
+    public String createRoom(){
+//    public String createRoom(@ModelAttribute("requestDto") @Valid ChatRoomReqDTO requestDto, HttpServletRequest request){
 
         // 쿠키에서 accessToken 가져오기
 //        Cookie[] cookies = request.getCookies();
@@ -53,12 +52,7 @@ public class ChatRoomUiController {
 //        Long id = info.getId();
 //        log.info(String.valueOf(id));
 //        chatRoomService.createChatRoom(requestDto,id);
-
-        String accessToken = (String) request.getAttribute("accessToken");
-        MemberInfoResponse info = memberUiController.info(accessToken);
-        Long id = info.getId();
-        log.info(String.valueOf(id));
-        chatRoomService.createChatRoom(requestDto,id);
+//        chatRoomService.createChatRoom(requestDto,id);
 
         return "redirect:index";
     }
