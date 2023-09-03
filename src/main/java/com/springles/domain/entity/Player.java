@@ -28,6 +28,14 @@ public class Player {
 
     private String memberName;
 
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
+    public void setRole(GameRole role) {
+        this.role = role;
+    }
+
     public static Player of(Long memberId, Long roomId, String memberName) {
         return Player.builder()
             .memberId(memberId)
