@@ -2,7 +2,6 @@ package com.springles.game;
 
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
-import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.domain.entity.GameSession;

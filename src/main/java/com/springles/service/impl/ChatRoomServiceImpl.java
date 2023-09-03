@@ -5,7 +5,6 @@ import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.constants.ChatRoomCode;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
-import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.domain.entity.Member;
 import com.springles.exception.CustomException;
@@ -25,9 +24,7 @@ import static com.springles.domain.dto.chatroom.ChatRoomReqDTO.createToEntity;
 import static com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto.updateToEntity;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
