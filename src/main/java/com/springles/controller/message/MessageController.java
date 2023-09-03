@@ -39,17 +39,25 @@ public class MessageController {
     public void sendMessage(SimpMessageHeaderAccessor accessor, String message,
         @DestinationVariable Long roomId) {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+        Player player = gameSessionManager.findPlayerByMemberName(accessor.getUser().getName());
+        // 관전자는 관전자들끼리만 채팅이 가능
+        if (player.getRole().equals(GameRole.OBSERVER)) {
+            messageManager.sendMessage("/sub/chat/"+roomId+"/"+"observer", message, roomId,
+                player.getMemberName());
+            return;
+        }
+        // 밤 투표시간에는 마피아끼리만 채팅 가능
         if (gameSession.getGamePhase().equals(GamePhase.NIGHT_VOTE)) {
-            if (gameSessionManager.findPlayerByMemberName(
-                accessor.getUser().getName()).getRole().equals(GameRole.MAFIA))
+            if (player.getRole().equals(GameRole.MAFIA))
             {
                 messageManager.sendMessage("/sub/chat/"+roomId+"/"+"mafia", message, roomId,
-                    accessor.getUser().getName());
+                    player.getMemberName());
             }
             return;
         }
+        // 위의 모든 조건이 아니라면 방에 참여한 모두에게 메시지 전송
         messageManager.sendMessage("/sub/chat/" + roomId, message, roomId,
-            accessor.getUser().getName());
+            player.getMemberName());
     }
 
     // 게임 생성
