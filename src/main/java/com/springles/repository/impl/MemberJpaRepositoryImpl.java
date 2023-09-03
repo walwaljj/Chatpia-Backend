@@ -5,17 +5,17 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import com.springles.domain.entity.Member;
 import com.springles.domain.entity.QMember;
-import com.springles.repository.custom.MemberCustomRepository;
+import com.springles.repository.custom.MemberJpaRepositoryCustom;
 import com.springles.repository.support.Querydsl4RepositorySupport;
 import io.micrometer.common.util.StringUtils;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.springles.domain.entity.QMember.member;
 
-public class MemberRepositoryImpl extends Querydsl4RepositorySupport implements MemberCustomRepository {
-    public MemberRepositoryImpl() {
+public class MemberJpaRepositoryImpl extends Querydsl4RepositorySupport implements
+    MemberJpaRepositoryCustom {
+    public MemberJpaRepositoryImpl() {
         super(Member.class);
     }
 

@@ -5,7 +5,7 @@ import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
-import com.springles.repository.custom.ChatRoomCustomRepository;
+import com.springles.repository.custom.ChatRoomJpaRepositoryCustom;
 import com.springles.repository.support.Querydsl4RepositorySupport;
 import jakarta.transaction.Transactional;
 import java.util.stream.Collectors;
@@ -20,10 +20,10 @@ import static com.springles.domain.entity.QChatRoom.chatRoom;
 @Repository
 @Transactional
 @Slf4j
-public class ChatRoomRepositoryImpl extends Querydsl4RepositorySupport implements
-    ChatRoomCustomRepository {
+public class ChatRoomJpaRepositoryImpl extends Querydsl4RepositorySupport implements
+    ChatRoomJpaRepositoryCustom {
 
-    public ChatRoomRepositoryImpl() {
+    public ChatRoomJpaRepositoryImpl() {
         super(ChatRoom.class);
     }
 
