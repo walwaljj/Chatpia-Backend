@@ -1,17 +1,22 @@
 package com.springles.controller.api;
 
+import com.springles.controller.ui.MemberUiController;
 import com.springles.domain.constants.ResponseCode;
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
+import com.springles.domain.dto.member.MemberCreateRequest;
+import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.domain.dto.response.ResResult;
 import com.springles.service.ChatRoomService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,18 +25,27 @@ import org.springframework.web.bind.annotation.*;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
+    private final MemberUiController memberUiController;
 
     // 채팅방 생성
     @Operation(summary = "채팅방 생성", description = "채팅방 생성")
-    @PostMapping(value = "/chatrooms", produces = "application/json;charset=UTF-8")
-    public ResponseEntity<ResResult> createChatRoom(@Valid @RequestBody ChatRoomReqDTO chatRoomReqDTO){
+    @PostMapping(value = "/chatrooms")
+    public ResponseEntity<ResResult> createChatRoom(@Valid @RequestBody ChatRoomReqDTO chatRoomReqDTO, HttpServletRequest request, Authentication auth){
+
+        String accessToken = (String) request.getAttribute("accessToken");
+        MemberInfoResponse info = memberUiController.info(accessToken);
+        Long id = info.getId();
+
+        log.info("MemberCreateRequest.getMemberName() = {}",((MemberCreateRequest) auth.getPrincipal()).getMemberName()); // 인증 된 멤버 이름
+        log.info("MemberCreateRequest.isAuthenticated() = {}", auth.isAuthenticated()); // 인증 되었다면 true
+
         // 응답 메시지 return
         ResponseCode responseCode = ResponseCode.CHATROOM_CREATE;
         return new ResponseEntity<>(ResResult.builder()
                 .responseCode(responseCode)
                 .code(responseCode.getCode())
                 .message(responseCode.getMessage())
-                .data(chatRoomService.createChatRoom(chatRoomReqDTO, 1L))
+                .data(chatRoomService.createChatRoom(chatRoomReqDTO, id))
                 .build(), HttpStatus.OK);
     }
 
