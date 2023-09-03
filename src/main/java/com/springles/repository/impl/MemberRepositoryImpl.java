@@ -18,12 +18,12 @@ public class MemberRepositoryImpl extends Querydsl4RepositorySupport implements 
     public MemberRepositoryImpl() {
         super(Member.class);
     }
+
     @Override
-    public Optional<List<Member>> findAllByMemberNameContainingIgnoreCase(String nickname) {
-        List<Member> memberList = selectFrom(member)
-                .where(member.memberName.eq(nickname))
-                .fetch();
-        return Optional.ofNullable(memberList);
+    public List<Member> findAllByMemberNameContainingIgnoreCase(String nickname) {
+        return selectFrom(member)
+            .where(member.memberName.eq(nickname))
+            .fetch();
     }
 
     public static Predicate searchMemberNameContains(String nameContains) {
@@ -33,7 +33,7 @@ public class MemberRepositoryImpl extends Querydsl4RepositorySupport implements 
         builder.and(qmember.memberName.eq(nameContains));
 
         if (StringUtils.isNotEmpty(nameContains)) {
-            builder = builder.and(qmember.memberName.containsIgnoreCase(nameContains));
+            builder.and(qmember.memberName.containsIgnoreCase(nameContains));
         }
 
         return builder;
