@@ -3,6 +3,7 @@ package com.springles.service.impl;
 import com.springles.config.TimeConfig;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
+import com.springles.domain.dto.message.DayDiscussionMessage;
 import com.springles.domain.dto.vote.GameSessionVoteRequestDto;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
@@ -123,44 +124,71 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
     }
 
-//    private List<String> getSuspiciousList(GameSession gameSession, Map<Long, Long> voteResult) {
-//        List<String> suspiciousList = new ArrayList<>();
-//
-//        // <투표받은 사람, 투표수>로 정리
-//        Map<Long, Integer> voteNum = new HashMap<Long, Integer>();
-//        int voteCnt = 0; // 총 투표 수
-//        for (Long vote : voteResult.values()) {
-//            // 투표한 결과가 없을 때
-//            if (vote == null) {
-//                continue;;
-//            }
-//            voteCnt++;
-//            voteNum.put(vote, voteNum.getOrDefault(vote, 0) + 1); // 투표 수 업데이트
-//        }
-//
-//        // 의심되는 사람 찾기
-//        int alivePlayer = gameSession.getAliveCivilian() +
-//                gameSession.getAliveDoctor() +
-//                gameSession.getAlivePolice() +
-//                gameSession.getAliveMafia();
-//        if (voteCnt > (alivePlayer - 1) / 2) {
-//            List<Long> suspects = new ArrayList<>(voteNum.keySet());
-//            // 투표 수 오름차순
-//            Collections.sort(suspects, (o1, o2) -> voteNum.get(o2).compareTo(voteNum.get(o1)));
-//
-//            List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId()); // 게임에 참여 중인 player 정보
-//            Map<Long, Player> playerMap = players.stream().collect(Collectors.toMap(Player::getMemberId, p -> p));
-//
-//            int voteMax = voteNum.get(suspects.get(0)); // 최다 득표수
-//            for (Long suspect : suspects) {
-//
-//            }
-//        }
-//    }
+    private void publishMessage(Long roomId, Map<Long, Long> vote) {
+        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+
+        if (gameSession.getGamePhase() == GamePhase.DAY_DISCUSSION) {
+            DayDiscussionMessage dayDiscussionMessage =
+                    new DayDiscussionMessage(roomId, getSuspiciousList(gameSession, vote));
+        }
+    }
+
+    // 후보자 반환 메소드
+    private List<Long> getSuspiciousList(GameSession gameSession, Map<Long, Long> voteResult) {
+        List<Long> suspiciousList = new ArrayList<>();
+
+        // <투표받은 사람, 투표수>로 정리
+        Map<Long, Integer> voteNum = new HashMap<Long, Integer>();
+        int voteCnt = 0; // 총 투표 수
+        for (Long vote : voteResult.values()) {
+            // 투표한 결과가 없을 때
+            if (vote == null) {
+                continue;
+            }
+            voteCnt++;
+            voteNum.put(vote, voteNum.getOrDefault(vote, 0) + 1); // 투표 수 업데이트
+        }
+
+        // 의심되는 사람 찾기
+        int alivePlayer = gameSession.getAliveCivilian() +
+                gameSession.getAliveDoctor() +
+                gameSession.getAlivePolice() +
+                gameSession.getAliveMafia();
+
+        if (voteCnt > (alivePlayer - 1) / 2) { // 과반수 이상이 투표에 참여했을 때
+            List<Long> suspects = new ArrayList<>(voteNum.keySet()); // 투표를 한 번이라도 받은 사람들 정리
+            // 투표 수 오름차순으로 정리
+            Collections.sort(suspects, (o1, o2) -> voteNum.get(o2).compareTo(voteNum.get(o1)));
+
+            List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId()); // 게임에 참여 중인 player 정보
+            // <memberId, Player> 객체로 변환해서 저장
+            Map<Long, Player> playerMap = players.stream().collect(Collectors.toMap(Player::getMemberId, p -> p));
+
+            int voteMax = voteNum.get(suspects.get(0)); // 최다 득표수
+            // 투표를 한 번이라도 받은 사람들의 오름차순인 suspects를 바탕으로
+            for (Long suspect : suspects) {
+                // suspect의 투표수가 최대 투표수가 아니면
+                if (voteNum.get(suspect) != voteMax) {
+                    break;
+                }
+                // 만약 최대 투표수를 받은 플레이어가 살아 있다면 후보군에 넣기
+                if (playerMap.get(suspect).isAlive()) {
+                    suspiciousList.add(suspect);
+                }
+            }
+            // 후보자가 두 명 이상이면 패스 (아무도 죽지 않음)
+            if (suspiciousList.size() >= 2) {
+                suspiciousList.clear();
+            }
+        }
+        return suspiciousList;
+    }
+
     private Long getEliminationPlayer(GameSession gameSession, Map<Long, Long> voteResult) {
         // 최다 득표수 플레이어를 죽이는 메소드
         Long deadPlayerId = null;
         Map<Long, Integer> voteNum = new HashMap<>();
+        // 투표의 개수
         int voteCnt = 0;
         for (Long vote : voteResult.values()) {
             if (vote == null) { // 투표 결과가 없을 때
