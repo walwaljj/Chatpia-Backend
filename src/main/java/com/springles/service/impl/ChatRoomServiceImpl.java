@@ -49,13 +49,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             throw new CustomException(ErrorCode.REQUEST_EMPTY);
         }
         // 비밀방 선택 - 비밀번호 입력하지 않은 경우 오류 발생
-        if (chatRoomReqDTO.getClose() && chatRoomReqDTO.getPassword() == null) {
-            throw new CustomException(ErrorCode.PASSWORD_EMPTY);
-        }
+
+        if (chatRoomReqDTO.getClose() && chatRoomReqDTO.getPassword().isEmpty()) throw new CustomException(ErrorCode.PASSWORD_EMPTY);
         // 공개방 선택 - 비밀번호 입력한 경우라면
-        if (!chatRoomReqDTO.getClose() && chatRoomReqDTO.getPassword() != null) {
-            throw new CustomException(ErrorCode.OPEN_PASSWORD);
-        }
+        if (!chatRoomReqDTO.getClose() && !chatRoomReqDTO.getPassword().isEmpty()) throw new CustomException(ErrorCode.OPEN_PASSWORD);
+
+        ChatRoom chatRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO, id));
 
         // 채팅방 생성하기
         return chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO, id));
