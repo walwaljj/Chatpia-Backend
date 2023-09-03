@@ -4,14 +4,18 @@
       layout:decorate="~{layouts/basic}">
 
 <div layout:fragment="content">
+    <!-- nav -->
+    <div th:insert="fragments/header :: header"></div>
+
     <div class="form-container">
         <div class="form-item">
-            <form th:action="@{/v1/signup}"  th:object="${memberDto}" method="post" >
+            <form th:action="@{/v1/signup}" th:object="${memberDto}" method="post">
                 <table class="table">
                     <tbody>
                     <div>
                         <label for="memberName">아이디</label>
-                        <input type="text" id="memberName" th:field="*{memberName}" class="form-control" placeholder="아이디를 입력하세요">
+                        <input type="text" id="memberName" th:field="*{memberName}" class="form-control"
+                               placeholder="아이디를 입력하세요">
                     </div>
                     <div>
                         <label for="email">이메일</label>
@@ -19,11 +23,13 @@
                     </div>
                     <div>
                         <label for="password">비밀번호</label>
-                        <input type="text" id="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
+                        <input type="text" id="password" th:field="*{password}" class="form-control"
+                               placeholder="비밀번호를 입력하세요">
                     </div>
                     <div>
                         <label for="passwordConfirm">비밀번호 확인</label>
-                        <input type="text" id="passwordConfirm" th:field="*{passwordConfirm}" class="form-control" placeholder="비밀번호 확인">
+                        <input type="text" id="passwordConfirm" th:field="*{passwordConfirm}" class="form-control"
+                               placeholder="비밀번호 확인">
                     </div>
                     <div>
                         <button class="submit_btn" type="submit">등록</button>

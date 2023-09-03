@@ -1,31 +1,109 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       lang="en" layout:decorate="~{layouts/basic}">
 
+<div layout:fragment="header">
+    <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #666666; height: 10vh;">
+        <!--        <div sec:authorize="isAuthenticated()">-->
+        <a class="navbar-brand" href="#">[[${chatroom.title}]]</a>
+
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
+            <div class="form-inline my-2 my-lg-0">
+                <a class="nav-link text-white" onclick="openRoomDetail()">방 정보</a>
+                <!-- 방 정보 모달-->
+                <div class="modal fade" id="roomDetailModal" tabindex="-1" aria-labelledby="roomDetailModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="roomDetailModalLabel">방 정보</h1>
+                                <!--  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+                            </div>
+                            <div class="modal-body" th:object="${chatroom}">
+                                <form method="post" action="#">
+
+                                    <div class="row">
+                                        <div class="col">
+                                            방 제목
+                                            <input type="text" class="form-control" id="room-title" name="room-title" th:value="${chatroom.title}">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            공개 여부
+                                            <input type="button" class="form-control" id="room-close" name="room-close" value="공개방"/>
+                                            <input type="button" class="form-control" id="room-open" name="room-open" value="비밀방">
+                                        </div>
+                                    </div>
+                                    <div class="row" th:if="${chatroom.getPassword() != null}">
+                                        <div class="col">
+                                            비밀 번호
+                                            <input type="text" class="form-control" id="room-password" name="room-password" th:value="${chatroom.getPassword()}">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            인원 수
+                                            <input type="text" class="form-control" id="room-capacity" name="room-capacity" th:value="${chatroom.getCapacity()}">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            초대 코드
+                                            <p class="form-control" id="room-invite" name="room-invite"></p>
+                                        </div>
+                                    </div>
+
+                                    <!-- 공유하기-->
+                                    <div class="row mb-3">
+                                        <div class="col mx-auto">
+                                            <div class="sns">
+                                                <a href="#n" id="btnKakao" onclick="fn_sendFB('kakaotalk');return false;"
+                                                   class="kakaotalk" target="_self"
+                                                   title="카카오톡 새창열림"><span class="skip">카카오톡</span></a>
+                                                <a href="#n" onclick="handleCopyClipBoard();return false;" th:field="*{id}"
+                                                   class="clipboard" target="_self"
+                                                   title="클립보드 복사"><span class="skip">복사하기</span></a>
+                                            <!--<img id="preview"  alt="Preview" class="rounded-circle shadow" width="200px" height="200px">-->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <button class="btn btn-primary" type="submit">저장</button>
+                                        </div>
+                                        <div class="col-auto">
+                                            <button class="btn btn-primary" type="submit">닫기</button>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 모달 끝 -->
+                <div class="nav-item">
+                    <a class="nav-link text-white" href="#"
+                       th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).WAITING.getValue()}">게임시작</a>
+                    <a class="nav-link text-white" href="#"
+                       th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).PLAYING.getValue()}">내 직업 설명</a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link text-white" href="#">게임룰</a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link text-white" onclick="location.href='/v1/index'">나가기</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+
 <div layout:fragment="content">
-    <!------------navigation ---------------------->
-<!--    <div class="nav-container" >-->
-<!--        <div class="nav-left">-->
-<!--            <p class="nav" aria-current="page" href="#">방 제목입니다</p>-->
-<!--        </div>-->
-<!--        <div class="nav-left">-->
-<!--            <a class="nav-link active" aria-current="page" onclick="openRoomDetail()">!!</a>-->
-<!--        </div>-->
-<!--        <div class="nav-right">-->
-<!--            <ul class="nav justify-content-end">-->
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link active" aria-current="page" href="#">게임시작</a>-->
-<!--                </li>-->
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link" href="#">게임룰</a>-->
-<!--                </li>-->
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link" href="#">나가기</a>-->
-<!--                </li>-->
-<!--            </ul>-->
-<!--        </div>-->
-<!--    </div>-->
 
     <div class="row" style="border-radius: 10px;
     border: solid 1px silver;
@@ -53,92 +131,121 @@
                     <a href="/chat"></a>
                     <p id="response"></p>
                 </div>
-            <!---------채팅 입력 input ----------------->
+                <!---------채팅 입력 input ----------------->
                 <form class="container row" id="message-form">
                     <input class="chat_input_ui col-11" style="margin:0;" type="text" id="message"/>
-                    <button class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px" type="submit">보내기</button>
+                    <button class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px" type="submit">보내기
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-<script src="/js/stomp.js"></script>
-<script type="text/javascript">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+    <script src="/js/stomp.js"></script>
+    <script type="text/javascript">
 
-    window.onload = function () {
-        connect();
-    };
+        window.onload = function () {
+            connect();
+        };
 
-    let stompClient = null;
-    const pathname = window.location.pathname;
-    const roomId = parseInt(pathname.split("/")[2]);
-    const nickname = decodeURI(pathname.split("/")[3]);
+        let stompClient = null;
+        const pathname = window.location.pathname;
+        const roomId = parseInt(pathname.split("/")[2]);
+        const nickname = decodeURI(pathname.split("/")[3]);
 
-    function getRoomName() {
-        fetch(`/chat/rooms/${roomId}/name`).then((response) => {
-            response.json().then((responseBody) => {
-                console.log(responseBody);
-                document.getElementById('room-name').innerHTML = responseBody.roomName;
-            })
-        });
-    }
-
-    function connect() {
-        getRoomName();
-        // 최초의 연결을 위한 URL은 동일하게 ws://localhost:8080/chatting 으로
-        const socket = new WebSocket('ws://localhost:8080/chatting');
-        // Stomp.over() 를 사용해 STOMP 통신을 할것이라 지정
-        stompClient = Stomp.over(socket);
-        stompClient.connect({}, function(frame) {
-            console.log('Connected: ' + frame);
-            // subscribe 메소드를 통해 /topic/${roomId} 에 구독했음을 확인
-            // roomId 의 경우 어떤 경로로 들어왔는지에 따라 바뀌는 동작이며, 후에 서버에서 메시지를 전달할때 클라이언트를 구분하기 위한 URL의 역할
-            // 연결을 위한 엔드포인트는 ws://localhost:8080/chatting 하나로 유지하면서, 연결된 사용자들을 /topic 이라고 하는 경로를 통해 다시 구분
-            stompClient.subscribe(`/topic/${roomId}`, function(message) {
-                receiveMessage(JSON.parse(message.body));
+        function getRoomName() {
+            fetch(`/chat/rooms/${roomId}/name`).then((response) => {
+                response.json().then((responseBody) => {
+                    console.log(responseBody);
+                    document.getElementById('room-name').innerHTML = responseBody.roomName;
+                })
             });
-        });
-    }
+        }
 
-    function receiveMessage(messageOutput) {
-        const response = document.getElementById('response');
-        const p = document.createElement('p');
-        p.style.wordWrap = 'break-word';
-        p.appendChild(document.createTextNode(messageOutput.sender + ": "
-            + messageOutput.message + " (" + messageOutput.time + ")"));
-        response.appendChild(p);
-    }
+        function connect() {
+            getRoomName();
+            // 최초의 연결을 위한 URL은 동일하게 ws://localhost:8080/chatting 으로
+            const socket = new WebSocket('ws://localhost:8080/chatting');
+            // Stomp.over() 를 사용해 STOMP 통신을 할것이라 지정
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                // subscribe 메소드를 통해 /topic/${roomId} 에 구독했음을 확인
+                // roomId 의 경우 어떤 경로로 들어왔는지에 따라 바뀌는 동작이며, 후에 서버에서 메시지를 전달할때 클라이언트를 구분하기 위한 URL의 역할
+                // 연결을 위한 엔드포인트는 ws://localhost:8080/chatting 하나로 유지하면서, 연결된 사용자들을 /topic 이라고 하는 경로를 통해 다시 구분
+                stompClient.subscribe(`/topic/${roomId}`, function (message) {
+                    receiveMessage(JSON.parse(message.body));
+                });
+            });
+        }
 
-    document.getElementById("message-form").addEventListener("submit", (event) => {
-        event.preventDefault()
-        const messageInput = document.getElementById('message');
-        const message = messageInput.value
-        // 요청을 보내는 위치는 Configuration 의 setApplicationDestinationPrefixes 와 MessageMapping 의 값을 합쳐서 활용
-        stompClient.send("/app/chat", {
-                "Authorization": "Bearer Token_here"
-            },
-            JSON.stringify({
-                'roomId': roomId,
-                'sender': nickname,
-                'message': message
-            }));
-        messageInput.value = null
-    })
-    function openRoomDetail() {
+        function receiveMessage(messageOutput) {
+            const response = document.getElementById('response');
+            const p = document.createElement('p');
+            p.style.wordWrap = 'break-word';
+            p.appendChild(document.createTextNode(messageOutput.sender + ": "
+                + messageOutput.message + " (" + messageOutput.time + ")"));
+            response.appendChild(p);
+        }
 
-        var _width = '650';
-        var _height = '380';
+        document.getElementById("message-form").addEventListener("submit", (event) => {
+            event.preventDefault()
+            const messageInput = document.getElementById('message');
+            const message = messageInput.value
+            // 요청을 보내는 위치는 Configuration 의 setApplicationDestinationPrefixes 와 MessageMapping 의 값을 합쳐서 활용
+            stompClient.send("/app/chat", {
+                    "Authorization": "Bearer Token_here"
+                },
+                JSON.stringify({
+                    'roomId': roomId,
+                    'sender': nickname,
+                    'message': message
+                }));
+            messageInput.value = null
+        })
 
-        // 팝업을 가운데 위치시키기 위해 아래와 같이 값 구하기
-        var _left = Math.ceil(( window.screen.width - _width )/2);
-        var _top = Math.ceil(( window.screen.height - _height )/2);
+        function openRoomDetail() {
+            $('#roomDetailModal').modal('show'); // 모달 열기
+        }
 
-        var roomUrl = `/chat/${roomId}/detail`;
+        const snsTitle = "챗피아에서 게임하기";
+        const thisUrl =  window.location.href;
+        console.log("thisUrl", thisUrl)
+        const handleCopyClipBoard = async () => {
+            try {
+                await navigator.clipboard.writeText(thisUrl);
+                alert('클립보드에 링크가 복사되었습니다.');
+            } catch (e) {
+                alert('복사에 실패하였습니다');
+            }
+        };
 
-        window.open(roomUrl, 'popup-test', 'width='+ _width +', height='+ _height +', left=' + _left + ', top='+ _top );
-    }
+        function fn_sendFB(sns) {
 
-</script>
+            <!-- 카카오  -->
+            if (sns == 'kakaotalk') {
+                // 사용할 앱의 JavaScript 키 설정
+                Kakao.init('1f068199be43767b197138dfc91f1cb6');
+
+                // 카카오링크 버튼 생성
+                Kakao.Link.createDefaultButton({
+                    container: '#btnKakao', // HTML에서 작성한 ID값
+                    objectType: 'feed',
+                    content: {
+                        title: snsTitle, // 보여질 제목
+                        description: snsTitle, // 보여질 설명
+                        imageUrl: thisUrl, // 카카오공유하기 시 썸네일 이미지 경로
+                        link: { //  카카오공유하기 시 클릭 후 이동 경로
+                            mobileWebUrl: thisUrl,
+                            webUrl: thisUrl
+                        }
+                    }
+                });
+            }
+        }
+
+    </script>
 </div>
 </html>
