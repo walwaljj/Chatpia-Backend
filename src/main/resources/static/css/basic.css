@@ -66,6 +66,9 @@ body {
 .my_bg {
     background-image: url("../images/profile.png");
     background-size: 100% 100%;
+    align-items:center;
+    justify-content: center;
+    display: flex;
 }
 
 
@@ -174,3 +177,52 @@ body {
     width:100%;
     overflow-y: scroll;
 }
+
+.card_body_info{
+    text-align: left;
+    background-color:#666666;
+    border-radius: 14px;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.mt1{
+    margin-top: 1rem;
+}
+
+.my_bg_img{
+    width: 100%;
+}
+
+.record_box {
+    border-radius: 14px;
+    border: #666666 solid 1px;
+    background-color: #ffffff;
+}
+
+.sign-out-btn {
+    border: #ced4da solid 1px;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.sign-out-btn-box {
+    text-align: center
+}
+
+.vertif-txt {
+    color: #666666;
+}
+
+.vertif-id-box {
+    display:inline-block;
+    float:left;
+}
+
+.vertif-pw-box {
+    display:inline-block;
+    float:right;
+}
+
+
+

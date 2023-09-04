@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic}">
+
+<div layout:fragment="content">
+    <div th:insert="fragments/header::header"></div>
+    <div class="form-container">
+        <div class="form-item">
+            <div class="mb-4"><h5>회원 탈퇴</h5></div>
+            <div class="mb-4">
+                <p>탈퇴 이후엔 데이터가 모두 삭제됩니다.<br>
+                회원 탈퇴를 하시겠습니까?</p>
+            </div>
+            <form th:action="@{/v1/my-page/sign-out}" th:object="${member}" method="post" >
+                <table class="table">
+                    <tbody>
+                    <div>
+                        <label for="password">비밀번호</label>
+                        <input type="text" id="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
+                    </div>
+                    <div>
+                        <button class="submit_btn" type="submit">회원 탈퇴</button>
+                    </div>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+</html>

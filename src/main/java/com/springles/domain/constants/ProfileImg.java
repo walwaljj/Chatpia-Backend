@@ -4,12 +4,18 @@ import lombok.Getter;
 
 @Getter
 public enum ProfileImg {
-    PROFILE01("static/image/profile_01.jpg"),
-    PROFILE02("static/image/profile_02.jpg"),
-    PROFILE03("static/image/profile_03.jpg"),
-    PROFILE04("static/image/profile_04.jpg"),
-    PROFILE05("static/image/profile_05.jpg"),
-    PROFILE06("static/image/profile_06.jpg");
+    PROFILE01("../images/profile_01.jpg"),
+    PROFILE02("../images/profile_02.jpg"),
+    PROFILE03("../images/profile_03.jpg"),
+    PROFILE04("../images/profile_04.jpg"),
+    PROFILE05("../images/profile_05.jpg"),
+    PROFILE06("../images/profile_06.jpg");
+//    PROFILE01("profile_01.jpg"),
+//    PROFILE02("profile_02.jpg"),
+//    PROFILE03("profile_03.jpg"),
+//    PROFILE04("profile_04.jpg"),
+//    PROFILE05("profile_05.jpg"),
+//    PROFILE06("profile_06.jpg");
 
     private String fileUrl;
 

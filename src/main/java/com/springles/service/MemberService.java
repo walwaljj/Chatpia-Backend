@@ -17,7 +17,7 @@ public interface MemberService {
 
     String updateInfo(MemberUpdateRequest memberDto, String authHeader);
 
-    void signOut(MemberDeleteRequest memberDto, String authHeader);
+    void signOut(MemberDeleteRequest memberDto, String accessToken);
 
     MemberLoginResponse login(MemberLoginRequest memberDto);
 
@@ -31,11 +31,11 @@ public interface MemberService {
 
     boolean memberExists(String memberName);
 
-    MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String authHeader);
+    MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String accessToken);
 
-    MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String authHeader);
+    MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String accessToken);
 
-    MemberProfileRead readProfile(String authHeader);
+    MemberProfileRead readProfile(String accessToken);
 
     MemberProfileResponse levelUp(Long memberId);
 
@@ -44,7 +44,7 @@ public interface MemberService {
     Long rank(Long memberId);
 
     /** 멤버 게임 기록 조회 */
-    MemberRecordResponse readRecord(String authHeader);
+    MemberRecordResponse readRecord(String accessToken);
 
     /** 멤버 게임 기록 update */
     MemberRecordResponse updateRecord(Long memberId);

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic}">
+
+<div layout:fragment="content">
+    <div th:insert="fragments/header::header"></div>
+    <div class="form-container">
+        <div class="form-item">
+            <div class="mb-4"><h5>프로필 변경</h5></div>
+            <form th:action="@{/v1/profile-change}" th:object="${profile}" method="post">
+                <table class="table">
+                    <tbody>
+                    <div>
+                        <label for="nickname">닉네임</label>
+                        <input type="text" id="nickname" name="nickname" th:value="${rawProfile.getNickname}" class="form-control"
+                               placeholder="닉네임을 입력하세요">
+                    </div>
+                    <div>
+                        <p class="mt-4">프로필 이미지</p>
+                        <div class="row">
+                            <div class="col-4">
+                                <input type="radio" id="profileImg_1" name="profileImgNum" value="1" checked>
+                                <label for="profileImg_1">
+                                    <img class="my_bg_img" src="../images/profile_01.jpg" alt="프로필이미지1"/>
+                                </label>
+                            </div>
+                            <div class="col-4">
+                                <input type="radio" id="profileImg_2" name="profileImgNum" value="2">
+                                <label for="profileImg_2">
+                                    <img class="my_bg_img" src="../images/profile_02.jpg" alt="프로필이미지2"/>
+                                </label>
+                            </div>
+                            <div class="col-4">
+                                <input type="radio" id="profileImg_3" name="profileImgNum" value="3">
+                                <label for="profileImg_3">
+                                    <img class="my_bg_img" src="../images/profile_03.jpg" alt="프로필이미지3"/>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">
+                                <input type="radio" id="profileImg_4" name="profileImgNum" value="4">
+                                <label for="profileImg_4">
+                                    <img class="my_bg_img" src="../images/profile_04.jpg" alt="프로필이미지4"/>
+                                </label>
+                            </div>
+                            <div class="col-4">
+                                <input type="radio" id="profileImg_5" name="profileImgNum" value="5">
+                                <label for="profileImg_5">
+                                    <img class="my_bg_img" src="../images/profile_05.jpg" alt="프로필이미지5"/>
+                                </label>
+                            </div>
+                            <div class="col-4">
+                                <input type="radio" id="profileImg_6" name="profileImgNum" value="6">
+                                <label for="profileImg_6">
+                                    <img class="my_bg_img" src="../images/profile_06.jpg" alt="프로필이미지6"/>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="submit_btn" type="submit">프로필 변경</button>
+                    </div>
+
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+</html>

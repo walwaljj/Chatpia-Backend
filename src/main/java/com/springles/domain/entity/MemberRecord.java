@@ -43,6 +43,12 @@ public class MemberRecord {
     private Long citizenWinCnt;
 
     @Column(nullable = false)
+    private Long policeWinCnt;
+
+    @Column(nullable = false)
+    private Long doctorWinCnt;
+
+    @Column(nullable = false)
     private Long totalCnt;
 
     @Column(nullable = false)

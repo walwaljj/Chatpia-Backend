@@ -1,4 +1,4 @@
-package com.springles.repository.support;
+package com.springles.repository;
 
 import com.springles.domain.entity.MemberGameInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +21,6 @@ public interface MemberGameInfoJpaRepository extends JpaRepository<MemberGameInf
                     "WHERE member_id = ?"
             , nativeQuery = true)
     Long findByMemberRank(@Param("memberId") Long memberId);
+
+    boolean existsByMemberId(Long memberId);
 }

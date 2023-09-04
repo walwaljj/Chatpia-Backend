@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic}">
+<div layout:fragment="content">
+    <div th:insert="fragments/header::header"></div>
+    <div class="form-container">
+        <div class="form-item">
+            <div class="mb-4"><h5>아이디 찾기</h5></div>
+                <form th:action="@{/member/vertification/id}" th:object="${member}" method="post" >
+                <table class="table">
+                    <tbody>
+                    <div>
+                        <label for="email">이메일</label>
+                        <input type="text" id="email" th:field="*{email}" class="form-control" placeholder="이메일을 입력하세요">
+                    </div>
+                    <div>
+                        <button class="submit_btn" type="submit">아이디 찾기</button>
+                    </div>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+
+<!----------------- 예외 처리 필요 ----------------->
+<!--    <th:block layout:fragment="script">-->
+<!--        <script type="text/javascript">-->
+
+<!--            $(function () {-->
+<!--                $('.submit_btn').click((e) => {-->
+<!--                    const formData = new FormData()-->
+<!--                    formData.append('email', $('#email').val());-->
+
+<!--                    $.ajax({-->
+<!--                        url: '/member/vertification/id',-->
+<!--                        type: 'POST',-->
+<!--                        // contentType: 'application/json',-->
+<!--                        contentType: false,-->
+<!--                        data: formData,-->
+<!--                        processData: false,-->
+<!--                        success: function () {-->
+<!--                            window.location.href = "http://localhost:8080/v1/vertification-id?success"-->
+<!--                            alert('메일 전송이 완료되었습니다.')-->
+<!--                        },-->
+<!--                        error: function () {-->
+<!--                            window.location.href = "http://localhost:8080/v1/vertification-id?error"-->
+<!--                            alert('메일 전송이 실패되었습니다.')-->
+<!--                        },-->
+<!--                    })-->
+<!--                })-->
+<!--            })-->
+<!--        </script>-->
+<!--    </th:block>-->
+</div>
+</html>
+
+
+
+
+

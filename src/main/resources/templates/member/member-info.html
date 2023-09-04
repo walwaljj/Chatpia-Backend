@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic}">
+
+<div layout:fragment="content">
+    <div th:insert="fragments/header::header"></div>
+    <div class="form-container">
+        <div class="form-item">
+            <div class="mb-4"><h5>회원 정보 관리</h5></div>
+            <form th:action="@{/v1/my-page/info}" th:object="${memberInfo}" method="post">
+                <table class="table">
+                    <tbody>
+                    <div>
+                        <label for="memberName">아이디</label>
+                        <input type="text" id="memberName" th:name="*{memberName}"
+                               th:value="${rawMemberInfo.getMemberName()}" th:disabled="${show != 'Y'} ? 'disabled'"
+                               class="form-control">
+                    </div>
+                    <div>
+                        <label for="email">이메일(선택)</label>
+                        <input type="text" id="email" name="email" th:value="${rawMemberInfo.getEmail()}"
+                               class="form-control" placeholder="이메일을 입력하세요">
+                    </div>
+                    <div>
+                        <label for="password">비밀번호</label>
+                        <input type="text" id="password" th:field="*{password}" class="form-control"
+                               placeholder="비밀번호를 입력하세요">
+                    </div>
+                    <div>
+                        <label for="passwordConfirm">비밀번호 확인</label>
+                        <input type="text" id="passwordConfirm" th:field="*{passwordConfirm}" class="form-control"
+                               placeholder="비밀번호 확인">
+                    </div>
+                    <div>
+                        <button class="submit_btn" type="submit">회원정보 변경</button>
+                    </div>
+                </table>
+            </form>
+            <hr>
+            <div class="sign-out-btn-box">
+                <button class="sign-out-btn" onclick="location.href='/v1/my-page/sign-out'">회원 탈퇴</button>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/basic}">
+<div layout:fragment="content">
+    <div th:insert="fragments/header::header"></div>
+    <div class="index-container">
+        <div class="row">
+            <div class="col-3 center p-1 m-5">
+                <!-----------------------프로필 ----------------------------------------------------------->
+                <div class="card profile">
+                    <!---------레벨 ---------->
+                    <div class="card-header text-white" style="border-radius: 14px;">
+                        <div class="level" th:text="${profileInfo.getLevel()}"></div>
+                    </div>
+                    <div class="card-body2 container row">
+                        <!--------- 프로필 사진 -------->
+                        <div class="my_div my_bg col m-3 p-0">
+                            <img class="my_bg_img" id="profileImg" th:src="${profileInfo.getProfileImg().getFileUrl()}"
+                                 alt="프로필이미지"/>
+                        </div>
+                        <!--------------------- 닉네임 -------->
+                        <div class="nick-name-box col p-3">
+                            <div class="nick-name" th:text="${profileInfo.getNickname()}"></div>
+                        </div>
+                    </div>
+
+                    <!-----------------------게임 관련 정보 ----------------------------------------------------------->
+                    <div class="card_body_info container">
+                        <!--------------------- 경험치 -------->
+                        <div class="exp-box col mt-3">
+                            <div class="exp">
+                                <p>경험치 : <span th:text="${profileInfo.getExp()}"></span> exp</p>
+                            </div>
+                        </div>
+                        <!--------------------- 다음레벨 -------->
+                        <div class="next-level-box col">
+                            <div class="next-level">
+                                <p>다음 레벨 : <span th:text="${profileInfo.getNextLevel()}"></span></p>
+                            </div>
+                        </div>
+                        <!--------------------- 랭킹 -------->
+                        <div class="rank-box col">
+                            <div class="rank">
+                                <p>랭킹 : <span th:text="${profileInfo.getRank()}"></span> 위</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!----------------------- 프로필 변경, 회원 정보 관리 버튼 ----------------------------------------->
+                <div>
+                    <button class="my_btn" style="margin-top: 150px;" type="button"
+                            onclick="location.href='/v1/profile-change'">
+                        <span class="text-white">프로필 변경</span>
+                    </button>
+                    <button class="my_btn mt-3" type="button" onclick="location.href='/v1/my-page/info'">
+                        <span class="text-white">회원 정보 관리</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-----------------------게임 기록(전적) ----------------------------------------------------------->
+            <div class="member-record col-6 r p-1 m-5" id="memberRecord">
+                <p>내 전적</p>
+                <div class="record_box pl-4 mb-3">
+                    <p class="record_text pt-3">총 게임 횟수: <span th:text="${record.getTotalCnt()}"></span> 회</p>
+                </div>
+                <div class="record_box pl-4 mb-3">
+                    <p class="record_text pt-3">총 게임 시간: <span th:text="${record.getTotalTime()}"></span> 분</p>
+                </div>
+                <div class="row mb-3 mb-3" style="margin-left: 0.08rem">
+                    <div class="record_box col-5 pl-4">
+                        <p class="record_title mt-3">마피아</p>
+                        <p class="record_text">횟수: <span th:text="${record.getMafiaCnt()}"></span> 회</p>
+                        <p class="record_text">승률: <span th:text="${record.getMafiaOdds()}"></span> %</p>
+                    </div>
+                    <div class="record_box col-5 ml-5 pl-4">
+                        <p class="record_title mt-3">시민</p>
+                        <p class="record_text">횟수: <span th:text="${record.getCitizenCnt()}"></span> 회</p>
+                        <p class="record_text">승률: <span th:text="${record.getCitizenOdds()}"></span> %</p>
+                    </div>
+                </div>
+                <div class="row mb-3 mb-3" style="margin-left: 0.08rem">
+                    <div class="record_box col-5 pl-4">
+                        <p class="record_title mt-3">경찰</p>
+                        <p class="record_text ml-2">횟수: <span th:text="${record.getPoliceCnt()}"></span> 회</p>
+                        <p class="record_text ml-2">승률: <span th:text="${record.getPoliceOdds()}"></span> %</p>
+                    </div>
+                    <div class="record_box col-5 ml-5 pl-4">
+                        <p class="record_title mt-3">의사</p>
+                        <p class="record_text">횟수: <span th:text="${record.getDoctorCnt()}"></span> 회</p>
+                        <p class="record_text">승률: <span th:text="${record.getDoctorOdds()}"></span> %</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+</html>

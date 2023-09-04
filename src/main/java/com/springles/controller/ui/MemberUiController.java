@@ -1,8 +1,7 @@
 package com.springles.controller.ui;
-import com.springles.domain.dto.member.MemberCreateRequest;
-import com.springles.domain.dto.member.MemberInfoResponse;
-import com.springles.domain.dto.member.MemberLoginRequest;
-import com.springles.domain.dto.member.MemberLoginResponse;
+
+import com.springles.domain.dto.member.*;
+import com.springles.repository.MemberGameInfoJpaRepository;
 import com.springles.service.MemberService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequestMapping("v1")
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberUiController {
 
     private final MemberService memberService;
+    private final MemberGameInfoJpaRepository memberGameInfoJpaRepository;
 
     // 회원가입 페이지 조회
     @GetMapping("/signup")
@@ -47,8 +48,7 @@ public class MemberUiController {
 
     // 로그인 POST
     @PostMapping("/login")
-    public String signup(@ModelAttribute("memberDto") @Valid MemberLoginRequest memberDto, HttpServletResponse response)
-    {
+    public String signup(@ModelAttribute("memberDto") @Valid MemberLoginRequest memberDto, HttpServletResponse response) {
         // 로그인 성공, Token 정보 받기
         MemberLoginResponse memberLoginResponse = memberService.login(memberDto);
         // AccessToken Cookie에 저장
@@ -58,7 +58,13 @@ public class MemberUiController {
         String refreshTokenId = memberLoginResponse.getRefreshToken().getId();
         setRtkCookie("refreshTokenId", refreshTokenId, response);
 
-        return "redirect:index";
+        // 프로필 정보가 있으면 index로 이동, 없으면 프로필 설정 화면으로 이동
+        Long memberId = memberService.getUserInfo(accessToken).getId();
+        if (memberGameInfoJpaRepository.existsByMemberId(memberId)) {
+            return "redirect:index";
+        }
+
+        return "redirect:profile-settings";
     }
 
     // 로그아웃 요청
@@ -111,5 +117,150 @@ public class MemberUiController {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);
+    }
+
+    // 아이디 찾기 GET
+    @GetMapping("/vertification-id")
+    public String vertificationId(
+            Model model,
+            @ModelAttribute("member") MemberVertifIdRequest memberDto
+    ) {
+        model.addAttribute("member", memberDto);
+        return "member/vertification-id";
+    }
+
+    // 비밀번호 찾기 GET
+    @GetMapping("/vertification-pw")
+    public String vertificationId(
+            Model model,
+            @ModelAttribute("member") MemberVertifPwRequest memberDto
+    ) {
+        model.addAttribute("member", memberDto);
+        return "member/vertification-pw";
+    }
+
+    // 마이페이지
+    @GetMapping("/my-page")
+    public String memberProflie(
+            Model model,
+            HttpServletRequest request
+    ) {
+        // accessToken 추출
+        String accessToken = (String) request.getAttribute("accessToken");
+
+        // 프로필 조회
+        MemberProfileRead profileInfo = memberService.readProfile(accessToken);
+
+        // 멤버 게임기록 조회
+        MemberRecordResponse memberRecord = memberService.readRecord(accessToken);
+
+        model.addAttribute("profileInfo", profileInfo);
+        model.addAttribute("record", memberRecord);
+
+        return "member/my-page";
+    }
+
+    // 회원 정보 변경 GET
+    @GetMapping("/my-page/info")
+    public String memberInfo(
+            Model model,
+            @ModelAttribute("memberInfo") MemberUpdateRequest memberDto,
+            HttpServletRequest request
+    ) {
+        String accessToken = (String) request.getAttribute("accessToken");
+        MemberInfoResponse memberInfo = memberService.getUserInfo(accessToken);
+
+        model.addAttribute("memberInfo", memberDto);
+        model.addAttribute("rawMemberInfo", memberInfo);
+
+        return "member/member-info";
+    }
+
+    // 회원 정보 변경 POST
+    @PostMapping("/my-page/info")
+    public String memberInfo(
+            @ModelAttribute("member") MemberUpdateRequest memberDto,
+            HttpServletRequest request
+    ) {
+        // accessToken 추출
+        String accessToken = (String) request.getAttribute("accessToken");
+        memberService.updateInfo(memberDto, accessToken);
+        return "redirect:info";
+    }
+
+    // 회원 탈퇴 GET
+    @GetMapping("/my-page/sign-out")
+    public String signOut(
+            Model model,
+            @ModelAttribute("member") MemberDeleteRequest memberDto,
+            HttpServletRequest request
+    ) {
+        model.addAttribute("member", memberDto);
+        return "member/member-sign-out";
+    }
+
+    // 회원 탈퇴 POST
+    @PostMapping("/my-page/sign-out")
+    public RedirectView signOut(
+            @ModelAttribute("member") MemberDeleteRequest memberDto,
+            HttpServletRequest request
+    ) {
+        // accessToken 추출
+        String accessToken = (String) request.getAttribute("accessToken");
+        memberService.signOut(memberDto, accessToken);
+
+        return new RedirectView("/v1/login-page");
+    }
+
+    // 프로필 설정 GET
+    @GetMapping("/profile-settings")
+    public String profileSetting(
+            Model model,
+            @ModelAttribute("member") MemberProfileCreateRequest memberDto
+    ) {
+        model.addAttribute("member", memberDto);
+        return "member/profile-settings";
+    }
+
+    // 프로필 설정 POST
+    @PostMapping("/profile-settings")
+    public String profileSetting(
+            @ModelAttribute("member") MemberProfileCreateRequest memberDto,
+            HttpServletRequest request
+    ) {
+        // accessToken 추출
+        String accessToken = (String) request.getAttribute("accessToken");
+        memberService.createProfile(memberDto, accessToken);
+
+        return "redirect:index";
+    }
+
+    // 프로필 변경 GET
+    @GetMapping("/profile-change")
+    public String profileSetting(
+            Model model,
+            @ModelAttribute("profile") MemberProfileUpdateRequest memberDto,
+            HttpServletRequest request
+    ) {
+        // accessToken 추출
+        String accessToken = (String) request.getAttribute("accessToken");
+        MemberProfileRead rawProfile = memberService.readProfile(accessToken);
+
+        model.addAttribute("profile", memberDto);
+        model.addAttribute("rawProfile", rawProfile);
+        return "member/profile-change";
+    }
+
+    // 프로필 변경 POST
+    @PostMapping("/profile-change")
+    public String profileSetting(
+            @ModelAttribute("member") MemberProfileUpdateRequest memberDto,
+            HttpServletRequest request
+    ) {
+        // accessToken 추출
+        String accessToken = (String) request.getAttribute("accessToken");
+        memberService.updateProfile(memberDto, accessToken);
+
+        return "redirect:index";
     }
 }

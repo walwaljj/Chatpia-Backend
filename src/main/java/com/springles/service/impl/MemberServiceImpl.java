@@ -1,7 +1,5 @@
 package com.springles.service.impl;
 
-import com.springles.domain.constants.GameRole;
-import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.constants.Level;
 import com.springles.domain.dto.member.*;
 import com.springles.domain.entity.*;
@@ -9,17 +7,13 @@ import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.jwt.JwtTokenUtils;
 import com.springles.repository.*;
-import com.springles.repository.support.MemberGameInfoJpaRepository;
+import com.springles.repository.MemberGameInfoJpaRepository;
 import com.springles.service.MemberService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -76,9 +70,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String updateInfo(MemberUpdateRequest memberDto, String authHeader) {
+    public String updateInfo(MemberUpdateRequest memberDto, String accessToken) {
 
-        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
 
         // 헤더의 회원정보가 존재하는 회원정보인지 체크
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
@@ -115,9 +109,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void signOut(MemberDeleteRequest memberDto, String authHeader) {
+    public void signOut(MemberDeleteRequest memberDto, String accessToken) {
 
-        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
 
         // 헤더의 회원정보가 존재하는 회원정보인지 체크
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
@@ -372,9 +366,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String authHeader) {
+    public MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String accessToken) {
 
-        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
 
         // 헤더의 회원정보가 존재하는 회원정보인지 체크
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
@@ -401,8 +395,8 @@ public class MemberServiceImpl implements MemberService {
 
 
     @Override
-    public MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String authHeader) {
-        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+    public MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String accessToken) {
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
 
         // 헤더의 회원정보가 존재하는 회원정보인지 체크
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
@@ -431,8 +425,8 @@ public class MemberServiceImpl implements MemberService {
 
 
     @Override
-    public MemberProfileRead readProfile(String authHeader) {
-        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+    public MemberProfileRead readProfile(String accessToken) {
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
 
         // 헤더의 회원정보가 존재하는 회원정보인지 체크
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
@@ -498,13 +492,13 @@ public class MemberServiceImpl implements MemberService {
         // 경험치 부여(내가 속한 팀이 이김: +200exp, 짐: +100exp)
         exp += ((isWinner && inGameRole.equals("mafia")
                 || !isWinner && (inGameRole.equals("civilian")
-                                || inGameRole.equals("police")
-                                || inGameRole.equals("doctor"))
-                )
+                || inGameRole.equals("police")
+                || inGameRole.equals("doctor"))
+        )
                 ? 200 : 100);
 
         // 레벨업이 가능할 경우
-        if(!(level.equals(Level.BOSS) || level.equals(Level.NONE)) && (exp >= goalExp)) {
+        if (!(level.equals(Level.BOSS) || level.equals(Level.NONE)) && (exp >= goalExp)) {
             level = nextLevel(level);
         }
 
@@ -550,10 +544,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
-    /** 멤버 게임 기록 update */
+    /**
+     * 멤버 게임 기록 update
+     */
     @Override
-    public MemberRecordResponse readRecord(String authHeader) {
-        String memberName = jwtTokenUtils.parseClaims(authHeader.split(" ")[1]).getSubject();
+    public MemberRecordResponse readRecord(String accessToken) {
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
 
         // 헤더의 회원정보가 존재하는 회원정보인지 체크
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
@@ -567,7 +563,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Optional<MemberRecord> optionalMemberRecord = memberRecordJpaRepository.findByMemberId(optionalMember.get().getId());
-        if(optionalMemberRecord.isEmpty()) {
+        if (optionalMemberRecord.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_MEMBER_RECORD);
         }
 
@@ -575,19 +571,21 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
-    /** 멤버 게임 기록 update */
+    /**
+     * 멤버 게임 기록 update
+     */
     @Override
     public MemberRecordResponse updateRecord(Long memberId) {
 
         // memberRecord(게임한 기록) 호출
         Optional<MemberRecord> optionalMemberRecord = memberRecordJpaRepository.findByMemberId(memberId);
-        if(optionalMemberRecord.isEmpty()) {
+        if (optionalMemberRecord.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_MEMBER_RECORD);
         }
 
         // memberGameInfo(프로필 정보) 호출
         Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(memberId);
-        if(optionalMemberGameInfo.isEmpty()) {
+        if (optionalMemberGameInfo.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_GAME_INFO);
         }
 
@@ -606,9 +604,11 @@ public class MemberServiceImpl implements MemberService {
         Long policeCnt = updateInGameRoleCnt(inGameRole, memberRecord).get("police");
         Long doctorCnt = updateInGameRoleCnt(inGameRole, memberRecord).get("doctor");
 
-        // 이긴팀 업데이트
+        // 역할별 이긴 횟수 업데이트
         Long mafiaWinCnt = updateWinCnt(inGameRole, memberRecord, gameRecord).get("mafiaWinCnt");
         Long citizenWinCnt = updateWinCnt(inGameRole, memberRecord, gameRecord).get("citizenWinCnt");
+        Long policeWinCnt = updateWinCnt(inGameRole, memberRecord, gameRecord).get("policeWinCnt");
+        Long doctorWinCnt = updateWinCnt(inGameRole, memberRecord, gameRecord).get("doctorWinCnt");
 
         // 총 게임 횟수 업데이트
         Long totalCnt = updateTotalCnt(memberRecord).get("totalCnt");
@@ -622,7 +622,7 @@ public class MemberServiceImpl implements MemberService {
         // TODO 죽인 횟수 업데이트(killCnt)
         Long killCnt = memberRecord.getKillCnt();
 
-        MemberRecord updateMemberRecord =  MemberRecord.builder()
+        MemberRecord updateMemberRecord = MemberRecord.builder()
                 .id(memberRecord.getId())
                 .memberId(memberId)
                 .mafiaCnt(mafiaCnt)
@@ -631,6 +631,8 @@ public class MemberServiceImpl implements MemberService {
                 .doctorCnt(doctorCnt)
                 .citizenWinCnt(citizenWinCnt)
                 .mafiaWinCnt(mafiaWinCnt)
+                .policeWinCnt(policeWinCnt)
+                .doctorWinCnt(doctorWinCnt)
                 .saveCnt(saveCnt)
                 .killCnt(killCnt)
                 .totalCnt(totalCnt)
@@ -642,7 +644,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
-    /** 역할별 게임 횟수 update */
+    /**
+     * 역할별 게임 횟수 update
+     */
     @Override
     public Map<String, Long> updateInGameRoleCnt(String inGameRole, MemberRecord memberRecord) {
         Long mafiaCnt = memberRecord.getMafiaCnt();
@@ -650,11 +654,19 @@ public class MemberServiceImpl implements MemberService {
         Long policeCnt = memberRecord.getPoliceCnt();
         Long doctorCnt = memberRecord.getDoctorCnt();
 
-        switch(inGameRole) {
-            case "mafia" : mafiaCnt++; break;
-            case "civilian" : citizenCnt++; break;
-            case "police" : policeCnt++; break;
-            case "doctor" : doctorCnt++; break;
+        switch (inGameRole) {
+            case "mafia":
+                mafiaCnt++;
+                break;
+            case "civilian":
+                citizenCnt++;
+                break;
+            case "police":
+                policeCnt++;
+                break;
+            case "doctor":
+                doctorCnt++;
+                break;
         }
 
         Map<String, Long> inGameRoleCntMap = new HashMap<>();
@@ -667,7 +679,9 @@ public class MemberServiceImpl implements MemberService {
         return inGameRoleCntMap;
     }
 
-    /** 시민/마피아로 이긴 팀 횟수 update */
+    /**
+     * 시민/마피아로 이긴 팀 횟수 update
+     */
     @Override
     public Map<String, Long> updateWinCnt(String inGameRole, MemberRecord memberRecord, GameRecord gameRecord) {
         // 이긴 팀(true: 마피아, false: 시민)
@@ -675,25 +689,31 @@ public class MemberServiceImpl implements MemberService {
 
         Long mafiaWinCnt = memberRecord.getMafiaWinCnt();
         Long citizenWinCnt = memberRecord.getCitizenWinCnt();
+        Long policeWinCnt = memberRecord.getPoliceWinCnt();
+        Long doctorWinCnt = memberRecord.getDoctorWinCnt();
 
-        if(isWinner && inGameRole.equals("mafia")) {
+        if (isWinner && inGameRole.equals("mafia")) {
             mafiaWinCnt++;
-        } else if(
-                (!isWinner && inGameRole.equals("civilian"))
-                        || (!isWinner && inGameRole.equals("police"))
-                        || (!isWinner && inGameRole.equals("doctor"))
-        ) {
+        } else if (!isWinner && inGameRole.equals("civilian")) {
             citizenWinCnt++;
+        } else if (!isWinner && inGameRole.equals("police")) {
+            policeWinCnt++;
+        } else if (!isWinner && inGameRole.equals("doctor")) {
+            doctorWinCnt++;
         }
 
         Map<String, Long> winCntMap = new HashMap<>();
         winCntMap.put("mafiaWinCnt", mafiaWinCnt);
         winCntMap.put("citizenWinCnt", citizenWinCnt);
+        winCntMap.put("policeWinCnt", policeWinCnt);
+        winCntMap.put("doctorWinCnt", doctorWinCnt);
 
         return winCntMap;
     }
 
-    /** 총 게임 횟수 update */
+    /**
+     * 총 게임 횟수 update
+     */
     @Override
     public Map<String, Long> updateTotalCnt(MemberRecord memberRecord) {
         Long totalCnt = memberRecord.getTotalCnt();
@@ -704,7 +724,9 @@ public class MemberServiceImpl implements MemberService {
         return totalCntMap;
     }
 
-    /** 총 게임 시간 update */
+    /**
+     * 총 게임 시간 update
+     */
     @Override
     public Map<String, Long> updateTotalTime(MemberRecord memberRecord, GameRecord gameRecord) {
         Long totalTime = memberRecord.getTotalTime();
@@ -717,13 +739,14 @@ public class MemberServiceImpl implements MemberService {
         return totalTimeMap;
     }
 
-    /** 멤버 기록 생성(초기화)
+    /**
+     * 멤버 기록 생성(초기화)
      * 회원가입 시 (signUp 메소드 내에서) 호출
-     * */
+     */
     @Override
     public MemberRecord newMemberRecord(String memberName) {
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
-        if(optionalMember.isEmpty()) {
+        if (optionalMember.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
         }
 
@@ -737,6 +760,8 @@ public class MemberServiceImpl implements MemberService {
                 .killCnt(0L)
                 .mafiaWinCnt(0L)
                 .citizenWinCnt(0L)
+                .policeWinCnt(0L)
+                .doctorWinCnt(0L)
                 .totalCnt(0L)
                 .totalTime(0L)
                 .build();

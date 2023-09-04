@@ -82,7 +82,7 @@ public class DayEliminationManager {
                 continue;
             }
             // 죽었다면 게임에서 제거하고 관찰자에 추가
-            gameSessionManager.removePlayer(gameSession.getRoomId(), player.getMemberName(););
+            gameSessionManager.removePlayer(gameSession.getRoomId(), player.getMemberName());
             victims.add(player.getMemberId());
         }
 
