@@ -39,16 +39,16 @@ public class NightVoteManager {
         NightVoteMessage nightVoteMessage = objectMapper.readValue(message, NightVoteMessage.class);
         Long roomId = nightVoteMessage.getRoomId();
         Map<GameRole, Long> roleVote = nightVoteMessage.getRoleVoteResult();
+        Map<Long, Player> suspectVote = nightVoteMessage.getSuspectResult();
+
 
         // 직업에 따른 투표 결과
         Long deadPlayerId = roleVote.get(GameRole.MAFIA);
         Long protectedPlayerId = roleVote.get(GameRole.DOCTOR);
-        Long suspectPlayerId = roleVote.get(GameRole.POLICE);
 
         // 기록
         log.info("Room {} NightVote deadPlayer: {}", roomId, deadPlayerId);
         log.info("Room {} NightVote protectedPlayer: {}", roomId, protectedPlayerId);
-        log.info("Room {} NightVote suspectPlayer: {}", roomId, suspectPlayerId);
 
         // 의사가 살렸을 경우 부활
         if (deadPlayerId != null && deadPlayerId == protectedPlayerId) {
@@ -69,9 +69,6 @@ public class NightVoteManager {
         // 살해당한 인간
         Player deadPlayer = playerMap.get(deadPlayerId);
 
-        // 조사한 인간
-        Player suspectPlayer = playerMap.get(suspectPlayerId);
-
         // 목격자들
         List<Long> victims = setNightDay(gameSession, deadPlayerId);
 
@@ -85,13 +82,12 @@ public class NightVoteManager {
         simpMessagingTemplate.convertAndSend("/sub/chat/"+roomId, GameStatusKillRes.of(gameSession, players, deadPlayer));
 
         // 용의자 조사 결과 관찰자와 경찰에게 전송
-        if (suspectPlayer == null) {
-            throw new CustomException(ErrorCode.SUSPECT_PLAYER_NOT_FOUND);
-        } else {
-            simpMessagingTemplate.convertAndSend("/sub/chat/"+roomId+"police", SuspectVoteRes.of(suspectPlayer));
-            simpMessagingTemplate.convertAndSend("/sub/chat/"+roomId+"observer", SuspectVoteRes.of(suspectPlayer));
+        for (Long voter : suspectVote.keySet()) {
+            Player suspectPlayer = suspectVote.get(voter);
+            log.info("Room {} NightVote suspectPlayer: {}", roomId, suspectPlayer.getMemberId());
+            simpMessagingTemplate.convertAndSend("/sub/chat/"+roomId+"/"+voter, SuspectVoteRes.of(suspectPlayer));
+            simpMessagingTemplate.convertAndSend("/sub/chat/"+roomId+"/observer", SuspectVoteRes.of(suspectPlayer));
         }
-
     }
 
     private List<Long> setNightDay(GameSession gameSession, Long deadPlayerId) {
