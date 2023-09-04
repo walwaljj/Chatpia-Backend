@@ -198,7 +198,7 @@ public class MemberUiController {
     // 회원 탈퇴 POST
     @PostMapping("/my-page/sign-out")
     public RedirectView signOut(
-            @ModelAttribute("member") MemberDeleteRequest memberDto,
+            @Valid @ModelAttribute("member") MemberDeleteRequest memberDto,
             HttpServletRequest request
     ) {
         // accessToken 추출
