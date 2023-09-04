@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th=http://www.thymeleaf.org
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <div th:fragment="header">
@@ -12,7 +13,7 @@
         <a class="navbar-brand" href="/v1/index">Chatfia</a>
 
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0"> </ul>
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
             <div class="form-inline my-2 my-lg-0">
                 <div class="nav-item">
                     <a sec:authorize="isAnonymous()" class="nav-link text-white" href="/v1/login-page">로그인</a>
@@ -20,10 +21,28 @@
                 </div>
                 <div class="nav-item">
                     <a sec:authorize="isAnonymous()" class="nav-link text-white" href="/v1/signup">회원가입</a>
-                    <a sec:authorize="isAuthenticated()" class="nav-link text-white" href="#">로그아웃</a>
+                    <a sec:authorize="isAuthenticated()" class="logout-btn nav-link text-white" href="javascript:void(0);">로그아웃</a>
+                    <th:block layout:fragment="script">
+                        <script th:inline="javascript">
+                        $('.logout-btn').on('click', function () {
+                            const form = document.createElement('form');
+                            form.setAttribute('method', 'post')
+                            form.setAttribute('action', '/v1/logout')
+                            // form 요소를 body에 추가
+                            document.body.appendChild(form)
+                            form.submit()
+                        })
+                        </script>
+                    </th:block>
                 </div>
             </div>
         </div>
+
     </nav>
+
+
 </div>
+
+
+
 </html>

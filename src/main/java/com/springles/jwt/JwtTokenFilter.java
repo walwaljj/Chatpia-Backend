@@ -61,10 +61,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     log.info("로그아웃 안됨");
 
                     /* accessToken 유효성 체크
-                    * 0 : 유효하지 않은 JWT 서명, 지원되지 않는 JWT토큰, 잘못된 JWT 토큰
-                    * 1 : 유효한 토큰
-                    * 2 : 유효기간이 만료된 토큰
-                    * */
+                     * 0 : 유효하지 않은 JWT 서명, 지원되지 않는 JWT토큰, 잘못된 JWT 토큰
+                     * 1 : 유효한 토큰
+                     * 2 : 유효기간이 만료된 토큰
+                     * */
                     if (jwtTokenUtils.validate(accessToken) != 0) {
                         log.info("validate(accessToken) != 0");
 
@@ -108,22 +108,22 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                         log.info("accessToken이 유효하지 않음");
                         throw new CustomException(ErrorCode.NO_JWT_TOKEN);
                     }
+
+
+                    // 인증객체 생성
+                    SecurityContext context = SecurityContextHolder.createEmptyContext();
+                    String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
+
+                    AbstractAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                            MemberCreateRequest.builder()
+                                    .memberName(memberName)
+                                    .build(),
+                            accessToken, new ArrayList<>()
+                    );
+                    context.setAuthentication(authenticationToken);
+                    SecurityContextHolder.setContext(context);
                 }
-
-                // 인증객체 생성
-                SecurityContext context = SecurityContextHolder.createEmptyContext();
-                String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
-
-                AbstractAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        MemberCreateRequest.builder()
-                                .memberName(memberName)
-                                .build(),
-                        accessToken, new ArrayList<>()
-                );
-                context.setAuthentication(authenticationToken);
-                SecurityContextHolder.setContext(context);
             }
-
 
             /** accessToken이 존재하지 않고, refreshTokenId만 존재할 경우 */
             else if(!refreshTokenId.equals("")) {
