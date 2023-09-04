@@ -250,7 +250,7 @@ public class MemberUiController {
     // 프로필 변경 POST
     @PostMapping("/profile-change")
     public String profileSetting(
-            @ModelAttribute("member") MemberProfileUpdateRequest memberDto,
+            @Valid @ModelAttribute("member") MemberProfileUpdateRequest memberDto,
             HttpServletRequest request
     ) {
         // accessToken 추출
