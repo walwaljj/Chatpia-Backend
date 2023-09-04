@@ -39,12 +39,26 @@ public class MemberServiceImpl implements MemberService {
 
     // 사용자 정보 가져오기
     @Override
-    public MemberInfoResponse getUserInfo(String authHeader) {
+    public MemberInfoResponse getUserInfo(String accessToken) {
 
-        String memberName = jwtTokenUtils.parseClaims(authHeader).getSubject();   // AccessToken으로 닉네임 받아오기
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();   // AccessToken으로 닉네임 받아오기
 
         return MemberInfoResponse.of(memberRepository.findByMemberName(memberName) // 닉네임으로 info dto 반환
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)));
+    }
+
+    // 사용자 프로필 정보 가져오기
+    public MemberProfileResponse getUserProfileInfo(String accessToken) {
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
+
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if(optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
+
+        return MemberProfileResponse.of(optionalMemberGameInfo.get(), optionalMember.get().getId());
     }
 
     @Override
