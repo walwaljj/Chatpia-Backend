@@ -4,6 +4,8 @@ import com.springles.config.TimeConfig;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.dto.message.DayDiscussionMessage;
+import com.springles.domain.dto.message.DayEliminationMessage;
+import com.springles.domain.dto.message.NightVoteMessage;
 import com.springles.domain.dto.vote.GameSessionVoteRequestDto;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
@@ -16,6 +18,7 @@ import com.springles.repository.VoteRepository;
 import com.springles.service.GameSessionVoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,6 +33,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     private final VoteRepository voteRepository;
     private final GameSessionManager gameSessionManager;
     private final PlayerRedisRepository playerRedisRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
 
     @Override
@@ -54,7 +58,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
             Map<Long, Long> vote = voteRepository.getVoteResult(roomId);
             log.info("Room {} end Vote for {}", roomId, phase);
             voteRepository.endVote(roomId, phase);
-            publishRedis(roomId, vote);
+            publishMessage(roomId, vote);
         }
     }
 
@@ -120,9 +124,6 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
         return voteRepository.getVoteResult(roomId);
     }
 
-    private void publishRedis(Long roomId, Map<Long, Long> vote) {
-
-    }
 
     private void publishMessage(Long roomId, Map<Long, Long> vote) {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
@@ -130,6 +131,15 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
         if (gameSession.getGamePhase() == GamePhase.DAY_DISCUSSION) {
             DayDiscussionMessage dayDiscussionMessage =
                     new DayDiscussionMessage(roomId, getSuspiciousList(gameSession, vote));
+            simpMessagingTemplate.convertAndSend(dayDiscussionMessage);
+        } else if (gameSession.getGamePhase() == GamePhase.DAY_ELIMINATE) {
+            DayEliminationMessage dayEliminationMessage =
+                    new DayEliminationMessage(roomId, getEliminationPlayer(gameSession, vote));
+            simpMessagingTemplate.convertAndSend(dayEliminationMessage);
+        }
+        else if (gameSession.getGamePhase() == GamePhase.NIGHT_VOTE) {
+            NightVoteMessage nightVoteMessage
+                    = new NightVoteMessage(roomId, getNightVoteResult(gameSession, vote));
         }
     }
 

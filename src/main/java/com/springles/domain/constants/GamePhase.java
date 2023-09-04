@@ -8,7 +8,6 @@ public enum GamePhase {
     DAY_TO_NIGHT,
     NIGHT_DISCUSSION,
     NIGHT_VOTE,
-    NIGHT_ELIMINATE,
     NIGHT_TO_DAY,
     END,
     READY

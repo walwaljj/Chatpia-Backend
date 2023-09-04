@@ -81,7 +81,9 @@ public enum ErrorCode {
     ENDED_VOTE(HttpStatus.BAD_REQUEST, "이미 종료된 투표입니다."),
     FAIL_VOTE(HttpStatus.INTERNAL_SERVER_ERROR, "투표 처리를 실패했습니다."),
     FAIL_CONFIRM_VOTE(HttpStatus.INTERNAL_SERVER_ERROR, "투표 확정에 실패했습니다."),
-    GAME_PHASE_NOT_NIGHT_VOTE(HttpStatus.BAD_REQUEST, "밤 투표를 진행하는 시간이 아닙니다.");
+    GAME_PHASE_NOT_NIGHT_VOTE(HttpStatus.BAD_REQUEST, "밤 투표를 진행하는 시간이 아닙니다."),
+    DEAD_PLAYER_NOT_FOUND(HttpStatus.NOT_FOUND, "제거할 플레이어를 찾을 수 없습니다."),
+    SUSPECT_PLAYER_NOT_FOUND(HttpStatus.NOT_FOUND, "조사할 플레이어를 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;

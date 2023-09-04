@@ -5,7 +5,6 @@ import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.dto.message.DayEliminationMessage;
 import com.springles.domain.dto.response.GameStatusKillRes;
-import com.springles.domain.dto.response.PlayerDeadRes;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
@@ -63,11 +62,8 @@ public class DayEliminationManager {
         // 현재 진행 상황 기록
         log.info("Room {} start Day {} {} ", roomId, gameSession.getDay(), gameSession.getGamePhase());
 
-        // 투표 결과 전송
+        // 죽인 결과 전송
         simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId, GameStatusKillRes.of(gameSession, players, deadPlayer));
-
-        // 사망자에게 너 죽었다 전송
-        simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId, PlayerDeadRes.of());
     }
 
     private List<Long> setDayToNight(GameSession gameSession, Long deadPlayerId)    {

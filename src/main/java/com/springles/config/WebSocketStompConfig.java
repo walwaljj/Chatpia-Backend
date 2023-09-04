@@ -1,5 +1,8 @@
 package com.springles.config;
 
+import com.springles.game.DayDiscussionManager;
+import com.springles.game.DayEliminationManager;
+import com.springles.game.NightVoteManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
@@ -42,4 +45,13 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/pub");
     }
 
+    @Bean
+    public MessageListenerAdapter nightVoteListener(NightVoteManager subscriber) {
+        return new MessageListenerAdapter(subscriber, "sendMessage");
+    }
+
+    @Bean
+    public MessageListenerAdapter dayEliminationListnener(DayEliminationManager subscriber) {
+        return new MessageListenerAdapter(subscriber, "sendMessage");
+    }
 }

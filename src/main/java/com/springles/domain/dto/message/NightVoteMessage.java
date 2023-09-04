@@ -14,5 +14,5 @@ import java.util.Map;
 @NoArgsConstructor
 public class NightVoteMessage {
     private Long roomId;
-    private Map<GameRole, String> roleVoteResult;
+    private Map<GameRole, Long> roleVoteResult;
 }
