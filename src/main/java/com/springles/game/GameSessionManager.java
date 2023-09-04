@@ -113,19 +113,6 @@ public class GameSessionManager {
         return findPlayersByRoomId(roomId);
     }
 
-    /* 게임 정보 업데이트 */
-    public void updateGame(Long roomId, String memberName, ChatRoomUpdateReqDto chatRoomUpdateReqDto) {
-        GameSession gameSession = findGameByRoomId(roomId);
-        if (!gameSession.getGamePhase().equals(GamePhase.READY)) {
-            // 게임 상태 익셉션 -> 게임 중 정보 변경 불가
-        }
-        Player player = findPlayerByMemberName(memberName);
-        if (!gameSession.getHostId().equals(player.getMemberId())) {
-            // 권한 익셉션 -> 방장만 정보를 변경할 수 있음
-        }
-
-    }
-
     public GameSession findGameByRoomId(Long roomId) {
         return gameSessionRedisRepository.findById(roomId)
             .orElseThrow(() -> new CustomException(ErrorCode.GAME_NOT_FOUND));
