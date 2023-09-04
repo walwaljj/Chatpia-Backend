@@ -6,6 +6,7 @@ import com.springles.exception.constants.ErrorCode;
 import com.springles.jwt.JwtTokenUtils;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -14,8 +15,10 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
+@Configuration
 public class MessageInterceptor implements ChannelInterceptor {
 
     private final JwtTokenUtils tokenUtils;
