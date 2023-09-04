@@ -34,21 +34,25 @@ public class MemberRecordResponse {
 
     private Long totalTime;
 
-    private Long mafiaOdds;
+    private String mafiaOdds;
 
-    private Long citizenOdds;
+    private String citizenOdds;
 
-    private Long policeOdds;
+    private String policeOdds;
 
-    private Long doctorOdds;
+    private String doctorOdds;
 
     public static MemberRecordResponse of(MemberRecord memberRecord) {
 
-        Long mafiaOdds = (memberRecord.getMafiaWinCnt() != 0L) && (memberRecord.getMafiaCnt() != 0L) ? (memberRecord.getMafiaWinCnt() / memberRecord.getMafiaCnt() * 100) : 0;
-        Long citizenOdds = (memberRecord.getCitizenWinCnt() != 0L) && (memberRecord.getCitizenCnt() != 0L) ? (memberRecord.getCitizenWinCnt() / memberRecord.getCitizenCnt() * 100) : 0;
-        Long policeOdds = (memberRecord.getPoliceWinCnt() != 0L) && (memberRecord.getPoliceCnt() != 0L) ? (memberRecord.getPoliceWinCnt() / memberRecord.getPoliceCnt() * 100) : 0;
-        Long doctorOdds = (memberRecord.getDoctorWinCnt() != 0L) && (memberRecord.getDoctorCnt() != 0L) ? (memberRecord.getDoctorWinCnt() / memberRecord.getDoctorCnt() * 100) : 0;
+        float mafiaOddsOp = (memberRecord.getMafiaWinCnt() != 0L) && (memberRecord.getMafiaCnt() != 0L) ? (memberRecord.getMafiaWinCnt() / (float)memberRecord.getMafiaCnt() * 100) : 0;
+        float citizenOddsOp = (memberRecord.getCitizenWinCnt() != 0L) && (memberRecord.getCitizenCnt() != 0L) ? (memberRecord.getCitizenWinCnt() / (float)memberRecord.getCitizenCnt() * 100) : 0;
+        float policeOddsOp = (memberRecord.getPoliceWinCnt() != 0L) && (memberRecord.getPoliceCnt() != 0L) ? (memberRecord.getPoliceWinCnt() / (float)memberRecord.getPoliceCnt() * 100) : 0;
+        float doctorOddsOp = (memberRecord.getDoctorWinCnt() != 0L) && (memberRecord.getDoctorCnt() != 0L) ? (memberRecord.getDoctorWinCnt() / (float)memberRecord.getDoctorCnt() * 100) : 0;
 
+        String mafiaOdds = String.format("%.1f", mafiaOddsOp);
+        String citizenOdds = String.format("%.1f", citizenOddsOp);
+        String policeOdds = String.format("%.1f", policeOddsOp);
+        String doctorOdds = String.format("%.1f", doctorOddsOp);
 
         return MemberRecordResponse.builder()
                 .id(memberRecord.getId())
