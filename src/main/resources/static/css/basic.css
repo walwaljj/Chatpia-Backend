@@ -64,7 +64,7 @@ body {
 }
 
 .my_bg {
-    background-image: url("../images/profile.png");
+    /*background-image: url("../images/profile.png");*/
     background-size: 100% 100%;
     align-items:center;
     justify-content: center;

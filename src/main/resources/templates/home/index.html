@@ -11,14 +11,16 @@
                 <!-----------------------사용자 정보 ----------------------------------------------------------->
                 <div class="card profile">
                     <!---------레벨 ---------->
-                    <div class="card-header text-white" style="border-radius: 14px;">BEGINNER (아이콘)</div>
+                    <div class="card-header text-white" style="border-radius: 14px;" th:text="${member.getLevel()}"></div>
                     <div class="card-body2 container row">
                         <!--------- 프로필 사진 -------->
                         <div class="my_div my_bg col m-3 p-0">
+                            <img class="my_bg_img" id="profileImg" th:src="${member.getProfileImg().getFileUrl()}"
+                                 alt="프로필이미지"/>
                         </div>
                         <!--------------------- 닉네임 -------->
                         <div class="nick-name-box col p-3">
-                            <div class="nick-name" th:text="${member.getMemberName()}"></div>
+                            <div class="nick-name" th:text="${member.getNickname()}"></div>
                         </div>
                     </div>
                 </div>
@@ -68,8 +70,8 @@
                 <div class="chat_list_ui" id="chatRoom">
                     <div th:if="${allChatRooms != null}">
                         <div th:id="'room_' + ${i.index}" class="list-group" th:each="room, i: ${allChatRooms}">
-                            <a th:href="@{/chat/{roomId}/{nickName} (roomId=${room.id},nickName=${member.memberName})}"
-                               th:attrappend="roomId=${room.id},nickName=${member.memberName},isClose=${room.getClose()}"
+                            <a th:href="@{/chat/{roomId}/{nickName} (roomId=${room.id},nickName=${member.getNickname()})}"
+                               th:attrappend="roomId=${room.id},nickName=${member.getNickname()},isClose=${room.getClose()}"
                                id="chatroom-url" name="chatroom-url"
                                class="list-group-item list-group-item-action flex-column align-items-start">
                                 <div class="d-flex w-100 justify-content-between">
@@ -102,7 +104,7 @@
                             <div th:id="'passwordInput_' + ${room.id}" class="password-input" style="display: none;">
                                 <input type="text" name="userInput" id="userInput"/>
                                 <button type="button" id="password-submit" name="password-submit" class="submit_btn"
-                                        th:attr="data-roomId=${room.id},data-nickName=${member.memberName},data-isClose=${room.close},data-roomPassword=${room.password}">
+                                        th:attr="data-roomId=${room.id},data-nickName=${member.getNickname()},data-isClose=${room.close},data-roomPassword=${room.password}">
                                     확인
                                 </button>
                             </div>
