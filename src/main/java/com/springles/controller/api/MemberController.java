@@ -112,7 +112,7 @@ public class MemberController {
 
     @PostMapping("/vertification/pw")
     public ResponseEntity<ResResult> vertificationPw(
-            @RequestBody MemberVertifPwRequest memberDto
+            @Valid @RequestBody MemberVertifPwRequest memberDto
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_PW_SEND;
 

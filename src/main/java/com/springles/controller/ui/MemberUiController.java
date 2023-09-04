@@ -125,18 +125,13 @@ public class MemberUiController {
 
     // 아이디 찾기 GET
     @GetMapping("/vertification-id")
-    public String vertificationId(
-    ) {
+    public String vertificationId() {
         return "member/vertification-id";
     }
 
     // 비밀번호 찾기 GET
     @GetMapping("/vertification-pw")
-    public String vertificationId(
-            Model model,
-            @ModelAttribute("member") MemberVertifPwRequest memberDto
-    ) {
-        model.addAttribute("member", memberDto);
+    public String vertificationPw() {
         return "member/vertification-pw";
     }
 
