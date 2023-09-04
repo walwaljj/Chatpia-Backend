@@ -33,7 +33,7 @@ public class DayEliminationManager {
     private final GameSessionVoteService gameSessionVoteService;
     private final ObjectMapper objectMapper;
 
-    private void sendMessage(String message) {
+    public void sendMessage(String message) {
         DayEliminationMessage dayEliminationMessage =
                 objectMapper.convertValue(message, DayEliminationMessage.class);
         Long roomId = dayEliminationMessage.getRoomId();

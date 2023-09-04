@@ -51,7 +51,7 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Bean
-    public MessageListenerAdapter dayEliminationListnener(DayEliminationManager subscriber) {
+    public MessageListenerAdapter dayEliminationListener(DayEliminationManager subscriber) {
         return new MessageListenerAdapter(subscriber, "sendMessage");
     }
 }
