@@ -42,31 +42,6 @@ public class GameSessionManager {
         addUser(chatRoom.getId(), member.getMemberName());
     }
 
-    /* 게임 세션 수정 */
-
-    /* 이름으로 채팅방 찾기(페이징) */
-
-
-    /* 방장 닉네임으로 채팅방 찾기 (페이징) */
-
-    /* 방Id로 채팅방 찾기 */
-
-    /* 닉네임과 제목 통합으로 채팅방 찾기 (페이징) */
-
-    /* 모든 채팅방 조회 */
-
-    /* 채팅방 조건 조회 */
-
-    /* 빠른 입장 */
-
-    /* 투표 세션마다 투표 대상 플레이어 리스트 조회 */
-    /*
-     * 전체 투표 : 전체
-     * 경찰 투표 : 전체
-     * 마피아 투표 : 마피아를 제외한 전체
-     * 의사 투표 : 전체
-     * */
-
     /* 게임 시작 */
     public List<Player> startGame(Long roomId, String memberName) {
         GameSession gameSession = findGameByRoomId(roomId);
@@ -125,7 +100,7 @@ public class GameSessionManager {
     }
 
     /* 게임에 유저 추가 */
-    public void addUser(Long roomId, String memberName) {
+    public List<Player> addUser(Long roomId, String memberName) {
         if (playerRedisRepository.findByRoomId(roomId).size() > 10) {
             throw new CustomException(ErrorCode.GAME_HEAD_FULL);
         }
@@ -135,6 +110,7 @@ public class GameSessionManager {
             throw new CustomException(ErrorCode.PLAYER_STILL_INGAME);
         }
         playerRedisRepository.save(Player.of(member.getId(), roomId, memberName));
+        return findPlayersByRoomId(roomId);
     }
 
     /* 게임 정보 업데이트 */
@@ -155,7 +131,7 @@ public class GameSessionManager {
             .orElseThrow(() -> new CustomException(ErrorCode.GAME_NOT_FOUND));
     }
 
-    public GameSession findGamByHostId(Long hostId) {
+    public GameSession findGameByHostId(Long hostId) {
         return gameSessionRedisRepository.findByHostId(hostId)
             .orElseThrow(() -> new CustomException(ErrorCode.GAME_NOT_FOUND));
     }

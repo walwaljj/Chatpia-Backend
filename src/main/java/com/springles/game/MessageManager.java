@@ -16,6 +16,10 @@ public class MessageManager {
         convertAndSend(dest+ roomId, message, roomId, memberName);
     }
 
+    public void sendMessage(String dest, Object o) {
+        simpMessagingTemplate.convertAndSend(dest,o);
+    }
+
     public void convertAndSend(String dest, String message, Long roomId, String memberName) {
         simpMessagingTemplate.convertAndSend(dest,
             ChatMessage.builder()

@@ -34,7 +34,7 @@ public class MessageController {
     private final MessageManager messageManager;
     private final ChatRoomService chatRoomService;
 
-    // 메세지 전송
+    /*메세지 전송*/
     @MessageMapping("/pub/chat/{roomId}")
     public void sendMessage(SimpMessageHeaderAccessor accessor, String message,
         @DestinationVariable Long roomId) {
@@ -42,15 +42,14 @@ public class MessageController {
         Player player = gameSessionManager.findPlayerByMemberName(accessor.getUser().getName());
         // 관전자는 관전자들끼리만 채팅이 가능
         if (player.getRole().equals(GameRole.OBSERVER)) {
-            messageManager.sendMessage("/sub/chat/"+roomId+"/"+"observer", message, roomId,
+            messageManager.sendMessage("/sub/chat/" + roomId + "/" + "observer", message, roomId,
                 player.getMemberName());
             return;
         }
         // 밤 투표시간에는 마피아끼리만 채팅 가능
         if (gameSession.getGamePhase().equals(GamePhase.NIGHT_VOTE)) {
-            if (player.getRole().equals(GameRole.MAFIA))
-            {
-                messageManager.sendMessage("/sub/chat/"+roomId+"/"+"mafia", message, roomId,
+            if (player.getRole().equals(GameRole.MAFIA)) {
+                messageManager.sendMessage("/sub/chat/" + roomId + "/" + "mafia", message, roomId,
                     player.getMemberName());
             }
             return;
@@ -60,30 +59,38 @@ public class MessageController {
             player.getMemberName());
     }
 
-    // 게임 생성
+    /*게임 생성*/
     @MessageMapping("/pub/gameCreate/{roomId}")
     public void sendMessage_GameCreate(@DestinationVariable Long roomId) {
         gameSessionManager.createGame(roomId);
     }
 
-    // 게임 참여
+    /*게임 참여*/
     @MessageMapping("/pub/gameJoin/{roomId}")
     public void sendMessage_GameJoin(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long roomId) {
         String memberName = accessor.getUser().getName();
-        gameSessionManager.addUser(roomId, memberName);
+
+        messageManager.sendMessage(
+            "/sub/chat/" + roomId + "/" + "playerList",
+            gameSessionManager.addUser(roomId, memberName));
+        // 게임 참여 메시지 전송
         messageManager.sendMessage(
             "/sub/chat/" + roomId,
             memberName + "님이 입장하셨습니다.",
             roomId, "admin");
     }
 
-    // 게임 나가기
+    /*게임 나가기*/
     @MessageMapping("/pub/gameExit/{roomId}")
     public void sendMessage_GameExit(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long roomId) {
         String memberName = accessor.getUser().getName();
         gameSessionManager.removePlayer(roomId, memberName);
+        messageManager.sendMessage(
+            "/sub/chat/" + roomId + "/" + "playerList",
+            gameSessionManager.findPlayersByRoomId(roomId)
+        );
         messageManager.sendMessage(
             "/sub/chat/" + roomId,
             memberName + "님이 퇴장하셨습니다.",
@@ -91,7 +98,7 @@ public class MessageController {
         );
     }
 
-    // 게임 시작
+    /*게임 시작*/
     @MessageMapping("/pub/gameStart/{roomId}")
     public void sendMessage_GameStart(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long roomId) {
@@ -101,13 +108,15 @@ public class MessageController {
             roomId, "admin");
 
         List<Player> mafiaList = new ArrayList<>();
-        gameSessionManager.startGame(roomId,accessor.getUser().getName()).forEach(p -> {
+        gameSessionManager.startGame(roomId, accessor.getUser().getName()).forEach(p -> {
             messageManager.sendMessage(
-                "/sub/chat/"+roomId+"/"+p.getMemberId(),
+                "/sub/chat/" + roomId + "/" + p.getMemberId(),
                 "당신은 " + p.getRole() + "입니다.",
                 roomId, "admin"
-                );
-            if (p.getRole().equals(GameRole.MAFIA)) mafiaList.add(p);
+            );
+            if (p.getRole().equals(GameRole.MAFIA)) {
+                mafiaList.add(p);
+            }
         });
 
         String mafiaListString = mafiaList.stream()
@@ -123,12 +132,12 @@ public class MessageController {
         });
     }
 
-    // 게임 정보 수정?
+    /*게임 정보 수정?*/
     @MessageMapping("/pub/gameUpdate/{roomId}")
     public void sendMessage_GameUpdate(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long roomId) {
         messageManager.sendMessage(
-            "/sub/chat/"+roomId,
+            "/sub/chat/" + roomId,
             "게임 정보가 변경되었습니다.",
             roomId, "admin"
         );
