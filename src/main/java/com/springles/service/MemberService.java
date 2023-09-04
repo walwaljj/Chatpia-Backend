@@ -24,7 +24,7 @@ public interface MemberService {
 
     MemberLoginResponse login(MemberLoginRequest memberDto);
 
-    void logout(String authHeader);
+    void logout(String accessToken);
 
     String vertificationId(MemberVertifIdRequest memberDto);
 

@@ -67,17 +67,15 @@ public class MemberUiController {
         return "redirect:profile-settings";
     }
 
-    // 로그아웃 요청
+    // 로그아웃 POST
     @PostMapping("/logout")
     public String logout(
             HttpServletRequest request
-//            @RequestHeader(value = "Authorization") String authHeader
     ) {
-        Cookie[] cookies = request.getCookies();
-        String authHeader = cookies[0].getValue();
-        memberService.logout(authHeader);
+        String accessToken = (String) request.getAttribute("accessToken");
+        memberService.logout(accessToken);
 
-        return "redirect:index";
+        return "redirect:login-page";
     }
 
     // 사용자 정보 요청
