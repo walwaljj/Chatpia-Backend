@@ -175,7 +175,7 @@ public class MemberUiController {
     // 회원 정보 변경 POST
     @PostMapping("/my-page/info")
     public String memberInfo(
-            @ModelAttribute("member") MemberUpdateRequest memberDto,
+            @Valid @ModelAttribute("member") MemberUpdateRequest memberDto,
             HttpServletRequest request
     ) {
         // accessToken 추출
