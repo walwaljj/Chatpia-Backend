@@ -96,7 +96,7 @@ public class MemberController {
 
     @PostMapping("/vertification/id")
     public ResponseEntity<ResResult> vertificationId(
-            @RequestBody MemberVertifIdRequest memberDto
+            @Valid @RequestBody MemberVertifIdRequest memberDto
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_ID_SEND;
 

@@ -126,10 +126,7 @@ public class MemberUiController {
     // 아이디 찾기 GET
     @GetMapping("/vertification-id")
     public String vertificationId(
-            Model model,
-            @ModelAttribute("member") MemberVertifIdRequest memberDto
     ) {
-        model.addAttribute("member", memberDto);
         return "member/vertification-id";
     }
 
