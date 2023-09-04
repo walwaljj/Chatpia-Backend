@@ -86,6 +86,12 @@ public class MemberUiController {
         return memberService.getUserInfo(authHeader);
     }
 
+    // 사용자 프로필 정보 요청
+    @PostMapping("/profile-info")
+    public MemberProfileResponse profileInfo(String accessToken) {
+        return memberService.getUserProfileInfo(accessToken);
+    }
+
     // 쿠키 설정
 //    public void setCookie(String name, String value, HttpServletResponse response) {
 //        Cookie cookie = new Cookie(name, value);
