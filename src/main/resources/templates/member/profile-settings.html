@@ -8,13 +8,12 @@
     <div class="form-container">
         <div class="form-item">
             <div class="mb-4"><h5>프로필 설정</h5></div>
-            <form th:action="@{/v1/profile-settings}" th:object="${member}" method="post">
+            <form id="form">
                 <table class="table">
                     <tbody>
                     <div>
                         <label for="nickname">닉네임</label>
-                        <input type="text" id="nickname" th:field="*{nickname}" class="form-control"
-                               placeholder="닉네임을 입력하세요">
+                        <input type="text" id="nickname" class="form-control" placeholder="닉네임을 입력하세요">
                     </div>
                     <div>
                         <p class="mt-4">프로필 이미지</p>
@@ -61,12 +60,44 @@
                         </div>
                     </div>
                     <div>
-                        <button class="submit_btn" type="submit">프로필 설정</button>
+                        <button class="submit_btn" type="button">프로필 설정</button>
                     </div>
 
                 </table>
             </form>
         </div>
     </div>
+
+    <!---------------------------------------------------------- script ---------------------------------------------------------->
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            $(function () {
+                $('.submit_btn').click((e) => {
+
+                    const form =new FormData();
+                    form.append('nickname', $('#nickname').val())
+                    form.append('profileImgNum', $('input[name="profileImgNum"]:checked').val())
+
+                    const path = 'http://localhost:8080/v1/profile-settings'
+
+                    $.ajax({
+                        url: path,
+                        type: 'POST',
+                        data: form,
+                        contentType: false,
+                        processData: false,
+                        success: function () {
+                            location.href = 'http://localhost:8080/v1/my-page'
+                        },
+                        error: function (response) {
+                            alert(JSON.stringify(response.responseJSON.message))
+                            location.href = 'http://localhost:8080/v1/profile-settings'
+                        }
+                    });
+                });
+                return false;
+            })
+        </script>
+    </th:block>
 </div>
 </html>

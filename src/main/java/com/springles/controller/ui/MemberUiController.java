@@ -221,7 +221,7 @@ public class MemberUiController {
     // 프로필 설정 POST
     @PostMapping("/profile-settings")
     public String profileSetting(
-            @ModelAttribute("member") MemberProfileCreateRequest memberDto,
+            @Valid @ModelAttribute("member") MemberProfileCreateRequest memberDto,
             HttpServletRequest request
     ) {
         // accessToken 추출
