@@ -14,6 +14,7 @@ public class MemberRecordResponse {
 
     private Long memberId;
 
+    /** 역할별 게임 횟수 */
     private Long mafiaCnt;
 
     private Long citizenCnt;
@@ -22,18 +23,17 @@ public class MemberRecordResponse {
 
     private Long policeCnt;
 
+    /** 의사, 마피아로써 살리고 죽인 횟수 */
     private Long saveCnt;
 
     private Long killCnt;
 
+    /** 역할별 이긴 횟수 */
     private Long mafiaWinCnt;
 
     private Long citizenWinCnt;
 
-    private Long totalCnt;
-
-    private Long totalTime;
-
+    /** 역할별 승률 */
     private String mafiaOdds;
 
     private String citizenOdds;
@@ -41,6 +41,12 @@ public class MemberRecordResponse {
     private String policeOdds;
 
     private String doctorOdds;
+
+    /** 전체 게임 횟수 */
+    private Long totalCnt;
+
+    /** 전체 게임 시간 */
+    private Long totalTime;
 
     public static MemberRecordResponse of(MemberRecord memberRecord) {
 
