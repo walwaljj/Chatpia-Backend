@@ -65,6 +65,7 @@
                         data: json,
                         contentType: 'application/json',
                         success: function () {
+                            alert('회원 정보 변경이 완료되었습니다.')
                             location.href = 'http://localhost:8080/v1/my-page/info'
                         },
                         error: function (response) {
