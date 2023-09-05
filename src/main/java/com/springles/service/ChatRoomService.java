@@ -1,5 +1,6 @@
 package com.springles.service;
 
+import com.springles.domain.dto.chatroom.ChatRoomCreateResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
@@ -8,7 +9,7 @@ import com.springles.domain.entity.ChatRoom;
 import java.util.List;
 
 public interface ChatRoomService {
-    ChatRoom createChatRoom(ChatRoomReqDTO chatRoomReqDTO, Long id);
+    ChatRoomCreateResponseDto createChatRoom(ChatRoomReqDTO chatRoomReqDTO, Long id, String memberName);
     ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto chatRoomUpdateReqDto, Long chatroomId);
     void deleteChatRoom(Long memberId, Long chatRoomId);
 
