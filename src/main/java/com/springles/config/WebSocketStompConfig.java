@@ -2,10 +2,13 @@ package com.springles.config;
 
 import com.springles.game.DayDiscussionManager;
 import com.springles.game.DayEliminationManager;
+import com.springles.game.MessageInterceptor;
 import com.springles.game.NightVoteManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -13,7 +16,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final MessageInterceptor interceptor;
 
     // registerWebSocketHandlers (어떤 주소에 어떤 핸들러를 활용할지를 정의하는 메소드) 대신
     // STOMP 규약을 사용하는 WebSocket 엔드포인트를 구성하는 메소드
@@ -45,6 +51,11 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
         // setApplicationDestinationPrefixes 다음에 정의할 서버 측 엔드포인트에 대한 Prefix를 설정하는 메소드
         // /app로 시작하는 메시지만 메시지 헨들러로 라우팅한다고 정의
         registry.setApplicationDestinationPrefixes("/app");
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(interceptor);
     }
 
     @Bean
