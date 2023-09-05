@@ -78,7 +78,7 @@
                             // response data에서 roomId 가져오기
                             const roomId = response.data.id;
                             // 성공할 경우 해당 채팅방으로 바로 이동
-                            location.href = 'http://localhost:8080/chat/'+roomId+'/'+nickName;
+                            location.replace('http://localhost:8080/chat/'+roomId+'/'+nickName);
                         },
                         error: function(response) {
                             alert(JSON.stringify(response.responseJSON.message))
