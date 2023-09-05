@@ -21,7 +21,7 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
-        registry.addEndpoint("/chat");
+        registry.addEndpoint("/chatting");
     }
 
 
@@ -32,17 +32,19 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
         // 수신
         // enableSimpleBroker 메소드로 정의된 경로가 클라이언트가 듣기 위한 경로
         // topic이라는 주제를 가진 메시지를 핸들러로 라우팅하여 해당 주제에 가입한 모든 클라이언트에게 메시지를 방송
-        registry.enableSimpleBroker(
-            "/sub/chat",
-            "/sub/gameStart",
-            "/sub/player",
-            "/sub/joinGame",
-            "/sub/exitGame");
+        registry.enableSimpleBroker("/topic"
+
+//                "/sub/chat",
+//            "/sub/gameStart",
+//            "/sub/player",
+//            "/sub/joinGame",
+//            "/sub/exitGame"
+            );
 
         // 발신
         // setApplicationDestinationPrefixes 다음에 정의할 서버 측 엔드포인트에 대한 Prefix를 설정하는 메소드
         // /app로 시작하는 메시지만 메시지 헨들러로 라우팅한다고 정의
-        registry.setApplicationDestinationPrefixes("/pub");
+        registry.setApplicationDestinationPrefixes("/app");
     }
 
     @Bean
