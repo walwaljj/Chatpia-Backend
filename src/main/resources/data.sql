@@ -1,0 +1,3 @@
+insert into member (email,is_deleted,member_name,password,role) values ('dsd2@naver.com',0,'ssssss','$2a$10$jWpTgBFPm4f77Jklchp7iu/oe0uaB8VeaeBiEueRp3/xOlFLvkPqC', 'USER');
+insert into member_game_info (is_observer, exp, member_game_info_id, member_id, in_game_role, level, nickname, profile_img) values (0,'0','1','1','NONE','BEGINNER','ddd','PROFILE01');
+insert into chat_room (close, capacity, chatroom_id, head, owner_id, password, state, title) values (0, '7', '1', '1', '1', '', 'WAITING', 'dddd');
