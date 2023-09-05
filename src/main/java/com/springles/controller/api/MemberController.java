@@ -5,6 +5,7 @@ import com.springles.domain.dto.member.*;
 import com.springles.domain.dto.response.ResResult;
 import com.springles.service.MemberService;
 import com.springles.valid.ValidationSequence;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,10 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<ResResult> signup(
-            @Valid @RequestBody MemberCreateRequest memberDto
+            @Validated({ValidationSequence.class}) @RequestBody MemberCreateRequest memberDto
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_SAVE;
 
@@ -33,11 +35,14 @@ public class MemberController {
                         .build());
     }
 
+
+    // 회원 정보 관리(수정)
     @PatchMapping("/info")
     public ResponseEntity<ResResult> updateInfo(
-            @Valid @RequestBody MemberUpdateRequest memberDto,
-            @RequestHeader(value = "Authorization") String authHeader
+            @Validated({ValidationSequence.class}) @RequestBody MemberUpdateRequest memberDto,
+            HttpServletRequest request
     ) {
+        String accessToken = (String) request.getAttribute("accessToken");
         ResponseCode responseCode = ResponseCode.MEMBER_UPDATE;
 
         return ResponseEntity.ok(
@@ -45,16 +50,19 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.updateInfo(memberDto, authHeader))
+                        .data(memberService.updateInfo(memberDto, accessToken))
                         .build());
     }
 
+
+    // 회원 탈퇴
     @DeleteMapping
     public ResponseEntity<ResResult> signOut(
-            @Valid @RequestBody MemberDeleteRequest memberDto,
-            @RequestHeader(value = "Authorization") String authHeader
+            @Validated({ValidationSequence.class}) @RequestBody MemberDeleteRequest memberDto,
+            HttpServletRequest request
     ) {
-        memberService.signOut(memberDto, authHeader);
+        String accessToken = (String) request.getAttribute("accessToken");
+        memberService.signOut(memberDto, accessToken);
         ResponseCode responseCode = ResponseCode.MEMBER_DELETE;
 
         return ResponseEntity.ok(
@@ -65,9 +73,11 @@ public class MemberController {
                         .build());
     }
 
+
+    // 로그인
     @PostMapping("/login")
     public ResponseEntity<ResResult> login(
-            @Valid @RequestBody MemberLoginRequest memberDto
+            @Validated({ValidationSequence.class}) @RequestBody MemberLoginRequest memberDto
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_LOGIN;
 
@@ -81,12 +91,16 @@ public class MemberController {
         );
     }
 
+
+    // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<ResResult> logout(
-            @RequestHeader(value = "Authorization") String authHeader
+            HttpServletRequest request
     ) {
+        String accessToken = (String) request.getAttribute("accessToken");
         ResponseCode responseCode = ResponseCode.MEMBER_LOGOUT;
-        memberService.logout(authHeader);
+        memberService.logout(accessToken);
+
         return ResponseEntity.ok(
                 ResResult.builder()
                         .responseCode(responseCode)
@@ -96,6 +110,8 @@ public class MemberController {
         );
     }
 
+
+    // 아이디 찾기
     @PostMapping("/vertification/id")
     public ResponseEntity<ResResult> vertificationId(
             @Validated({ValidationSequence.class}) @RequestBody MemberVertifIdRequest memberDto
@@ -112,6 +128,8 @@ public class MemberController {
         );
     }
 
+
+    // 비밀번호 찾기
     @PostMapping("/vertification/pw")
     public ResponseEntity<ResResult> vertificationPw(
             @Validated({ValidationSequence.class}) @RequestBody MemberVertifPwRequest memberDto
@@ -128,11 +146,14 @@ public class MemberController {
         );
     }
 
+
+    // 프로필 생성
     @PostMapping("/info/profile")
     public ResponseEntity<ResResult> createProfile(
-            @Valid @RequestBody MemberProfileCreateRequest memberDto,
-            @RequestHeader(value = "Authorization") String authHeader
+            @Validated({ValidationSequence.class}) @RequestBody MemberProfileCreateRequest memberDto,
+            HttpServletRequest request
     ) {
+        String accessToken = (String) request.getAttribute("accessToken");
         ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_CREATE;
 
         return ResponseEntity.ok(
@@ -140,16 +161,19 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.createProfile(memberDto, authHeader))
+                        .data(memberService.createProfile(memberDto, accessToken))
                         .build()
         );
     }
 
+
+    // 프로필 수정
     @PatchMapping("/info/profile")
     public ResponseEntity<ResResult> updateProfile(
-            @Valid @RequestBody MemberProfileUpdateRequest memberDto,
-            @RequestHeader(value = "Authorization") String authHeader
+            @Validated({ValidationSequence.class}) @RequestBody MemberProfileUpdateRequest memberDto,
+            HttpServletRequest request
     ) {
+        String accessToken = (String) request.getAttribute("accessToken");
         ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_UPDATE;
 
         return ResponseEntity.ok(
@@ -157,11 +181,13 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.updateProfile(memberDto, authHeader))
+                        .data(memberService.updateProfile(memberDto, accessToken))
                         .build()
         );
     }
 
+
+    // 프로필 조회
     @GetMapping("/info/profile")
     public ResponseEntity<ResResult> readProfile(
             @RequestHeader(value = "Authorization") String authHeader
@@ -178,6 +204,8 @@ public class MemberController {
         );
     }
 
+
+    // 레벨업
     @PatchMapping("/levelup")
     public ResponseEntity<ResResult> levelUp(
             // 테스트를 위해 param으로 받음 -> 추후 @RequestParam 삭제 필요
@@ -195,6 +223,8 @@ public class MemberController {
         );
     }
 
+
+    // 멤버 게임 기록 조회
     @GetMapping("/record")
     public ResponseEntity<ResResult> readRecord(
             @RequestHeader(value = "Authorization") String authHeader
@@ -211,6 +241,8 @@ public class MemberController {
         );
     }
 
+
+    // 멤버 게임 기록 업데이트
     @PatchMapping("/record")
     public ResponseEntity<ResResult> updateRecord(
             // 테스트를 위해 param으로 받음 -> 추후 @RequestParam 삭제 필요

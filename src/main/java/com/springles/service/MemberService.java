@@ -4,6 +4,7 @@ import com.springles.domain.constants.Level;
 import com.springles.domain.dto.member.*;
 import com.springles.domain.entity.GameRecord;
 import com.springles.domain.entity.MemberRecord;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.util.Map;
@@ -18,7 +19,7 @@ public interface MemberService {
 
     String signUp(MemberCreateRequest memberDto);
 
-    String updateInfo(MemberUpdateRequest memberDto, String authHeader);
+    String updateInfo(MemberUpdateRequest memberDto, String accessToken);
 
     void signOut(MemberDeleteRequest memberDto, String accessToken);
 

@@ -43,20 +43,24 @@
             $(function () {
                 $('.submit_btn').click((e) => {
 
-                    const form =new FormData();
-                    form.append('memberName', $('#memberName').val())
-                    form.append('email', $('#email').val())
-                    form.append('password', $('#password').val())
-                    form.append('passwordConfirm', $('#passwordConfirm').val())
+                    const memberName = $('#memberName').val()
+                    const email = $('#email').val()
+                    const password = $('#password').val()
+                    const passwordConfirm = $('#passwordConfirm').val()
+                    const json = JSON.stringify({
+                        'memberName': memberName,
+                        'email': email,
+                        'password': password,
+                        'passwordConfirm': passwordConfirm
+                    });
 
-                    const path = 'http://localhost:8080/v1/signup'
+                    const path = 'http://localhost:8080/member/signup'
 
                     $.ajax({
                         url: path,
                         type: 'POST',
-                        data: form,
-                        contentType: false,
-                        processData: false,
+                        data: json,
+                        contentType: 'application/json',
                         success: function () {
                             location.href = 'http://localhost:8080/v1/login-page'
                         },

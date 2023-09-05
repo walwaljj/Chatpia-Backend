@@ -74,24 +74,26 @@
             $(function () {
                 $('.submit_btn').click((e) => {
 
-                    const form =new FormData();
-                    form.append('nickname', $('#nickname').val())
-                    form.append('profileImgNum', $('input[name="profileImgNum"]:checked').val())
+                    const nickname = $('#nickname').val()
+                    const profileImgNum = $('input[name="profileImgNum"]:checked').val()
+                    const json = JSON.stringify({
+                        'nickname': nickname,
+                        'profileImgNum': profileImgNum
+                    });
 
-                    const path = 'http://localhost:8080/v1/profile-settings'
+                    const path = 'http://localhost:8080/member/info/profile'
 
                     $.ajax({
                         url: path,
                         type: 'POST',
-                        data: form,
-                        contentType: false,
-                        processData: false,
+                        data: json,
+                        contentType: 'application/json',
                         success: function () {
-                            location.href = 'http://localhost:8080/v1/my-page'
+                            alert('프로필 생성이 완료되었습니다.')
+                            location.href = 'http://localhost:8080/v1/index'
                         },
                         error: function (response) {
                             alert((response.responseJSON.message).split('##')[0])
-                            location.href = 'http://localhost:8080/v1/profile-settings'
                         }
                     });
                 });
