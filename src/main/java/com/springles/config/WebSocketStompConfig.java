@@ -54,4 +54,6 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
     public MessageListenerAdapter dayEliminationListener(DayEliminationManager subscriber) {
         return new MessageListenerAdapter(subscriber, "sendMessage");
     }
+
+
 }
