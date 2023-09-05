@@ -4,6 +4,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       lang="en" layout:decorate="~{layouts/basic}">
 
+<body onload="connect()">
 <div layout:fragment="header">
     <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #666666; height: 10vh;">
         <!--        <div sec:authorize="isAuthenticated()">-->
@@ -133,7 +134,7 @@
                 </div>
                 <!---------채팅 입력 input ----------------->
                 <form class="container row" id="message-form">
-                    <input class="chat_input_ui col-11" style="margin:0;" type="text" id="message"/>
+                    <input class="chat_input_ui col-11" style="margin:0;" type="text" id="message" placeholder="Write a message..."/>
                     <button class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px" type="submit">보내기
                     </button>
                 </form>
@@ -145,11 +146,6 @@
     <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
     <script src="/js/stomp.js"></script>
     <script type="text/javascript">
-
-        window.onload = function () {
-            connect();
-        };
-
         let stompClient = null;
         const pathname = window.location.pathname;
         const roomId = parseInt(pathname.split("/")[2]);
@@ -166,16 +162,11 @@
 
         function connect() {
             getRoomName();
-            // 최초의 연결을 위한 URL은 동일하게 ws://localhost:8080/chatting 으로
             const socket = new WebSocket('ws://localhost:8080/chatting');
-            // Stomp.over() 를 사용해 STOMP 통신을 할것이라 지정
             stompClient = Stomp.over(socket);
-            stompClient.connect({}, function (frame) {
+            stompClient.connect({}, function(frame) {
                 console.log('Connected: ' + frame);
-                // subscribe 메소드를 통해 /topic/${roomId} 에 구독했음을 확인
-                // roomId 의 경우 어떤 경로로 들어왔는지에 따라 바뀌는 동작이며, 후에 서버에서 메시지를 전달할때 클라이언트를 구분하기 위한 URL의 역할
-                // 연결을 위한 엔드포인트는 ws://localhost:8080/chatting 하나로 유지하면서, 연결된 사용자들을 /topic 이라고 하는 경로를 통해 다시 구분
-                stompClient.subscribe(`/topic/${roomId}`, function (message) {
+                stompClient.subscribe(`/topic/${roomId}`, function(message) {
                     receiveMessage(JSON.parse(message.body));
                 });
             });
@@ -194,7 +185,6 @@
             event.preventDefault()
             const messageInput = document.getElementById('message');
             const message = messageInput.value
-            // 요청을 보내는 위치는 Configuration 의 setApplicationDestinationPrefixes 와 MessageMapping 의 값을 합쳐서 활용
             stompClient.send("/app/chat", {
                     "Authorization": "Bearer Token_here"
                 },
@@ -248,4 +238,5 @@
 
     </script>
 </div>
+</body>
 </html>

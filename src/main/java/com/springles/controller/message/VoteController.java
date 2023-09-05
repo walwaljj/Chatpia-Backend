@@ -6,10 +6,12 @@ import com.springles.domain.dto.vote.ConfirmResultResponseDto;
 import com.springles.domain.dto.vote.GameSessionVoteRequestDto;
 import com.springles.domain.dto.vote.VoteResultResponseDto;
 import com.springles.domain.entity.GameSession;
+import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.game.ChatMessage;
 import com.springles.game.GameSessionManager;
+import com.springles.repository.PlayerRedisRepository;
 import com.springles.service.GameSessionVoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,8 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -30,6 +34,36 @@ public class VoteController {
     private final GameSessionManager gameSessionManager;
     private final GameSessionVoteService gameSessionVoteService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final PlayerRedisRepository playerRedisRepository;
+
+    @MessageMapping("/pub/chat/{roomId}/start")
+    private void voteStart (SimpMessageHeaderAccessor accessor,
+                            @DestinationVariable Long roomId,
+                            @Payload GameSessionVoteRequestDto request) {
+        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+        gameSession.changePhase(GamePhase.DAY_DISCUSSION, 100);
+        gameSession.passADay();
+
+        // 종료된 게임인지 체크
+        if (!gameSessionManager.existRoomByRoomId(roomId)) {
+            throw new CustomException(ErrorCode.GAME_NOT_FOUND);
+        }
+
+        log.info("Room {} start Day {} {} ", gameSession.getRoomId(), gameSession.getDay(),
+                gameSession.getGamePhase());
+
+        List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
+
+        Map<Long, GameRole> alivePlayerMap = new HashMap<>();
+        for (Player player : players) {
+            if (player.isAlive()) {
+                alivePlayerMap.put(player.getMemberId(), player.getRole());
+            }
+        }
+
+        gameSessionVoteService.startVote(roomId, gameSession.getPhaseCount(),
+                gameSession.getGamePhase(), gameSession.getTimer(), alivePlayerMap);
+    }
 
     @MessageMapping("/pub/chat/{roomId}/vote")
     private void dayVote(SimpMessageHeaderAccessor accessor,
