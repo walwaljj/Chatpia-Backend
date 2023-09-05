@@ -40,7 +40,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         /** 쿠키에서 accessToken과 refreshTokenId 추출 */
         if (cookies != null) {
-            log.info("쿠키 != null");
+            //log.info("쿠키 != null");
 
             for (Cookie cookie : cookies) {
                 if ("accessToken".equals(cookie.getName())) {
@@ -54,11 +54,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             /**  쿠키에 accessToken이 존재할 경우 */
             if (!accessToken.equals("")) {
-                log.info("쿠키에 accessToken이 존재");
+                //log.info("쿠키에 accessToken이 존재");
 
                 // accessToken 로그아웃 여부 체크
                 if (jwtTokenUtils.isNotLogout(accessToken)) {
-                    log.info("로그아웃 안됨");
+                    //log.info("로그아웃 안됨");
 
                     /* accessToken 유효성 체크
                      * 0 : 유효하지 않은 JWT 서명, 지원되지 않는 JWT토큰, 잘못된 JWT 토큰
@@ -66,7 +66,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                      * 2 : 유효기간이 만료된 토큰
                      * */
                     if (jwtTokenUtils.validate(accessToken) != 0) {
-                        log.info("validate(accessToken) != 0");
+                        //log.info("validate(accessToken) != 0");
 
                         // accessToken 유효기간 만료 or 짧게 남음 체크
                         if ((jwtTokenUtils.validate(accessToken) == 2)

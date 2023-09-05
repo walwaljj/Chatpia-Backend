@@ -166,9 +166,12 @@
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function(frame) {
                 console.log('Connected: ' + frame);
-                stompClient.subscribe(`/topic/${roomId}`, function(message) {
+                stompClient.subscribe(`/sub/chat/${roomId}`, function(message) {
                     receiveMessage(JSON.parse(message.body));
                 });
+                stompClient.subscribe(`/sub/chat/${roomId}/"playerList`, function (message){
+                    // 채팅방 참여자 목록 갱신
+                })
             });
         }
 
@@ -185,14 +188,10 @@
             event.preventDefault()
             const messageInput = document.getElementById('message');
             const message = messageInput.value
-            stompClient.send("/app/chat", {
+            stompClient.send(`/pub/chat/${roomId}`, {
                     "Authorization": "Bearer Token_here"
                 },
-                JSON.stringify({
-                    'roomId': roomId,
-                    'sender': nickname,
-                    'message': message
-                }));
+                message);
             messageInput.value = null
         })
 

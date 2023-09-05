@@ -111,7 +111,7 @@ public class JwtTokenUtils {
     public int validate(String accessToken) {
         try {
             jwtParser.parseClaimsJws(accessToken).getBody();
-            log.info("유효한 토큰");
+            //log.info("유효한 토큰");
             return 1;
         } catch (ExpiredJwtException e) {
             log.warn("유효기간이 만료된 token");

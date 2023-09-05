@@ -1,11 +1,14 @@
 package com.springles.game;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springles.domain.dto.member.MemberCreateRequest;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.jwt.JwtTokenUtils;
 import java.util.ArrayList;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -19,34 +22,15 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Configuration
+@Slf4j
 public class MessageInterceptor implements ChannelInterceptor {
 
     private final JwtTokenUtils tokenUtils;
+    private final ObjectMapper objectMapper;
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message,
-            StompHeaderAccessor.class);
 
-        if (accessor.getCommand().equals(StompCommand.CONNECT)) {
-            String accessToken = accessor.getFirstNativeHeader("Authorization");
-            /** tokenUtils.validate 메소드가 'boolean 값 반환 -> exception 케이스에 따른 int 타입 반환'으로 변경되어 코드 수정
-             * 0 : 유효하지 않은 JWT 서명, 지원되지 않는 JWT토큰, 잘못된 JWT 토큰
-             * 1 : 유효한 토큰
-             * 2 : 유효기간이 만료된 토큰
-             *  */
-            if (accessToken == null || tokenUtils.validate(accessToken) != 1) {
-                throw new CustomException(ErrorCode.NOT_AUTHORIZED_TOKEN);
-            }
-
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                MemberCreateRequest.builder()
-                    .memberName(tokenUtils.parseClaims(accessToken).getSubject())
-                    .build(),
-                accessToken, new ArrayList<>()
-            );
-
-            accessor.setUser(authenticationToken);
-        }
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         return message;
     }
 }
