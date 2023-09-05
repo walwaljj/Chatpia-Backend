@@ -52,8 +52,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // 공개방 선택 - 비밀번호 입력한 경우라면
         if (!chatRoomReqDTO.getClose() && !chatRoomReqDTO.getPassword().isEmpty()) throw new CustomException(ErrorCode.OPEN_PASSWORD);
 
-        ChatRoom chatRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO, id));
-
         // 채팅방 생성하기
         ChatRoom savedRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO, id));
         // data return

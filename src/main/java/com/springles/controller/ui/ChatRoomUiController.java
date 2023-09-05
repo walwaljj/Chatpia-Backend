@@ -27,35 +27,10 @@ public class ChatRoomUiController {
     private final MemberUiController memberUiController;
     private final ChatRoomService chatRoomService;
 
-    // 홈으로 가는 controller : addAttribute 로 username 을 전달 해주고 있다.
-//    @GetMapping("/detail.html")
-//    public String detail(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        if (userDetails != null) {
-//            model.addAttribute("username", userDetails.getUsername());  <-- 이 부분
-//        }
-//        return "detail";
-
     // 채팅방 만들기 페이지 (GET)
     @GetMapping("add")
     public String chatroom() {
         return "home/add";
-    }
-
-    // 채팅방 만들기 (POST)
-    @PostMapping("add")
-    public String createRoom(){
-//    public String createRoom(@ModelAttribute("requestDto") @Valid ChatRoomReqDTO requestDto, HttpServletRequest request){
-
-        // 쿠키에서 accessToken 가져오기
-//        Cookie[] cookies = request.getCookies();
-//        String accessToken = cookies[0].getValue();
-//        MemberInfoResponse info = memberUiController.info(accessToken);
-//        Long id = info.getId();
-//        log.info(String.valueOf(id));
-//        chatRoomService.createChatRoom(requestDto,id);
-//        chatRoomService.createChatRoom(requestDto,id);
-
-        return "redirect:index";
     }
 
     // 채팅방 목록 페이지 (전체 조회)
@@ -64,18 +39,13 @@ public class ChatRoomUiController {
                                HttpServletRequest request,
                                @RequestParam(value = "search-content", required = false, defaultValue = "") String searchContent
     ) {
-
         // 목록 전체 조회
         String accessToken = (String)request.getAttribute("accessToken");
-
         // 회원 정보 호출
 //        MemberInfoResponse info = memberUiController.info(accessToken);
-
         // 회원 프로필 정보 호출
         MemberProfileResponse profileInfo = memberUiController.profileInfo(accessToken);
-
         model.addAttribute("member",profileInfo);
-
         // 채팅방 검색
         try {
             List<ChatRoomResponseDto> allByTitleAndNickname = chatRoomService.findAllByTitleAndNickname(searchContent);
