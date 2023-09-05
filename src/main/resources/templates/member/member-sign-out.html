@@ -9,22 +9,53 @@
         <div class="form-item">
             <div class="mb-4"><h5>회원 탈퇴</h5></div>
             <div class="mb-4">
-                <p>탈퇴 이후엔 데이터가 모두 삭제됩니다.<br>
+                <p>탈퇴 이후에는 데이터가 모두 삭제됩니다.<br>
                 회원 탈퇴를 하시겠습니까?</p>
             </div>
-            <form th:action="@{/v1/my-page/sign-out}" th:object="${member}" method="post" >
+            <form id="form">
                 <table class="table">
                     <tbody>
                     <div>
                         <label for="password">비밀번호</label>
-                        <input type="text" id="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
+                        <input type="text" id="password" class="form-control" placeholder="비밀번호를 입력하세요">
                     </div>
                     <div>
-                        <button class="submit_btn" type="submit">회원 탈퇴</button>
+                        <button class="submit_btn" type="button">회원 탈퇴</button>
                     </div>
                 </table>
             </form>
         </div>
     </div>
+
+    <!---------------------------------------------------------- script ---------------------------------------------------------->
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            $(function () {
+                $('.submit_btn').click((e) => {
+
+                    const password = $('#password').val()
+                    const json = JSON.stringify({
+                        'password': password
+                    });
+
+                    const path = 'http://localhost:8080/member'
+
+                    $.ajax({
+                        url: path,
+                        type: 'DELETE',
+                        data: json,
+                        contentType: 'application/json',
+                        success: function () {
+                            location.href = 'http://localhost:8080/v1/login-page'
+                        },
+                        error: function (response) {
+                            alert((response.responseJSON.message).split('##')[0])
+                        }
+                    });
+                });
+                return false;
+            })
+        </script>
+    </th:block>
 </div>
 </html>

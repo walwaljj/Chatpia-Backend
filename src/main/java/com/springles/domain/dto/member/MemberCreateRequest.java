@@ -2,7 +2,9 @@ package com.springles.domain.dto.member;
 
 import com.springles.domain.entity.Member;
 
+import com.springles.valid.ValidationGroups;
 import jakarta.persistence.Column;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,23 +17,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class MemberCreateRequest {
 
     // 게임 아이디
-    @NotBlank(message = "아이디를 입력해주세요.")
+    @NotBlank(message = "아이디를 입력해주세요.##", groups = ValidationGroups.NotEmptyGroup.class)
     @Column(unique = true)
-    @Size(min = 6, max = 20, message = "아이디는 6 ~ 20자 사이여야 합니다.")
-    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "아이디는 영문 대소문자, 숫자만 입력 할 수 있습니다.")
+    @Size(min = 6, max = 20, message = "아이디는 6 ~ 20자 사이여야 합니다.##", groups = ValidationGroups.SizeCheckGroup.class)
+    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "아이디는 영문 대소문자, 숫자만 입력 할 수 있습니다.##", groups = ValidationGroups.PatternCheckGroup.class)
     private String memberName;
 
     // 비밃번호
-    @NotBlank(message = "비밀번호를 입력해주세요.")
-    @Size(min = 6, message = "비밀번호는 6자 이상이여야 합니다.")
-    @Pattern(regexp = "^[a-zA-Z0-9!@#$%^&*]+$", message = "비밀번호는 영문 대소문자, 숫자, 특수문자(!,@,#,$,%,^,&,*)만 입력할 수 있습니다.")
+    @NotBlank(message = "비밀번호를 입력해주세요.##", groups = ValidationGroups.NotEmptyGroup.class)
+    @Size(min = 6, message = "비밀번호는 6자 이상이여야 합니다.##", groups = ValidationGroups.SizeCheckGroup.class)
+    @Pattern(regexp = "^[a-zA-Z0-9!@#$%^&*]+$", message = "비밀번호는 영문 대소문자, 숫자, 특수문자(!,@,#,$,%,^,&,*)만 입력할 수 있습니다.##", groups = ValidationGroups.PatternCheckGroup.class)
     private String password;
 
     // 비밃번호 확인
     private String passwordConfirm;
 
     // 이메일
-    @Email(message = "이메일 형식이 올바르지 않습니다.")
+    @Email(message = "이메일 형식이 올바르지 않습니다.##", groups = ValidationGroups.SizeCheckGroup.class)
     private String email;
 
     // 유저 역할 - Admin(관리자), User(일반유저)

@@ -11,6 +11,7 @@ import com.springles.repository.MemberGameInfoJpaRepository;
 import com.springles.service.MemberService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,9 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenUtils jwtTokenUtils;
     private final JavaMailSender javaMailSender;
 
-    // 사용자 정보 가져오기
+    /**
+     * 사용자 정보 반환
+     */
     @Override
     public MemberInfoResponse getUserInfo(String accessToken) {
 
@@ -47,7 +50,9 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)));
     }
 
-    // 사용자 프로필 정보 가져오기
+    /**
+     * 사용자 프로필 정보 반환
+     */
     public MemberProfileResponse getUserProfileInfo(String accessToken) {
         String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
 
@@ -61,6 +66,9 @@ public class MemberServiceImpl implements MemberService {
         return MemberProfileResponse.of(optionalMemberGameInfo.get(), optionalMember.get().getId());
     }
 
+    /**
+     * 회원가입
+     */
     @Override
     public String signUp(MemberCreateRequest memberDto) {
 
@@ -83,6 +91,10 @@ public class MemberServiceImpl implements MemberService {
         return MemberCreateRequest.fromEntity(memberDto.newMember(passwordEncoder)).toString();
     }
 
+
+    /**
+     * 회원 정보 변경
+     */
     @Override
     public String updateInfo(MemberUpdateRequest memberDto, String accessToken) {
 
@@ -121,6 +133,10 @@ public class MemberServiceImpl implements MemberService {
         return updateMember.toString();
     }
 
+
+    /**
+     * 회원 탈퇴
+     */
     @Override
     @Transactional
     public void signOut(MemberDeleteRequest memberDto, String accessToken) {
@@ -147,6 +163,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 로그인
+     */
     @Override
     @Transactional
     public MemberLoginResponse login(MemberLoginRequest memberDto) {
@@ -197,6 +216,10 @@ public class MemberServiceImpl implements MemberService {
 //                .toString();
     }
 
+
+    /**
+     * 로그아웃
+     */
     @Override
     @Transactional
     public void logout(String accessToken) {
@@ -232,6 +255,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 아이디 찾기
+     */
     @Override
     public String vertificationId(MemberVertifIdRequest memberDto) {
 
@@ -295,6 +321,10 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
+
+    /**
+     * 비밀번호 찾기
+     */
     @Override
     public String vertificationPw(MemberVertifPwRequest memberDto) {
         String memberName = memberDto.getMemberName();
@@ -357,7 +387,10 @@ public class MemberServiceImpl implements MemberService {
                 + ", email : " + email;
     }
 
-    // 임시 비밀번호 생성
+
+    /**
+     * 임시 비밀번호 생성
+     */
     @Override
     public String randomPassword() {
         // 임시 비밀번호
@@ -379,6 +412,10 @@ public class MemberServiceImpl implements MemberService {
         return tempPassword;
     }
 
+
+    /**
+     * 프로필 생성
+     */
     @Override
     public MemberProfileResponse createProfile(MemberProfileCreateRequest memberDto, String accessToken) {
 
@@ -408,6 +445,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 프로필 변경
+     */
     @Override
     public MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String accessToken) {
         String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
@@ -438,6 +478,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 프로필 조회
+     */
     @Override
     public MemberProfileRead readProfile(String accessToken) {
         String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
@@ -471,6 +514,10 @@ public class MemberServiceImpl implements MemberService {
                 .build();
     }
 
+
+    /**
+     * 레벨(경험치) 업데이트
+     */
     @Override
     public MemberProfileResponse levelUp(Long memberId) {
 
@@ -531,11 +578,19 @@ public class MemberServiceImpl implements MemberService {
         return MemberProfileResponse.of(updateLevelAndExp, memberId);
     }
 
+
+    /**
+     * 랭킹 반환
+     */
     @Override
     public Long rank(Long memberId) {
         return memberGameInfoJpaRepository.findByMemberRank(memberId);
     }
 
+
+    /**
+     * 다음 레벨 반환
+     */
     @Override
     public Level nextLevel(Level rawLevel) {
         if (rawLevel.equals(Level.BEGINNER)) {
@@ -552,6 +607,10 @@ public class MemberServiceImpl implements MemberService {
             return Level.NONE;
     }
 
+
+    /**
+     * 멤버 존재 여부 반환
+     */
     @Override
     public boolean memberExists(String memberName) {
         return memberRepository.existsByMemberName(memberName);

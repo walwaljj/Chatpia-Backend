@@ -8,13 +8,12 @@
     <div class="form-container">
         <div class="form-item">
             <div class="mb-4"><h5>프로필 변경</h5></div>
-            <form th:action="@{/v1/profile-change}" th:object="${profile}" method="post">
+            <form id="form">
                 <table class="table">
                     <tbody>
                     <div>
                         <label for="nickname">닉네임</label>
-                        <input type="text" id="nickname" name="nickname" th:value="${rawProfile.getNickname}" class="form-control"
-                               placeholder="닉네임을 입력하세요">
+                        <input type="text" id="nickname" name="nickname" class="form-control" th:value="${rawProfile.getNickname()}" placeholder="닉네임을 입력하세요">
                     </div>
                     <div>
                         <p class="mt-4">프로필 이미지</p>
@@ -61,12 +60,46 @@
                         </div>
                     </div>
                     <div>
-                        <button class="submit_btn" type="submit">프로필 변경</button>
+                        <button class="submit_btn" type="button">프로필 변경</button>
                     </div>
 
                 </table>
             </form>
         </div>
     </div>
+
+    <!---------------------------------------------------------- script ---------------------------------------------------------->
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            $(function () {
+                $('.submit_btn').click((e) => {
+
+                    const nickname = $('#nickname').val()
+                    const profileImgNum = $('input[name="profileImgNum"]:checked').val()
+                    const json = JSON.stringify({
+                        'nickname': nickname,
+                        'profileImgNum': profileImgNum
+                    });
+
+                    const path = 'http://localhost:8080/member/info/profile'
+
+                    $.ajax({
+                        url: path,
+                        type: 'PATCH',
+                        data: json,
+                        contentType: 'application/json',
+                        success: function () {
+                            alert('프로필 변경이 완료되었습니다.')
+                            location.href = 'http://localhost:8080/v1/my-page'
+                        },
+                        error: function (response) {
+                            alert((response.responseJSON.message).split('##')[0])
+                        }
+                    });
+                });
+                return false;
+            })
+        </script>
+    </th:block>
 </div>
 </html>

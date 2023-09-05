@@ -47,5 +47,35 @@
             alert('다시 로그인해주세요.');
         }
     </script>
+
+<!--    <th:block layout:fragment="script">-->
+<!--        <script th:inline="javascript">-->
+<!--            $(function () {-->
+<!--                $('.submit_btn').click((e) => {-->
+
+<!--                    const form =new FormData();-->
+<!--                    form.append('memberName', $('#memberName').val())-->
+<!--                    form.append('password', $('#password').val())-->
+
+<!--                    const path = 'http://localhost:8080/v1/login'-->
+
+<!--                    $.ajax({-->
+<!--                        url: path,-->
+<!--                        type: 'POST',-->
+<!--                        data: form,-->
+<!--                        contentType: false,-->
+<!--                        processData: false,-->
+<!--                        success: function () {-->
+<!--                            location.href = 'http://localhost:8080/v1/index'-->
+<!--                        },-->
+<!--                        error: function (response) {-->
+<!--                            alert((response.responseJSON.message).split('##')[0])-->
+<!--                        }-->
+<!--                    });-->
+<!--                });-->
+<!--                return false;-->
+<!--            })-->
+<!--        </script>-->
+<!--    </th:block>-->
 </div>
 </html>

@@ -8,20 +8,19 @@
     <div class="form-container">
         <div class="form-item">
             <div class="mb-4"><h5>비밀번호 찾기</h5></div>
-            <form th:action="@{/member/vertification/pw}" th:object="${member}" method="post" >
+            <form id="form">
                 <table class="table">
                     <tbody>
                     <div>
                         <label for="email">아이디</label>
-                        <input type="text" id="memberName" th:field="*{memberName}" class="form-control"
-                               placeholder="아이디를 입력하세요">
+                        <input type="text" id="memberName" class="form-control" placeholder="아이디를 입력하세요">
                     </div>
                     <div>
                         <label for="email">이메일</label>
-                        <input type="text" id="email" th:field="*{email}" class="form-control" placeholder="이메일을 입력하세요">
+                        <input type="text" id="email" class="form-control" placeholder="이메일을 입력하세요">
                     </div>
                     <div>
-                        <button class="submit_btn" type="submit">비밀번호 찾기</button>
+                        <button class="submit_btn" type="button">비밀번호 찾기</button>
                     </div>
                     </tbody>
                 </table>
@@ -29,33 +28,38 @@
         </div>
     </div>
 
-<!----------------- 예외 처리 필요 ----------------->
-<!--    <th:block layout:fragment="script">-->
-<!--        <script type="text/javascript">-->
-<!--            $(function () {-->
-<!--                $('.submit_btn').click((e) => {-->
-<!--                    const formData = new FormData()-->
-<!--                    formData.append('memberName', $('#memberName').val());-->
-<!--                    formData.append('email', $('#email').val());-->
+    <!---------------------------------------------------------- script ---------------------------------------------------------->
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            $(function () {
+                $('.submit_btn').click((e) => {
 
-<!--                    $.ajax({-->
-<!--                        url: '/member/vertification/pw',-->
-<!--                        type: 'POST',-->
-<!--                        contentType: false,-->
-<!--                        data: formData,-->
-<!--                        processData: false,-->
-<!--                        success: function () {-->
-<!--                            window.location.href = "http://localhost:8080/v1/vertification-pw?success"-->
-<!--                            alert('메일 전송이 완료되었습니다.')-->
-<!--                        },-->
-<!--                        error: function () {-->
-<!--                            window.location.href = "http://localhost:8080/v1/vertification-pw?error"-->
-<!--                            alert('메일 전송이 실패되었습니다.')-->
-<!--                        },-->
-<!--                    })-->
-<!--                })-->
-<!--            })-->
-<!--        </script>-->
-<!--    </th:block>-->
+                    const memberName = $('#memberName').val()
+                    const email = $('#email').val()
+                    const json = JSON.stringify({
+                        'email': email,
+                        'memberName' : memberName
+                    });
+
+                    const path = 'http://localhost:8080/member/vertification/pw'
+
+                    $.ajax({
+                        url: path,
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: json,
+                        success: function () {
+                            alert('메일 전송이 완료되었습니다.')
+                            location.href = 'http://localhost:8080/v1/login-page'
+                        },
+                        error: function (response) {
+                            alert((response.responseJSON.message).split('##')[0])
+                        }
+                    });
+                });
+                return false;
+            })
+        </script>
+    </th:block>
 </div>
 </html>

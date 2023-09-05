@@ -10,30 +10,28 @@
     <div class="form-container">
         <div class="form-item">
             <div class="mb-4"><h5>회원가입</h5></div>
-            <form th:action="@{/v1/signup}" th:object="${memberDto}" method="post">
+            <form id="form">
+<!--            <form th:action="@{/v1/signup}" th:object="${memberDto}" method="post">-->
                 <table class="table">
                     <tbody>
                     <div>
                         <label for="memberName">아이디</label>
-                        <input type="text" id="memberName" th:field="*{memberName}" class="form-control"
-                               placeholder="아이디를 입력하세요">
+                        <input type="text" id="memberName" class="form-control" placeholder="아이디를 입력하세요">
                     </div>
                     <div>
                         <label for="email">이메일</label>
-                        <input type="text" id="email" th:field="*{email}" class="form-control" placeholder="이메일을 입력하세요">
+                        <input type="text" id="email" class="form-control" placeholder="이메일을 입력하세요">
                     </div>
                     <div>
                         <label for="password">비밀번호</label>
-                        <input type="text" id="password" th:field="*{password}" class="form-control"
-                               placeholder="비밀번호를 입력하세요">
+                        <input type="text" id="password" class="form-control" placeholder="비밀번호를 입력하세요">
                     </div>
                     <div>
                         <label for="passwordConfirm">비밀번호 확인</label>
-                        <input type="text" id="passwordConfirm" th:field="*{passwordConfirm}" class="form-control"
-                               placeholder="비밀번호 확인">
+                        <input type="text" id="passwordConfirm" class="form-control" placeholder="비밀번호 확인">
                     </div>
                     <div>
-                        <button class="submit_btn" type="submit">등록</button>
+                        <button class="submit_btn" type="button">등록</button>
                     </div>
                 </table>
             </form>
@@ -41,59 +39,39 @@
     </div>
 
     <th:block layout:fragment="script">
-        <script type="text/javascript">
+        <script th:inline="javascript">
             $(function () {
                 $('.submit_btn').click((e) => {
-                    const memberName = $('#memberName').val();
-                    const password = $('#password').val();
+
+                    const memberName = $('#memberName').val()
+                    const email = $('#email').val()
+                    const password = $('#password').val()
                     const passwordConfirm = $('#passwordConfirm').val()
-                    const email = $('#email').val();
+                    const json = JSON.stringify({
+                        'memberName': memberName,
+                        'email': email,
+                        'password': password,
+                        'passwordConfirm': passwordConfirm
+                    });
 
-                    if (memberName == '') {
-                        alert('아이디를 입력해주세요');
-                        e.preventDefault();
-                    }
-                    if (password == '') {
-                        alert('패스워드를 입력해주세요');
-                        e.preventDefault();
-                    }
-                    if (passwordConfirm == '') {
-                        alert('패스워드 확인을 입력해주세요');
-                        e.preventDefault();
-                    }
-                    if (email == '') {
-                        alert('메일을 입력해주세요');
-                        e.preventDefault();
-                    }
+                    const path = 'http://localhost:8080/member/signup'
 
-                    if (password != passwordConfirm) {
-                        alert('비밀번호가 일치하지 않습니다.')
-                        e.preventDefault();
-                    } else {
-                        const path = 'http://localhost:8086/v1/signup';
-                        const json = JSON.stringify({
-                            'memberName': memberName,
-                            'password': password,
-                            'email': email
-                        });
-                        $.ajax({
-                            url: path,
-                            type: 'POST',
-                            contentType: 'application/json',
-                            data: json,
-                        }).done((response) => {
-                            if (response === 'success') {
-                                alert('회원가입 성공')
-                                location.href = "http://localhost:8080/v1/index"
-                            } else if (response === 'fail') {
-                                alert('아이디를 변경하세요.');
-                            } else {
-                                alert('회원가입 실패');
-                            }
-                        });
-                    }
+                    $.ajax({
+                        url: path,
+                        type: 'POST',
+                        data: json,
+                        contentType: 'application/json',
+                        success: function () {
+                            location.href = 'http://localhost:8080/v1/login-page'
+                        },
+                        error: function (response) {
+                            console.log(response.responseJSON.message)
+                            alert((response.responseJSON.message).split('##')[0])
+                        }
+                    });
                 });
-            });
+                return false;
+            })
         </script>
     </th:block>
 </div>

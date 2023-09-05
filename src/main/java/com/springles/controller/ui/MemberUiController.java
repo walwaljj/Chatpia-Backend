@@ -3,6 +3,7 @@ package com.springles.controller.ui;
 import com.springles.domain.dto.member.*;
 import com.springles.repository.MemberGameInfoJpaRepository;
 import com.springles.service.MemberService;
+import com.springles.valid.ValidationSequence;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -25,19 +27,10 @@ public class MemberUiController {
 
     // 회원가입 페이지 조회
     @GetMapping("/signup")
-    public String signUpPage(Model model, MemberCreateRequest memberDto) {
-        model.addAttribute("memberDto", memberDto);
+    public String signUpPage() {
         return "member/sign-up";
     }
 
-    // 회원가입 POST 요청
-    @PostMapping("/signup")
-    public String signup(Model model, @Valid MemberCreateRequest memberDto
-    ) {
-        model.addAttribute("memberDto", memberDto);
-        memberService.signUp(memberDto);
-        return "redirect:login-page";
-    }
 
     // 로그인 페이지 조회
     @GetMapping("/login-page")
@@ -48,7 +41,7 @@ public class MemberUiController {
 
     // 로그인 POST
     @PostMapping("/login")
-    public String signup(@ModelAttribute("memberDto") @Valid MemberLoginRequest memberDto, HttpServletResponse response) {
+    public String signup(@ModelAttribute("memberDto") @Validated({ValidationSequence.class}) MemberLoginRequest memberDto, HttpServletResponse response) {
         // 로그인 성공, Token 정보 받기
         MemberLoginResponse memberLoginResponse = memberService.login(memberDto);
         // AccessToken Cookie에 저장
@@ -67,83 +60,22 @@ public class MemberUiController {
         return "redirect:profile-settings";
     }
 
-    // 로그아웃 POST
-    @PostMapping("/logout")
-    public String logout(
-            HttpServletRequest request
-    ) {
-        String accessToken = (String) request.getAttribute("accessToken");
-        memberService.logout(accessToken);
 
-        return "redirect:login-page";
-    }
-
-    // 사용자 정보 요청
-    @PostMapping("/info")
-    public MemberInfoResponse info(String authHeader) {
-        return memberService.getUserInfo(authHeader);
-    }
-
-    // 사용자 프로필 정보 요청
-    @PostMapping("/profile-info")
-    public MemberProfileResponse profileInfo(String accessToken) {
-        return memberService.getUserProfileInfo(accessToken);
-    }
-
-    // 쿠키 설정
-//    public void setCookie(String name, String value, HttpServletResponse response) {
-//        Cookie cookie = new Cookie(name, value);
-//        cookie.setDomain("localhost");
-//        cookie.setPath("/");
-//        cookie.setMaxAge(60*60);
-//        cookie.setHttpOnly(true);
-//        cookie.setSecure(true);
-//        response.addCookie(cookie);
-//    }
-
-    // accessToken 쿠키 설정
-    public void setAtkCookie(String name, String value, HttpServletResponse response) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setDomain("localhost");
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60);  // 1시간(테스트용)
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        response.addCookie(cookie);
-    }
-
-    // refreshToken 쿠키 설정
-    public void setRtkCookie(String name, String value, HttpServletResponse response) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setDomain("localhost");
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 24 * 14);    // 2주
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        response.addCookie(cookie);
-    }
-
-    // 아이디 찾기 GET
+    // 아이디 찾기 페이지 조회
     @GetMapping("/vertification-id")
-    public String vertificationId(
-            Model model,
-            @ModelAttribute("member") MemberVertifIdRequest memberDto
-    ) {
-        model.addAttribute("member", memberDto);
+    public String vertificationId() {
         return "member/vertification-id";
     }
 
-    // 비밀번호 찾기 GET
+
+    // 비밀번호 찾기 페이지 조회
     @GetMapping("/vertification-pw")
-    public String vertificationId(
-            Model model,
-            @ModelAttribute("member") MemberVertifPwRequest memberDto
-    ) {
-        model.addAttribute("member", memberDto);
+    public String vertificationPw() {
         return "member/vertification-pw";
     }
 
-    // 마이페이지
+
+    // 마이페이지 조회
     @GetMapping("/my-page")
     public String memberProflie(
             Model model,
@@ -164,7 +96,7 @@ public class MemberUiController {
         return "member/my-page";
     }
 
-    // 회원 정보 변경 GET
+    // 회원 정보 변경 페이지 조회
     @GetMapping("/my-page/info")
     public String memberInfo(
             Model model,
@@ -180,19 +112,7 @@ public class MemberUiController {
         return "member/member-info";
     }
 
-    // 회원 정보 변경 POST
-    @PostMapping("/my-page/info")
-    public String memberInfo(
-            @ModelAttribute("member") MemberUpdateRequest memberDto,
-            HttpServletRequest request
-    ) {
-        // accessToken 추출
-        String accessToken = (String) request.getAttribute("accessToken");
-        memberService.updateInfo(memberDto, accessToken);
-        return "redirect:info";
-    }
-
-    // 회원 탈퇴 GET
+    // 회원 탈퇴 페이지 조회
     @GetMapping("/my-page/sign-out")
     public String signOut(
             Model model,
@@ -203,20 +123,8 @@ public class MemberUiController {
         return "member/member-sign-out";
     }
 
-    // 회원 탈퇴 POST
-    @PostMapping("/my-page/sign-out")
-    public RedirectView signOut(
-            @ModelAttribute("member") MemberDeleteRequest memberDto,
-            HttpServletRequest request
-    ) {
-        // accessToken 추출
-        String accessToken = (String) request.getAttribute("accessToken");
-        memberService.signOut(memberDto, accessToken);
 
-        return new RedirectView("/v1/login-page");
-    }
-
-    // 프로필 설정 GET
+    // 프로필 설정 페이지 조회
     @GetMapping("/profile-settings")
     public String profileSetting(
             Model model,
@@ -226,20 +134,8 @@ public class MemberUiController {
         return "member/profile-settings";
     }
 
-    // 프로필 설정 POST
-    @PostMapping("/profile-settings")
-    public String profileSetting(
-            @ModelAttribute("member") MemberProfileCreateRequest memberDto,
-            HttpServletRequest request
-    ) {
-        // accessToken 추출
-        String accessToken = (String) request.getAttribute("accessToken");
-        memberService.createProfile(memberDto, accessToken);
 
-        return "redirect:index";
-    }
-
-    // 프로필 변경 GET
+    // 프로필 변경 페이지 조회
     @GetMapping("/profile-change")
     public String profileSetting(
             Model model,
@@ -255,16 +151,40 @@ public class MemberUiController {
         return "member/profile-change";
     }
 
-    // 프로필 변경 POST
-    @PostMapping("/profile-change")
-    public String profileSetting(
-            @ModelAttribute("member") MemberProfileUpdateRequest memberDto,
-            HttpServletRequest request
-    ) {
-        // accessToken 추출
-        String accessToken = (String) request.getAttribute("accessToken");
-        memberService.updateProfile(memberDto, accessToken);
 
-        return "redirect:index";
+    /** 메소드 */
+    // 사용자 정보 요청
+    public MemberInfoResponse info(String authHeader) {
+        return memberService.getUserInfo(authHeader);
+    }
+
+
+    // 사용자 프로필 정보 요청
+    public MemberProfileResponse profileInfo(String accessToken) {
+        return memberService.getUserProfileInfo(accessToken);
+    }
+
+
+    // accessToken 쿠키 설정
+    public void setAtkCookie(String name, String value, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setDomain("localhost");
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60);  // 1시간(테스트용)
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+    }
+
+
+    // refreshToken 쿠키 설정
+    public void setRtkCookie(String name, String value, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setDomain("localhost");
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24 * 14);    // 2주
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
     }
 }

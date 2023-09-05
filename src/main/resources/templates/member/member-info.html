@@ -8,32 +8,28 @@
     <div class="form-container">
         <div class="form-item">
             <div class="mb-4"><h5>회원 정보 관리</h5></div>
-            <form th:action="@{/v1/my-page/info}" th:object="${memberInfo}" method="post">
+            <form id="form">
                 <table class="table">
                     <tbody>
                     <div>
                         <label for="memberName">아이디</label>
-                        <input type="text" id="memberName" th:name="*{memberName}"
-                               th:value="${rawMemberInfo.getMemberName()}" th:disabled="${show != 'Y'} ? 'disabled'"
+                        <input type="text" id="memberName" th:value="${rawMemberInfo.getMemberName()}" th:disabled="${show != 'Y'} ? 'disabled'"
                                class="form-control">
                     </div>
                     <div>
                         <label for="email">이메일(선택)</label>
-                        <input type="text" id="email" name="email" th:value="${rawMemberInfo.getEmail()}"
-                               class="form-control" placeholder="이메일을 입력하세요">
+                        <input type="text" id="email" name="email" th:value="${rawMemberInfo.getEmail()}" class="form-control" placeholder="이메일을 입력하세요">
                     </div>
                     <div>
                         <label for="password">비밀번호</label>
-                        <input type="text" id="password" th:field="*{password}" class="form-control"
-                               placeholder="비밀번호를 입력하세요">
+                        <input type="text" id="password" class="form-control" placeholder="비밀번호를 입력하세요">
                     </div>
                     <div>
                         <label for="passwordConfirm">비밀번호 확인</label>
-                        <input type="text" id="passwordConfirm" th:field="*{passwordConfirm}" class="form-control"
-                               placeholder="비밀번호 확인">
+                        <input type="text" id="passwordConfirm" class="form-control" placeholder="비밀번호 확인">
                     </div>
                     <div>
-                        <button class="submit_btn" type="submit">회원정보 변경</button>
+                        <button class="submit_btn" type="button">회원정보 변경</button>
                     </div>
                 </table>
             </form>
@@ -43,5 +39,43 @@
             </div>
         </div>
     </div>
+
+    <!---------------------------------------------------------- script ---------------------------------------------------------->
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            $(function () {
+                $('.submit_btn').click((e) => {
+
+                    const memberName = $('#memberName').val()
+                    const email = $('#email').val()
+                    const password = $('#password').val()
+                    const passwordConfirm = $('#passwordConfirm').val()
+                    const json = JSON.stringify({
+                        'memberName': memberName,
+                        'email': email,
+                        'password': password,
+                        'passwordConfirm': passwordConfirm
+                    });
+
+                    const path = 'http://localhost:8080/member/info'
+
+                    $.ajax({
+                        url: path,
+                        type: 'PATCH',
+                        data: json,
+                        contentType: 'application/json',
+                        success: function () {
+                            alert('회원 정보 변경이 완료되었습니다.')
+                            location.href = 'http://localhost:8080/v1/my-page/info'
+                        },
+                        error: function (response) {
+                            alert((response.responseJSON.message).split('##')[0])
+                        }
+                    });
+                });
+                return false;
+            })
+        </script>
+    </th:block>
 </div>
 </html>
