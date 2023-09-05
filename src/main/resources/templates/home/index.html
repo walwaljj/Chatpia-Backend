@@ -101,12 +101,43 @@
                                 </div>
                             </a>
                             <!--------------------비밀방 비밀번호 입력 ----------------------->
-                            <div th:id="'passwordInput_' + ${room.id}" class="password-input" style="display: none;">
-                                <input type="text" name="userInput" id="userInput"/>
-                                <button type="button" id="password-submit" name="password-submit" class="submit_btn"
-                                        th:attr="data-roomId=${room.id},data-nickName=${member.getNickname()},data-isClose=${room.close},data-roomPassword=${room.password}">
-                                    확인
-                                </button>
+<!--                            <div th:id="'passwordInput_' + ${room.id}" class="password-input" style="display: none;">-->
+<!--                                <input type="text" name="userInput" id="userInput"/>-->
+<!--                                <button type="button" id="password-submit" name="password-submit" class="submit_btn"-->
+<!--                                        th:attr="data-roomId=${room.id},data-nickName=${member.getNickname()},data-isClose=${room.close},data-roomPassword=${room.password}">-->
+<!--                                    확인-->
+<!--                                </button>-->
+<!--                            </div>-->
+                            <!-- Modal -->
+
+                            <!--------------------비밀방 비밀번호 입력 Modal ----------------------->
+                            <div th:id="'passwordInput_' + ${room.id}" id="modal" class="searchModal password-input">
+                                <div class="search-modal-content">
+                                    <div class="page-header">
+                                        <h1>MODAL</h1>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <h5> 비밀번호를 입력하세요.</h5>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div th:id="'passwordInput_' + ${room.id}" class="password-input">
+                                                        <input type="text" name="userInput" id="userInput"/>
+                                                        <button type="button" id="password-submit" name="password-submit" class="submit_btn"
+                                                                th:attr="data-roomId=${room.id},data-nickName=${member.getNickname()},data-isClose=${room.close},data-roomPassword=${room.password}">
+                                                            확인
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="btn" onClick="closeModal()">
+            <span class="pop_bt modalCloseBtn">닫기</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -116,6 +147,12 @@
             <!---------------------- script ----------------------->
             <th:block layout:fragment="script">
                 <script th:inline="javascript">  // 자바스크립트 인라인
+
+                // Modal 닫기
+                function closeModal() {
+                    $('.searchModal').hide();
+                };
+
                 $('#checkbox').on('click', function () {
                     const checkBtn = document.getElementById('checkbox');
                     let allChatRooms = [[${allChatRooms}]];
@@ -158,7 +195,8 @@
                     console.log(nickname);
 
                     if (isClose === 'true') { // 비밀방이면
-                        passwordInputDiv.style.display = "block"; // 비밀번호 입력가능한 input 을 표출
+                        passwordInputDiv.style.display = "block"; // 비밀번호 입력가능한 Modal 표출
+                        // $("#modal").show();
                     } else {
                         window.location.href = '/chat/' + roomId + '/' + nickname; // 오픈방이면 input 을 보여주지 않고 chat room 으로 이동시킴
                     }
