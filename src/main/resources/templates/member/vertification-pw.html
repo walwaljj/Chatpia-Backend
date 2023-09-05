@@ -37,8 +37,8 @@
                     const memberName = $('#memberName').val()
                     const email = $('#email').val()
                     const json = JSON.stringify({
-                        'memberName' : memberName,
-                        'email': email
+                        'email': email,
+                        'memberName' : memberName
                     });
 
                     const path = 'http://localhost:8080/member/vertification/pw'
@@ -53,7 +53,7 @@
                             location.href = 'http://localhost:8080/v1/login-page'
                         },
                         error: function (response) {
-                            alert(JSON.stringify(response.responseJSON.message))
+                            alert((response.responseJSON.message).split('##')[0])
                         }
                     });
                 });

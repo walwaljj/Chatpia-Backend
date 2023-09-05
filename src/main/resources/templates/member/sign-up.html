@@ -61,7 +61,8 @@
                             location.href = 'http://localhost:8080/v1/login-page'
                         },
                         error: function (response) {
-                            alert(JSON.stringify(response.responseJSON.message))
+                            console.log(response.responseJSON.message)
+                            alert((response.responseJSON.message).split('##')[0])
                         }
                     });
                 });

@@ -3,6 +3,7 @@ package com.springles.controller.ui;
 import com.springles.domain.dto.member.*;
 import com.springles.repository.MemberGameInfoJpaRepository;
 import com.springles.service.MemberService;
+import com.springles.valid.ValidationSequence;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -32,7 +34,7 @@ public class MemberUiController {
 
     // 회원가입 POST 요청
     @PostMapping("/signup")
-    public String signup(Model model, @Valid MemberCreateRequest memberDto
+    public String signup(Model model, @Validated({ValidationSequence.class}) MemberCreateRequest memberDto
     ) {
         model.addAttribute("memberDto", memberDto);
         memberService.signUp(memberDto);
@@ -48,7 +50,7 @@ public class MemberUiController {
 
     // 로그인 POST
     @PostMapping("/login")
-    public String signup(@ModelAttribute("memberDto") @Valid MemberLoginRequest memberDto, HttpServletResponse response) {
+    public String signup(@ModelAttribute("memberDto") @Validated({ValidationSequence.class}) MemberLoginRequest memberDto, HttpServletResponse response) {
         // 로그인 성공, Token 정보 받기
         MemberLoginResponse memberLoginResponse = memberService.login(memberDto);
         // AccessToken Cookie에 저장
@@ -175,7 +177,7 @@ public class MemberUiController {
     // 회원 정보 변경 POST
     @PostMapping("/my-page/info")
     public String memberInfo(
-            @Valid @ModelAttribute("member") MemberUpdateRequest memberDto,
+            @Validated({ValidationSequence.class}) @ModelAttribute("member") MemberUpdateRequest memberDto,
             HttpServletRequest request
     ) {
         // accessToken 추출
@@ -198,7 +200,7 @@ public class MemberUiController {
     // 회원 탈퇴 POST
     @PostMapping("/my-page/sign-out")
     public RedirectView signOut(
-            @Valid @ModelAttribute("member") MemberDeleteRequest memberDto,
+            @Validated({ValidationSequence.class}) @ModelAttribute("member") MemberDeleteRequest memberDto,
             HttpServletRequest request
     ) {
         // accessToken 추출
@@ -221,7 +223,7 @@ public class MemberUiController {
     // 프로필 설정 POST
     @PostMapping("/profile-settings")
     public String profileSetting(
-            @Valid @ModelAttribute("member") MemberProfileCreateRequest memberDto,
+            @Validated({ValidationSequence.class}) @ModelAttribute("member") MemberProfileCreateRequest memberDto,
             HttpServletRequest request
     ) {
         // accessToken 추출
@@ -250,7 +252,7 @@ public class MemberUiController {
     // 프로필 변경 POST
     @PostMapping("/profile-change")
     public String profileSetting(
-            @Valid @ModelAttribute("member") MemberProfileUpdateRequest memberDto,
+            @Validated({ValidationSequence.class}) @ModelAttribute("member") MemberProfileUpdateRequest memberDto,
             HttpServletRequest request
     ) {
         // accessToken 추출

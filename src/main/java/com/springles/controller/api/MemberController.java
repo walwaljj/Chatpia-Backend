@@ -4,9 +4,11 @@ import com.springles.domain.constants.ResponseCode;
 import com.springles.domain.dto.member.*;
 import com.springles.domain.dto.response.ResResult;
 import com.springles.service.MemberService;
+import com.springles.valid.ValidationSequence;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -96,7 +98,7 @@ public class MemberController {
 
     @PostMapping("/vertification/id")
     public ResponseEntity<ResResult> vertificationId(
-            @Valid @RequestBody MemberVertifIdRequest memberDto
+            @Validated({ValidationSequence.class}) @RequestBody MemberVertifIdRequest memberDto
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_ID_SEND;
 
@@ -112,7 +114,7 @@ public class MemberController {
 
     @PostMapping("/vertification/pw")
     public ResponseEntity<ResResult> vertificationPw(
-            @Valid @RequestBody MemberVertifPwRequest memberDto
+            @Validated({ValidationSequence.class}) @RequestBody MemberVertifPwRequest memberDto
     ) {
         ResponseCode responseCode = ResponseCode.MEMBER_PW_SEND;
 

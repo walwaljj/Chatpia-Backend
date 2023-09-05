@@ -67,7 +67,7 @@
                             location.href = 'http://localhost:8080/v1/index'
                         },
                         error: function (response) {
-                            alert(JSON.stringify(response.responseJSON.message))
+                            alert((response.responseJSON.message).split('##')[0])
                         }
                     });
                 });

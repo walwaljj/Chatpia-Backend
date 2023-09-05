@@ -1,5 +1,6 @@
 package com.springles.domain.dto.member;
 
+import com.springles.valid.ValidationGroups;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -14,6 +15,6 @@ public class MemberDeleteRequest {
     private String memberName;
 
     // 비밃번호
-    @NotBlank(message = "비밀번호를 입력해주세요.")
+    @NotBlank(message = "비밀번호를 입력해주세요.##", groups = ValidationGroups.NotEmptyGroup.class)
     private String password;
 }

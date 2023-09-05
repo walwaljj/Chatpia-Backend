@@ -90,7 +90,7 @@
                             location.href = 'http://localhost:8080/v1/my-page'
                         },
                         error: function (response) {
-                            alert(JSON.stringify(response.responseJSON.message))
+                            alert((response.responseJSON.message).split('##')[0])
                             location.href = 'http://localhost:8080/v1/profile-settings'
                         }
                     });
