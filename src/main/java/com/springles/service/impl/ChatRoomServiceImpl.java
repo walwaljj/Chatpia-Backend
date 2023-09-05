@@ -1,6 +1,7 @@
 package com.springles.service.impl;
 
 
+import com.springles.domain.dto.chatroom.ChatRoomCreateResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.constants.ChatRoomCode;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
@@ -40,7 +41,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     // 채팅방 생성
     @Transactional
     @Override
-    public ChatRoom createChatRoom(ChatRoomReqDTO chatRoomReqDTO, Long id) {
+    public ChatRoomCreateResponseDto createChatRoom(ChatRoomReqDTO chatRoomReqDTO, Long id, String memberName) {
         // request 자체가 빈 경우
         if (chatRoomReqDTO == null) {
             throw new CustomException(ErrorCode.REQUEST_EMPTY);
@@ -54,7 +55,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         ChatRoom chatRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO, id));
 
         // 채팅방 생성하기
-        return chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO, id));
+        ChatRoom savedRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO, id));
+        // data return
+        return ChatRoomCreateResponseDto.of(savedRoom, memberName);
+
+
     }
 
     /**

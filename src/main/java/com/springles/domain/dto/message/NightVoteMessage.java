@@ -1,6 +1,7 @@
 package com.springles.domain.dto.message;
 
 import com.springles.domain.constants.GameRole;
+import com.springles.domain.entity.Player;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,4 +16,5 @@ import java.util.Map;
 public class NightVoteMessage {
     private Long roomId;
     private Map<GameRole, Long> roleVoteResult;
+    private Map<Long, Player> suspectResult;
 }

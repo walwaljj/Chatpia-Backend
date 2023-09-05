@@ -35,6 +35,7 @@ public class ChatRoomController {
         String accessToken = (String) request.getAttribute("accessToken");
         MemberInfoResponse info = memberUiController.info(accessToken);
         Long id = info.getId();
+        String memberName = info.getMemberName();
 
         log.info("MemberCreateRequest.getMemberName() = {}",((MemberCreateRequest) auth.getPrincipal()).getMemberName()); // 인증 된 멤버 이름
         log.info("MemberCreateRequest.isAuthenticated() = {}", auth.isAuthenticated()); // 인증 되었다면 true
@@ -45,7 +46,7 @@ public class ChatRoomController {
                 .responseCode(responseCode)
                 .code(responseCode.getCode())
                 .message(responseCode.getMessage())
-                .data(chatRoomService.createChatRoom(chatRoomReqDTO, id))
+                .data(chatRoomService.createChatRoom(chatRoomReqDTO, id, memberName))
                 .build(), HttpStatus.OK);
     }
 

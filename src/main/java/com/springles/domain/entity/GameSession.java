@@ -49,7 +49,7 @@ public class GameSession {
             .hostId(chatRoom.getOwnerId())
             .gamePhase(GamePhase.READY)
             .phaseCount(0)
-            .day(1)
+            .day(0)
             .build();
     }
 
@@ -61,7 +61,7 @@ public class GameSession {
         this.alivePolice += gameRoleNum.getPolice();
         this.gamePhase = GamePhase.START;
         this.phaseCount = 0;
-        this.day = 1;
+        this.day = 0;
         return this;
     }
 

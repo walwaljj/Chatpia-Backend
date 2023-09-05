@@ -150,9 +150,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     SecurityContextHolder.setContext(context);
                 }
 
-                // refreshToken이 DB 상에 존재하지 않거나 유효하지 않는 경우
+                // refreshToken이 DB 상에 존재하지 않거나 유효하지 않는 경우 refreshToken 초기화
                 // (쿠키에는 있었으나 로직을 수행하는 사이 refreshToken의 유효시간이 지나서 DB에서 삭제된 경우)
                 else {
+                    refreshTokenId = "";
                     log.info("refreshToken이 DB에 존재하지 않거나 유효하지 않음");
                     throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
                 }

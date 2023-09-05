@@ -139,8 +139,32 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
         }
         else if (gameSession.getGamePhase() == GamePhase.NIGHT_VOTE) {
             NightVoteMessage nightVoteMessage
-                    = new NightVoteMessage(roomId, getNightVoteResult(gameSession, vote));
+                    = new NightVoteMessage(roomId, getNightVoteResult(gameSession, vote), getSuspectResult(gameSession, vote));
         }
+    }
+
+    private Map<Long, Player> getSuspectResult(GameSession gameSession, Map<Long, Long> vote) {
+        Map<Long, Player> suspectResult = new HashMap<>();
+
+        List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
+        // <memberId, player>로 만든 맵
+        Map<Long, Player> playerMap = players.stream().collect(Collectors.toMap(Player::getMemberId, p -> p));
+
+        for (Player player : playerMap.values()) {
+            if (player.getRole() == GameRole.POLICE) {
+                Long policeId = player.getMemberId();
+                Long suspectId = vote.get(policeId);
+                Optional<Player> suspectOptional = playerRedisRepository.findById(suspectId);
+                if (suspectOptional.isEmpty()) {
+                    throw new CustomException(ErrorCode.SUSPECT_PLAYER_NOT_FOUND);
+                }
+                else {
+                    Player suspect = suspectOptional.get();
+                    suspectResult.put(policeId, suspect);
+                }
+            }
+        }
+        return suspectResult;
     }
 
     // 후보자 반환 메소드
