@@ -178,6 +178,7 @@ public class JwtTokenUtils {
         if(cookies.length != 0) {
             log.info("utils: 쿠키 있음");
             for (Cookie cookie : cookies) {
+                // 쿠키에 accessToken이 있는지 확인
                 if ("accessToken".equals(cookie.getName())) {
                     log.info("utils: accessToken 있음");
                     accessToken = cookie.getValue();
@@ -185,9 +186,9 @@ public class JwtTokenUtils {
                     break;
                 }
             }
+            // 쿠키에 accessToken이 없으면 request.attribute에서 추출
             if(accessToken.equals("")) {
-                log.info("utils: accessToken 없음");
-                throw new CustomException(ErrorCode.NOT_AUTHORIZED_CONTENT);
+                accessToken = String.valueOf(request.getAttribute("accessToken"));
             }
         } else {
             throw new CustomException(ErrorCode.NOT_AUTHORIZED_CONTENT);

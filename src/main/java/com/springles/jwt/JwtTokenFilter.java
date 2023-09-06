@@ -171,6 +171,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                 // 쿠키에 저장
                                 jwtTokenUtils.setAtkCookie("accessToken", accessToken, response);
 
+                                // attribute에 저장
+                                // atk 재발급 후 쿠키에 저장해도 request 속 쿠키값은 변하지 않아 유효하지 않은 토큰으로 필터를 지나치게됨
+                                // 이를 해결하기 위해 재발급 시에만 request.setAttibute에도 atk 저장
+                                request.setAttribute("accessToken", accessToken);
+
                                 // 인증객체 생성
                                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                                 String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
@@ -239,6 +244,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
                 // 쿠키에 저장
                 jwtTokenUtils.setAtkCookie("accessToken", accessToken, response);
+
+                // attribute에 저장
+                // atk 재발급 후 쿠키에 저장해도 request 속 쿠키값은 변하지 않아 유효하지 않은 토큰으로 필터를 지나치게됨
+                // 이를 해결하기 위해 재발급 시에만 request.setAttibute에도 atk 저장
+                request.setAttribute("accessToken", accessToken);
 
                 // 인증객체 생성
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
