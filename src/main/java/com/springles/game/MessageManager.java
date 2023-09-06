@@ -13,7 +13,7 @@ public class MessageManager {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     public void sendMessage(String dest,String message, Long roomId, String memberName) {
-        convertAndSend(dest+ roomId, message, roomId, memberName);
+        convertAndSend(dest, message, roomId, memberName);
     }
 
     public void sendMessage(String dest, Object o) {

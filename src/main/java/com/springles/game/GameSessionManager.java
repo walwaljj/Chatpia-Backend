@@ -13,12 +13,12 @@ import com.springles.repository.ChatRoomJpaRepository;
 import com.springles.repository.GameSessionRedisRepository;
 import com.springles.repository.MemberJpaRepository;
 import com.springles.repository.PlayerRedisRepository;
-import groovy.util.logging.Slf4j;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -37,9 +37,6 @@ public class GameSessionManager {
     public void createGame(Long roomId) {
         ChatRoom chatRoom = chatRoomJpaRepository.findByIdCustom(roomId);
         gameSessionRedisRepository.save(GameSession.of(chatRoom));
-        Member member = memberJpaRepository.findById(chatRoom.getOwnerId())
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        addUser(chatRoom.getId(), member.getMemberName());
     }
 
     /* 게임 시작 */
@@ -114,7 +111,7 @@ public class GameSessionManager {
     }
 
     public GameSession findGameByRoomId(Long roomId) {
-        return gameSessionRedisRepository.findById(roomId)
+        return gameSessionRedisRepository.findByRoomId(roomId)
             .orElseThrow(() -> new CustomException(ErrorCode.GAME_NOT_FOUND));
     }
 

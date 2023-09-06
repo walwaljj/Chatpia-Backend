@@ -4,6 +4,7 @@ import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.constants.ResponseCode;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
+import com.springles.domain.dto.message.RoleExplainMessage;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
@@ -17,12 +18,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import groovy.util.logging.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -35,21 +36,24 @@ public class MessageController {
     private final ChatRoomService chatRoomService;
 
     /*메세지 전송*/
-    @MessageMapping("/pub/chat/{roomId}")
+    @MessageMapping("/chat/{roomId}")
     public void sendMessage(SimpMessageHeaderAccessor accessor, String message,
         @DestinationVariable Long roomId) {
+
+        log.info("수신 메시지: "+message+ " 방 id: "+roomId +" 발송자: "+getMemberName(accessor));
+
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
-        Player player = gameSessionManager.findPlayerByMemberName(accessor.getUser().getName());
+        Player player = gameSessionManager.findPlayerByMemberName(getMemberName(accessor));
         // 관전자는 관전자들끼리만 채팅이 가능
         if (player.getRole().equals(GameRole.OBSERVER)) {
-            messageManager.sendMessage("/sub/chat/" + roomId + "/" + "observer", message, roomId,
+            messageManager.sendMessage("/sub/chat/" + roomId + "/" + GameRole.OBSERVER, message, roomId,
                 player.getMemberName());
             return;
         }
         // 밤 투표시간에는 마피아끼리만 채팅 가능
         if (gameSession.getGamePhase().equals(GamePhase.NIGHT_VOTE)) {
             if (player.getRole().equals(GameRole.MAFIA)) {
-                messageManager.sendMessage("/sub/chat/" + roomId + "/" + "mafia", message, roomId,
+                messageManager.sendMessage("/sub/chat/" + roomId + "/" + GameRole.MAFIA, message, roomId,
                     player.getMemberName());
             }
             return;
@@ -60,20 +64,23 @@ public class MessageController {
     }
 
     /*게임 생성*/
-    @MessageMapping("/pub/gameCreate/{roomId}")
+    @MessageMapping("/gameCreate/{roomId}")
     public void sendMessage_GameCreate(@DestinationVariable Long roomId) {
+        log.info("게임 생성");
         gameSessionManager.createGame(roomId);
     }
 
     /*게임 참여*/
-    @MessageMapping("/pub/gameJoin/{roomId}")
+    @MessageMapping("/gameJoin/{roomId}")
     public void sendMessage_GameJoin(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long roomId) {
-        String memberName = accessor.getUser().getName();
+        String memberName = getMemberName(accessor);
 
+        // 게임 참여자 목록 갱신
         messageManager.sendMessage(
             "/sub/chat/" + roomId + "/" + "playerList",
             gameSessionManager.addUser(roomId, memberName));
+
         // 게임 참여 메시지 전송
         messageManager.sendMessage(
             "/sub/chat/" + roomId,
@@ -82,15 +89,19 @@ public class MessageController {
     }
 
     /*게임 나가기*/
-    @MessageMapping("/pub/gameExit/{roomId}")
+    @MessageMapping("/gameExit/{roomId}")
     public void sendMessage_GameExit(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long roomId) {
-        String memberName = accessor.getUser().getName();
+        String memberName = getMemberName(accessor);
         gameSessionManager.removePlayer(roomId, memberName);
+
+        // 게임 참여자 목록 갱신
         messageManager.sendMessage(
             "/sub/chat/" + roomId + "/" + "playerList",
             gameSessionManager.findPlayersByRoomId(roomId)
         );
+
+        // 게임 퇴장 메시지 전송
         messageManager.sendMessage(
             "/sub/chat/" + roomId,
             memberName + "님이 퇴장하셨습니다.",
@@ -99,7 +110,7 @@ public class MessageController {
     }
 
     /*게임 시작*/
-    @MessageMapping("/pub/gameStart/{roomId}")
+    @MessageMapping("/gameStart/{roomId}")
     public void sendMessage_GameStart(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long roomId) {
 
@@ -108,11 +119,10 @@ public class MessageController {
             roomId, "admin");
 
         List<Player> mafiaList = new ArrayList<>();
-        gameSessionManager.startGame(roomId, accessor.getUser().getName()).forEach(p -> {
+        gameSessionManager.startGame(roomId, getMemberName(accessor)).forEach(p -> {
             messageManager.sendMessage(
-                "/sub/chat/" + roomId + "/" + p.getMemberId(),
-                "당신은 " + p.getRole() + "입니다.",
-                roomId, "admin"
+                "/sub/chat/" + roomId + "/gameRole/" + p.getMemberName(),
+                new RoleExplainMessage(p.getRole(), getTimeString())
             );
             if (p.getRole().equals(GameRole.MAFIA)) {
                 mafiaList.add(p);
@@ -125,7 +135,7 @@ public class MessageController {
 
         mafiaList.forEach(m -> {
             messageManager.sendMessage(
-                "/sub/chat/" + roomId + "/" + m.getMemberId(),
+                "/sub/chat/" + roomId + "/" + m.getMemberName(),
                 "마피아 플레이어는" + " [" + mafiaListString + "] " + "입니다.",
                 roomId, "admin"
             );
@@ -133,7 +143,7 @@ public class MessageController {
     }
 
     /*게임 정보 수정?*/
-    @MessageMapping("/pub/gameUpdate/{roomId}")
+    @MessageMapping("/gameUpdate/{roomId}")
     public void sendMessage_GameUpdate(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long roomId) {
         messageManager.sendMessage(
@@ -141,5 +151,13 @@ public class MessageController {
             "게임 정보가 변경되었습니다.",
             roomId, "admin"
         );
+    }
+
+    public String getMemberName(SimpMessageHeaderAccessor accessor) {
+        return accessor.getUser().getName().split(",")[1].split(":")[1].trim();
+    }
+
+    public String getTimeString() {
+        return new SimpleDateFormat("HH:mm").format(new Date());
     }
 }

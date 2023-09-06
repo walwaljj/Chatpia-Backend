@@ -39,6 +39,15 @@
         </div>
     </div>
     <th:block layout:fragment="script">
+        <script src="/js/stomp.js"></script>
+        <script>
+            let stompClient = null;
+            const socket = new WebSocket('ws://localhost:8080/chatting');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function(frame) {
+                console.log('Connected: ' + frame);
+            });
+        </script>
         <script th:inline="javascript">
             $(function () {
                 // ======================== 비밀방 체크박스와 비밀번호 설정 =====================================================
@@ -72,13 +81,14 @@
                         type: 'POST',
                         contentType: 'application/json',
                         data: json,
-                        success: function(response) {
+                        success: function(data) {
+                            stompClient.send(`/pub/gameCreate/${data.data.id}`)
                             // response data에서 방장 이름 가져오기
-                            const nickName = response.data.nickName;
+                            const nickName = data.data.nickName;
                             // response data에서 roomId 가져오기
-                            const roomId = response.data.id;
+                            const roomId = data.data.id;
                             // 성공할 경우 해당 채팅방으로 바로 이동
-                            location.href = 'http://localhost:8080/chat/'+roomId+'/'+nickName;
+                            location.replace('http://localhost:8080/chat/'+roomId+'/'+nickName);
                         },
                         error: function(response) {
                             alert(JSON.stringify(response.responseJSON.message))

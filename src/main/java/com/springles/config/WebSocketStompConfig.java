@@ -7,6 +7,7 @@ import com.springles.game.NightVoteManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -27,7 +28,7 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
-        registry.addEndpoint("/chatting");
+        registry.addEndpoint("/chatting").setAllowedOrigins("*");
     }
 
 
@@ -38,25 +39,28 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
         // 수신
         // enableSimpleBroker 메소드로 정의된 경로가 클라이언트가 듣기 위한 경로
         // topic이라는 주제를 가진 메시지를 핸들러로 라우팅하여 해당 주제에 가입한 모든 클라이언트에게 메시지를 방송
-        registry.enableSimpleBroker("/topic"
-
-//                "/sub/chat",
-//            "/sub/gameStart",
-//            "/sub/player",
-//            "/sub/joinGame",
-//            "/sub/exitGame"
+        registry.enableSimpleBroker("/topic",
+                "/sub/chat",
+            "/sub/gameStart",
+            "/sub/joinGame",
+            "/sub/exitGame",
+            "/sub/gameRole"
             );
 
         // 발신
         // setApplicationDestinationPrefixes 다음에 정의할 서버 측 엔드포인트에 대한 Prefix를 설정하는 메소드
         // /app로 시작하는 메시지만 메시지 헨들러로 라우팅한다고 정의
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.setApplicationDestinationPrefixes("/pub");
     }
 
+
+/*
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(interceptor);
     }
+*/
+
 
     @Bean
     public MessageListenerAdapter nightVoteListener(NightVoteManager subscriber) {
@@ -66,6 +70,36 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
     @Bean
     public MessageListenerAdapter dayEliminationListener(DayEliminationManager subscriber) {
         return new MessageListenerAdapter(subscriber, "sendMessage");
+    }
+
+    @Bean
+    public ChannelTopic topicStartFin() {
+        return new ChannelTopic("START_FIN");
+    }
+
+    @Bean
+    public ChannelTopic topicDayDiscussionFin() {
+        return new ChannelTopic("DAY_DISCUSSION_FIN");
+    }
+
+    @Bean
+    public ChannelTopic topicDayEliminationFin() {
+        return new ChannelTopic("DAY_ELIMINAION_FIN");
+    }
+
+    @Bean
+    public ChannelTopic topicDayToNightFin() {
+        return new ChannelTopic("DAY_TO_NIGHT_FIN");
+    }
+
+    @Bean
+    public ChannelTopic topicNightVoteFin() {
+        return new ChannelTopic("NIGHT_VOTE_FIN");
+    }
+
+    @Bean
+    public ChannelTopic topicEnd() {
+        return new ChannelTopic("END");
     }
 
 

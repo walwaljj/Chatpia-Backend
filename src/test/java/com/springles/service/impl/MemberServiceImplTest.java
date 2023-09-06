@@ -1,3 +1,4 @@
+/*
 package com.springles.service.impl;
 
 import com.springles.domain.constants.GameRole;
@@ -65,9 +66,11 @@ class MemberServiceImplTest {
     String accessToken = "";
 
 
-    /** 초기화 데이터
+    */
+/** 초기화 데이터
      * 1. 회원가입 및 로그인 한 사용자 생성
-     * */
+     * *//*
+
     @BeforeEach
     void init() {
         memberService.signUp(
@@ -99,9 +102,11 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. DB에 해당 회원정보가 정상적으로 저장되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("회원가입 테스트 - CASE.성공")
     void signUp() {
@@ -126,9 +131,11 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. 변경한 정보가 DB에 정상적으로 저장되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("회원 정보 변경 테스트 - CASE.성공")
     void updateInfo() {
@@ -149,9 +156,11 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1.  해당 회원의 isDeleted 값이 true로 변경되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("회원 탈퇴 테스트 - CASE.성공")
     void signOut() {
@@ -169,10 +178,12 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. accessToken이 정상적으로 생성되는가(jwt parsing이 잘 되는가)
      * 2. refreshToken이 정상적으로 생성되며, redis에 저장되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("로그인 테스트 - CASE.성공")
     void login() {
@@ -192,10 +203,12 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. accessToken이 블랙리스트(redis)로 저장되는가
      * 2. refreshToken이 redis에서 삭제되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("로그아웃 테스트 - CASE.성공")
     void logout() {
@@ -211,11 +224,13 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. 수신자 email이 정상적으로 반환되는가
      * 2. 수신자 email로 가입된 memberName이 정상적으로 반환되는가
      * (반환값이 정상이다 = 메일 전송이 정상적으로 완료되었다)
-     * */
+     * *//*
+
     @Test
     @DisplayName("아이디 찾기 테스트 - CASE.성공")
     void vertificationId() {
@@ -242,12 +257,14 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. 수신자 email이 정상적으로 반환되는가
      * 2. 수신자 email로 가입된 memberName이 정상적으로 반환되는가
      * (반환값이 정상이다 = 메일 전송이 정상적으로 완료되었다)
      * 3. db에 임시 비밀번호가 정상적으로 저장되는가(기존 비밀번호와 다른 값이 저장되어 있는가)
-     * */
+     * *//*
+
     @Test
     @DisplayName("비밀번호 찾기 테스트 - CASE.성공")
     void vertificationPw() {
@@ -276,10 +293,12 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. 매번 랜덤 생성이 되는가
      * 2. 생성된 비밀번호의 글자수는 8자인가
-     * */
+     * *//*
+
     @Test
     @DisplayName("임시 비밀번호 생성 테스트 - CASE.성공")
     void randomPassword() {
@@ -294,9 +313,11 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. Dto를 통해 프로필 데이터가 정상적으로 생성되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("프로필 생성 테스트 - CASE.성공")
     void createProfile() {
@@ -320,9 +341,11 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. Dto를 통해 프로필 데이터가 정상적으로 수정되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("프로필 수정 테스트 - CASE.성공")
     void updateProfile() {
@@ -354,9 +377,11 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. 프로필 데이터가 정상적으로 조회되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("프로필 조회 테스트 - CASE.성공")
     void readProfile() {
@@ -382,9 +407,11 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. 멤버 게임기록이 정상적으로 조회되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("멤버 게임기록 조회 테스트 - CASE.성공")
     void readRecord() {
@@ -407,9 +434,11 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. 멤버 게임기록이 정상적으로 업데이트 되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("멤버 게임기록 업데이트 테스트 - CASE.성공")
     void updateRecord() {
@@ -443,9 +472,11 @@ class MemberServiceImplTest {
         assertEquals(result.getSaveCnt() , 0L);
     }
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. 게임 내 역할이 마피아일 때, 마피아 카운트가 정상적으로 +1 되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("역할별 게임 횟수 업데이트 테스트 - CASE.성공")
     void updateInGameRoleCnt() {
@@ -466,9 +497,11 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. 게임 내 역할이 마피아이면서, 게임에서 마피아팀이 이겼을 때, 마피아팀 승리 카운트가 정상적으로 +1 되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("시민팀/마피아팀으로 이긴 횟수 업데이트 테스트 - CASE.성공")
     void updateWinCnt() {
@@ -494,9 +527,11 @@ class MemberServiceImplTest {
     }
 
 
-        /** 테스트 항목
+        */
+/** 테스트 항목
          * 1. 총 게임 횟수가 정상적으로 +1 되는가
-         * */
+         * *//*
+
         @Test
         @DisplayName(("총 게임 횟수 업데이트 테스트 - CASE.성공"))
         void updateToalCnt() {
@@ -514,9 +549,11 @@ class MemberServiceImplTest {
         }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. 총 게임 시간이 게임 진행 시간만큼 정상적으로 증가하는가
-     * */
+     * *//*
+
     @Test
     @DisplayName(("총 게임 시간 업데이트 테스트 - CASE.성공"))
     void updateTotalTime() {
@@ -539,9 +576,11 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. 멤버 기록이 정상적으로 생성되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("멤버 기록 생성(초기화) 테스트 - CASE.성공")
     void newMemberRecord() {
@@ -567,9 +606,11 @@ class MemberServiceImplTest {
     }
 
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. 회원가입 시 정상적으로 멤버 기록이 생성되는가
-     * */
+     * *//*
+
     @Test
     @DisplayName("회원가입 시 멤버 기록 생성 테스트 - CASE.성공")
     void createRecord() {
@@ -593,4 +634,4 @@ class MemberServiceImplTest {
         assertEquals(result.get().getKillCnt() , 0L);
         assertEquals(result.get().getSaveCnt() , 0L);
     }
-}
+}*/

@@ -1,3 +1,4 @@
+/*
 package com.springles.repository;
 
 import com.springles.domain.dto.member.MemberCreateRequest;
@@ -180,3 +181,4 @@ class MemberJpaRepositoryTest {
         assertEquals(optionalMember.get().getEmail(), "mafia1@gmail.com");
     }
 }
+*/

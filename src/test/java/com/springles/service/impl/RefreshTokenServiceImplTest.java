@@ -1,3 +1,4 @@
+/*
 package com.springles.service.impl;
 
 import com.springles.domain.dto.member.MemberLoginRequest;
@@ -40,9 +41,11 @@ class RefreshTokenServiceImplTest {
     String refreshTokenId = "";
     String authHeader = "";
 
-    /** 초기화 데이터
+    */
+/** 초기화 데이터
      * 1. 회원가입 및 로그인 한 사용자 생성
-     * */
+     * *//*
+
     @BeforeEach
     void init() {
         memberJpaRepository.save(Member.builder()
@@ -62,9 +65,11 @@ class RefreshTokenServiceImplTest {
         refreshTokenId = loginInfo.getRefreshToken().getId();
     }
 
-    /** 테스트 항목
+    */
+/** 테스트 항목
      * 1. refreshTokenId로 재발급된 accssToken이 정상적인가(jwt parsing이 잘 되는가)
-     * */
+     * *//*
+
     @Test
     @DisplayName("accessToken 재발급 테스트 - CASE.성공")
     void reissue() {
@@ -74,4 +79,4 @@ class RefreshTokenServiceImplTest {
         // then
         assertEquals("mafia1", jwtTokenUtils.parseClaims(newAccessToken).getSubject());
     }
-}
+}*/

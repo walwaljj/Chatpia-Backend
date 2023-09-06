@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.index.Indexed;
 public class Player {
 
     @Id
+    @Indexed
     private Long memberId;
 
     @Indexed
@@ -26,6 +27,7 @@ public class Player {
 
     private boolean alive;
 
+    @Indexed
     private String memberName;
 
     public void setAlive(boolean alive) {

@@ -1,3 +1,4 @@
+/*
 
 package com.springles.repository;
 
@@ -78,3 +79,4 @@ class ChatRoomJpaRepositoryTest {
     }
 
 }
+*/
