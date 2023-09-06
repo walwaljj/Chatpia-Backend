@@ -84,9 +84,9 @@
                         success: function(data) {
                             stompClient.send(`/pub/gameCreate/${data.data.id}`)
                             // response data에서 방장 이름 가져오기
-                            const nickName = response.data.nickName;
+                            const nickName = data.data.nickName;
                             // response data에서 roomId 가져오기
-                            const roomId = response.data.id;
+                            const roomId = data.data.id;
                             // 성공할 경우 해당 채팅방으로 바로 이동
                             location.replace('http://localhost:8080/chat/'+roomId+'/'+nickName);
                         },

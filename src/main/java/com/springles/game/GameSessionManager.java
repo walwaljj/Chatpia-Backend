@@ -37,9 +37,6 @@ public class GameSessionManager {
     public void createGame(Long roomId) {
         ChatRoom chatRoom = chatRoomJpaRepository.findByIdCustom(roomId);
         gameSessionRedisRepository.save(GameSession.of(chatRoom));
-        Member member = memberJpaRepository.findById(chatRoom.getOwnerId())
-            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        addUser(chatRoom.getId(), member.getMemberName());
     }
 
     /* 게임 시작 */

@@ -6,240 +6,323 @@
 
 <body onload="connect()">
 <div layout:fragment="header">
-    <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #666666; height: 10vh;">
-        <!--        <div sec:authorize="isAuthenticated()">-->
-        <a class="navbar-brand" href="#">[[${chatroom.title}]]</a>
+  <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #666666; height: 10vh;">
+    <!--        <div sec:authorize="isAuthenticated()">-->
+    <a class="navbar-brand" href="#">[[${chatroom.title}]]</a>
 
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
-            <div class="form-inline my-2 my-lg-0">
-                <a class="nav-link text-white" onclick="openRoomDetail()">방 정보</a>
-                <!-- 방 정보 모달-->
-                <div class="modal fade" id="roomDetailModal" tabindex="-1" aria-labelledby="roomDetailModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="roomDetailModalLabel">방 정보</h1>
-                                <!--  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-                            </div>
-                            <div class="modal-body" th:object="${chatroom}">
-                                <form method="post" action="#">
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
+      <div class="form-inline my-2 my-lg-0">
+        <a class="nav-link text-white" onclick="openRoomDetail()">방 정보</a>
+        <!-- 방 정보 모달-->
+        <div class="modal fade" id="roomDetailModal" tabindex="-1"
+             aria-labelledby="roomDetailModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="roomDetailModalLabel">방 정보</h1>
+                <!--  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+              </div>
+              <div class="modal-body" th:object="${chatroom}">
+                <form method="post" action="#">
 
-                                    <div class="row">
-                                        <div class="col">
-                                            방 제목
-                                            <input type="text" class="form-control" id="room-title" name="room-name" th:value="${chatroom.title}">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            공개 여부
-                                            <input type="button" class="form-control" id="room-close" name="room-close" value="공개방"/>
-                                            <input type="button" class="form-control" id="room-open" name="room-open" value="비밀방">
-                                        </div>
-                                    </div>
-                                    <div class="row" th:if="${chatroom.getPassword() != null}">
-                                        <div class="col">
-                                            비밀 번호
-                                            <input type="text" class="form-control" id="room-password" name="room-password" th:value="${chatroom.getPassword()}">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            인원 수
-                                            <input type="text" class="form-control" id="room-capacity" name="room-capacity" th:value="${chatroom.getCapacity()}">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            초대 코드
-                                            <p class="form-control" id="room-invite" name="room-invite"></p>
-                                        </div>
-                                    </div>
-
-                                    <!-- 공유하기-->
-                                    <div class="row mb-3">
-                                        <div class="col mx-auto">
-                                            <div class="sns">
-                                                <a href="#n" id="btnKakao" onclick="fn_sendFB('kakaotalk');return false;"
-                                                   class="kakaotalk" target="_self"
-                                                   title="카카오톡 새창열림"><span class="skip">카카오톡</span></a>
-                                                <a href="#n" onclick="handleCopyClipBoard();return false;" th:field="*{id}"
-                                                   class="clipboard" target="_self"
-                                                   title="클립보드 복사"><span class="skip">복사하기</span></a>
-                                            <!--<img id="preview"  alt="Preview" class="rounded-circle shadow" width="200px" height="200px">-->
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-auto">
-                                            <button class="btn btn-primary" type="submit">저장</button>
-                                        </div>
-                                        <div class="col-auto">
-                                            <button class="btn btn-primary" type="submit">닫기</button>
-                                        </div>
-                                    </div>
-
-                                </form>
-                            </div>
-                        </div>
+                  <div class="row">
+                    <div class="col">
+                      방 제목
+                      <input type="text" class="form-control" id="room-title" name="room-name"
+                             th:value="${chatroom.title}">
                     </div>
-                </div>
-                <!-- 모달 끝 -->
-                <div class="nav-item">
-                    <a class="nav-link text-white" href="#"
-                       th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).WAITING.getValue()}">게임시작</a>
-                    <a class="nav-link text-white" href="#"
-                       th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).PLAYING.getValue()}">내 직업 설명</a>
-                </div>
-                <div class="nav-item">
-                    <a class="nav-link text-white" href="#">게임룰</a>
-                </div>
-                <div class="nav-item">
-                    <a class="nav-link text-white" onclick="location.href='/v1/index'">나가기</a>
-                </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      공개 여부
+                      <input type="button" class="form-control" id="room-close" name="room-close"
+                             value="공개방"/>
+                      <input type="button" class="form-control" id="room-open" name="room-open"
+                             value="비밀방">
+                    </div>
+                  </div>
+                  <div class="row" th:if="${chatroom.getPassword() != null}">
+                    <div class="col">
+                      비밀 번호
+                      <input type="text" class="form-control" id="room-password"
+                             name="room-password" th:value="${chatroom.getPassword()}">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      인원 수
+                      <input type="text" class="form-control" id="room-capacity"
+                             name="room-capacity" th:value="${chatroom.getCapacity()}">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      초대 코드
+                      <p class="form-control" id="room-invite" name="room-invite"></p>
+                    </div>
+                  </div>
+
+                  <!-- 공유하기-->
+                  <div class="row mb-3">
+                    <div class="col mx-auto">
+                      <div class="sns">
+                        <a href="#n" id="btnKakao" onclick="fn_sendFB('kakaotalk');return false;"
+                           class="kakaotalk" target="_self"
+                           title="카카오톡 새창열림"><span class="skip">카카오톡</span></a>
+                        <a href="#n" onclick="handleCopyClipBoard();return false;" th:field="*{id}"
+                           class="clipboard" target="_self"
+                           title="클립보드 복사"><span class="skip">복사하기</span></a>
+                        <!--<img id="preview"  alt="Preview" class="rounded-circle shadow" width="200px" height="200px">-->
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-auto">
+                      <button class="btn btn-primary" type="submit">저장</button>
+                    </div>
+                    <div class="col-auto">
+                      <button class="btn btn-primary" type="submit">닫기</button>
+                    </div>
+                  </div>
+
+                </form>
+              </div>
             </div>
+          </div>
         </div>
-    </nav>
+        <!-- 모달 끝 -->
+        <div class="nav-item">
+          <a class="nav-link text-white" href="#"
+             th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).WAITING.getValue()}">게임시작</a>
+          <a class="nav-link text-white" href="#"
+             th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).PLAYING.getValue()}">내
+            직업 설명</a>
+        </div>
+        <div class="nav-item">
+          <a class="nav-link text-white" href="#">게임룰</a>
+        </div>
+        <div class="nav-item">
+          <a class="nav-link text-white" onclick="">나가기</a>
+        </div>
+      </div>
+    </div>
+  </nav>
 </div>
 
 <div layout:fragment="content">
 
-    <div class="row" style="border-radius: 10px;
+  <div class="row" style="border-radius: 10px;
     border: solid 1px silver;
     margin: 4vw;
     padding: 0;
     height: 80vh">
-        <div class="col-3" style="height:100%; background-color: gray; padding:20px">
-            <!---------------참여인원 / 정원 -------------------->
-            <h3>참여자</h3>
-            <span th:text="${chatroom.getHead()}"></span>/<span th:text="${chatroom.getCapacity()}"></span>
-            <div>
-                <!--------------참여자 목록 ------------------------>
-                <div>사람 이름이 여기 나와야하눈뎅,,</div>
-                <div th:each="player : ${players}">
-                    <div th:text="${player.getMemberId()}"></div>
-                    <div th:text="${player.getRole()}"></div>
-                </div>
-            </div>
-        </div>
-        <!------------------- 채팅----------------------------------------------------------------------------------->
-        <div class="col-9" style="padding:0; height:80%">
-            <!----------채팅 화면 스크롤 ----------------->
-            <div id="conversationDiv">
-                <div class="chat_ui">
-                    <a href="/chat"></a>
-                    <p id="response"></p>
-                </div>
-                <!---------채팅 입력 input ----------------->
-                <form class="container row" id="message-form">
-                    <input class="chat_input_ui col-11" style="margin:0;" type="text" id="message" placeholder="Write a message..."/>
-                    <button class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px" type="submit">보내기
-                    </button>
-                </form>
-            </div>
-        </div>
+    <div class="col-3" style="height:100%; background-color: gray; padding:20px">
+      <!---------------참여인원 / 정원 -------------------->
+      <h3>참여자</h3>
+      <span id="gamePlayer"></span>/
+      <span id="gameCapacity"></span>
+      <div id="playerList">
+        <!--------------참여자 목록 ------------------------>
+        <!--<div th:each="player : ${players}">
+          <div th:text="${player.getMemberId()}"></div>
+          <div th:text="${player.getRole()}"></div>
+        </div>-->
+      </div>
     </div>
+    <!------------------- 채팅----------------------------------------------------------------------------------->
+    <div class="col-9" style="padding:0; height:80%">
+      <!----------채팅 화면 스크롤 ----------------->
+      <div id="conversationDiv">
+        <div class="chat_ui">
+          <a href="/chat"></a>
+          <p id="response"></p>
+        </div>
+        <!---------채팅 입력 input ----------------->
+        <form class="container row" id="message-form">
+          <input class="chat_input_ui col-11" style="margin:0;" type="text" id="message"
+                 placeholder="Write a message..."/>
+          <button class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px" type="submit">
+            보내기
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
-    <script src="/js/stomp.js"></script>
-    <script type="text/javascript">
-        let stompClient = null;
-        const pathname = window.location.pathname;
-        const roomId = parseInt(pathname.split("/")[2]);
-        const nickname = decodeURI(pathname.split("/")[3]);
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+  <script src="/js/stomp.js"></script>
+  <script type="text/javascript">
+    let stompClient = null;
+    let pathname = window.location.pathname;
+    let roomId = parseInt(pathname.split("/")[2]);
+    let nickname = decodeURI(pathname.split("/")[3]);
 
-        function getRoomName() {
-            fetch(`/chat/rooms/${roomId}/${nickname}`).then((response) => {
-                response.json().then((responseBody) => {
-                    console.log("GetRoomName 결과: "+responseBody);
-                    document.getElementById('room-name').innerHTML = responseBody.roomName;
-                })
-            });
-        }
+    function getRoomName() {
+      fetch(`/v1/chatRooms/${roomId}`).then((response) => {
+        response.json().then((responseBody) => {
+          console.log(responseBody)
+          document.getElementById('gameCapacity').innerHTML = responseBody.capacity;
+        })
+      });
+    }
 
-        function connect() {
-            getRoomName();
-            const socket = new WebSocket('ws://localhost:8080/chatting');
-            stompClient = Stomp.over(socket);
-            stompClient.connect({}, function(frame) {
-                console.log('Connected: ' + frame);
-                stompClient.subscribe(`/sub/chat/${roomId}`, (message) => {
-                    console.log("메시지: " + JSON.parse(message.body))
-                    receiveMessage(JSON.parse(message.body));
-                });
-                stompClient.subscribe(`/sub/chat/${roomId}/playerList`, function (message){
-                    // 채팅방 참여자 목록 갱신
-                })
-            });
-        }
+    function connect() {
+      getRoomName();
+      const socket = new WebSocket('ws://localhost:8080/chatting');
+      stompClient = Stomp.over(socket);
+      stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
 
-        function receiveMessage(messageOutput) {
-            const response = document.getElementById('response');
-            console.log(response)
-            const p = document.createElement('p');
-            p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(
-                " (" + messageOutput.time + ") "
-                +messageOutput.sender
-                + ": "
-                + messageOutput.message));
-            response.appendChild(p);
-        }
+        // 게임 참여 메시지 전송
+        stompClient.send(`/pub/gameJoin/${roomId}`)
 
-        document.getElementById("message-form").addEventListener("submit", (event) => {
-            event.preventDefault()
-            const messageInput = document.getElementById('message');
-            const message = messageInput.value
-            stompClient.send(`/pub/chat/${roomId}`, {
-                    "Authorization": "Bearer Token_here"
-                },message);
-            messageInput.value = null
+        // 전체 채팅 URL 구독
+        stompClient.subscribe(`/sub/chat/${roomId}`, (message) => {
+          const body = JSON.parse(message.body)
+          console.log("전체 메시지: ")
+          receiveMessage(body);
+        });
+
+        // 채팅방 목록 URL 구독
+        stompClient.subscribe(`/sub/chat/${roomId}/playerList`, function (message) {
+          updatePlayerList(message)
         })
 
-        function openRoomDetail() {
-            $('#roomDetailModal').modal('show'); // 모달 열기
+        // 개인 채팅 URL 구독
+        stompClient.subscribe(`/sub/chat/${roomId}/${nickname}`, (message) => {
+          const body = JSON.parse(message.body)
+          console.log("개인 메시지: " + body)
+          receiveMessage(body);
+        })
+
+        // 게임 시작 시 역할 부여 URL 구독
+        stompClient.subscribe(`/sub/chat/${roomId}/gameRole/${nickname}`, (message => {
+          const body = JSON.parse(message.body)
+          console.log("역할 설명 메시지: " + body)
+          stompClient.subscribe(`/sub/chat/${roomId}/${body.gameRole}`)
+          stompClient.unsubscribe(`/sub/chat/${roomId}/playerRole/${nickname}`)
+          receiveMessage(body)
+        }))
+
+      });
+    }
+
+    // 브라우저 변동 시 게임 나가기
+    // 새로고침시 나갔다가 들어온 것으로 간주
+    window.addEventListener('beforeunload', (event) => {
+      event.preventDefault();
+      stompClient.send(`/pub/gameExit/${roomId}`)
+    });
+
+    function updatePlayerList(message) {
+      const list = document.getElementById('playerList');
+      list.innerHTML = ""
+      let i = 0
+      for (const player of JSON.parse(message.body)) {
+        const li = document.createElement('li');
+        li.appendChild(document.createTextNode(
+            "[" + player.memberName + "]"
+        ))
+        i++;
+        list.appendChild(li)
+      }
+      document.getElementById('gamePlayer').innerText = i;
+    }
+
+    function gameStart() {
+      stompClient.send(`/pub/gameStart/${roomId}`)
+    }
+
+    function gameExit() {
+      stompClient.send(`/pub/gameExit/${roomId}`)
+      stompClient.disconnect();
+      location.href = '/v1/index';
+    }
+
+    function receiveMessage(messageOutput) {
+      const response = document.getElementById('response');
+      console.log(response)
+      const p = document.createElement('p');
+      p.style.wordWrap = 'break-word';
+      p.appendChild(document.createTextNode(
+          " (" + messageOutput.time + ") "
+          + messageOutput.sender
+          + ": "
+          + messageOutput.message));
+      response.appendChild(p);
+    }
+
+    document.getElementById("message-form").addEventListener("submit", (event) => {
+      event.preventDefault()
+      const messageInput = document.getElementById('message');
+      const message = messageInput.value
+      stompClient.send(`/pub/chat/${roomId}`, {
+        "Authorization": getCookie("accessToken")
+      }, message);
+      messageInput.value = null
+    })
+
+    function openRoomDetail() {
+      $('#roomDetailModal').modal('show'); // 모달 열기
+    }
+
+    const snsTitle = "챗피아에서 게임하기";
+    const thisUrl = window.location.href;
+    console.log("thisUrl", thisUrl)
+    const handleCopyClipBoard = async () => {
+      try {
+        await navigator.clipboard.writeText(thisUrl);
+        alert('클립보드에 링크가 복사되었습니다.');
+      } catch (e) {
+        alert('복사에 실패하였습니다');
+      }
+    };
+
+    function getCookie(cookieName) {
+      var name = cookieName + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var cookieArray = decodedCookie.split(';');
+
+      for (var i = 0; i < cookieArray.length; i++) {
+        var cookie = cookieArray[i];
+        while (cookie.charAt(0) === ' ') {
+          cookie = cookie.substring(1);
         }
-
-        const snsTitle = "챗피아에서 게임하기";
-        const thisUrl =  window.location.href;
-        console.log("thisUrl", thisUrl)
-        const handleCopyClipBoard = async () => {
-            try {
-                await navigator.clipboard.writeText(thisUrl);
-                alert('클립보드에 링크가 복사되었습니다.');
-            } catch (e) {
-                alert('복사에 실패하였습니다');
-            }
-        };
-
-        function fn_sendFB(sns) {
-
-            <!-- 카카오  -->
-            if (sns == 'kakaotalk') {
-                // 사용할 앱의 JavaScript 키 설정
-                Kakao.init('1f068199be43767b197138dfc91f1cb6');
-
-                // 카카오링크 버튼 생성
-                Kakao.Link.createDefaultButton({
-                    container: '#btnKakao', // HTML에서 작성한 ID값
-                    objectType: 'feed',
-                    content: {
-                        title: snsTitle, // 보여질 제목
-                        description: snsTitle, // 보여질 설명
-                        imageUrl: thisUrl, // 카카오공유하기 시 썸네일 이미지 경로
-                        link: { //  카카오공유하기 시 클릭 후 이동 경로
-                            mobileWebUrl: thisUrl,
-                            webUrl: thisUrl
-                        }
-                    }
-                });
-            }
+        if (cookie.indexOf(name) === 0) {
+          return cookie.substring(name.length, cookie.length);
         }
+      }
+      return "";
+    }
 
-    </script>
+    function fn_sendFB(sns) {
+
+      <!-- 카카오  -->
+      if (sns == 'kakaotalk') {
+        // 사용할 앱의 JavaScript 키 설정
+        Kakao.init('1f068199be43767b197138dfc91f1cb6');
+
+        // 카카오링크 버튼 생성
+        Kakao.Link.createDefaultButton({
+          container: '#btnKakao', // HTML에서 작성한 ID값
+          objectType: 'feed',
+          content: {
+            title: snsTitle, // 보여질 제목
+            description: snsTitle, // 보여질 설명
+            imageUrl: thisUrl, // 카카오공유하기 시 썸네일 이미지 경로
+            link: { //  카카오공유하기 시 클릭 후 이동 경로
+              mobileWebUrl: thisUrl,
+              webUrl: thisUrl
+            }
+          }
+        });
+      }
+    }
+
+  </script>
 </div>
 </body>
 </html>

@@ -3,6 +3,7 @@ package com.springles.controller.api;
 import com.springles.controller.ui.MemberUiController;
 import com.springles.domain.constants.ResponseCode;
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
+import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 import com.springles.domain.dto.member.MemberCreateRequest;
 import com.springles.domain.dto.member.MemberInfoResponse;
@@ -109,4 +110,12 @@ public class ChatRoomController {
         chatRoomService.deleteChatRoom(memberId, chatroomid);
         return "redirect:/v1/chatrooms";
     }
+
+    @GetMapping("/chatRooms/{roomId}")
+    public ChatRoomResponseDto findRoomInfo(
+        @PathVariable Long roomId
+    ) {
+        return chatRoomService.findChatRoomByChatRoomId(roomId);
+    }
+
 }
