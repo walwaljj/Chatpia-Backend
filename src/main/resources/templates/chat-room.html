@@ -130,6 +130,12 @@
           <div th:text="${player.getRole()}"></div>
         </div>-->
       </div>
+<!--            투표 테스트를 위한 임시 버튼-->
+            <form class="container row" id="vote-test">
+                <input class="chat_input_ui col-11" style="margin:0;" type="text" id="vote" placeholder="vote"/>
+                <button class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px" type="submit">투표 시작
+                </button>
+            </form>
     </div>
     <!------------------- 채팅----------------------------------------------------------------------------------->
     <div class="col-9" style="padding:0; height:80%">
@@ -254,7 +260,15 @@
           + messageOutput.message));
       response.appendChild(p);
     }
+// 투표 테스트를 위한 임시 코드
+        document.getElementById("vote-test").addEventListener("submit", (event) => {
+            event.preventDefault()
+            stompClient.send(`/pub/chat/${roomId}/start`, {
+                "Authorization": "Bearer Token_here"
+            });
+            // /pub/chat/{roomId}/start
 
+        })
     document.getElementById("message-form").addEventListener("submit", (event) => {
       event.preventDefault()
       const messageInput = document.getElementById('message');

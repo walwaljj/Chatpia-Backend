@@ -14,7 +14,7 @@ values
 insert into member
 (email,is_deleted,member_name,password,role)
 values
-    ('test3@naver.com',0,'test3','$2a$10$jWpTgBFPm4f77Jklchp7iu/oe0uaB8VeaeBiEueRp3/xOlFLvkPqC', 'USER');
+
 insert into member
 (email,is_deleted,member_name,password,role)
 values
