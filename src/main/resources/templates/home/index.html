@@ -11,16 +11,19 @@
                 <!-----------------------사용자 정보 ----------------------------------------------------------->
                 <div class="card profile">
                     <!---------레벨 ---------->
-                    <div class="card-header text-white" style="border-radius: 14px;" th:text="${member.getLevel()}"></div>
+                    <div class="card-header text-white" style="border-radius: 14px;">
+                        <p id="level"></p>
+                    </div>
                     <div class="card-body2 container row">
                         <!--------- 프로필 사진 -------->
                         <div class="my_div my_bg col m-3 p-0">
-                            <img class="my_bg_img" id="profileImg" th:src="${member.getProfileImg().getFileUrl()}"
-                                 alt="프로필이미지"/>
+                            <img class="my_bg_img" id="profileImg" alt="프로필이미지"/>
                         </div>
                         <!--------------------- 닉네임 -------->
                         <div class="nick-name-box col p-3">
-                            <div class="nick-name" th:text="${member.getNickname()}"></div>
+                            <div class="nick-name">
+                                <p id="nickName"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -66,87 +69,91 @@
                     <p th:text="${errorMessage}"></p>
                 </div>
 
-                <!------------------ 채팅방 목록 ----------------------->
-                <div class="chat_list_ui" id="chatRoom">
-                    <div th:if="${allChatRooms != null}">
-                        <div th:id="'room_' + ${i.index}" class="list-group" th:each="room, i: ${allChatRooms}">
-                            <a th:href="@{/chat/{roomId}/{nickName} (roomId=${room.id},nickName=${member.getNickname()})}"
-                               th:attrappend="roomId=${room.id},nickName=${member.getNickname()},isClose=${room.getClose()}"
-                               id="chatroom-url" name="chatroom-url"
-                               class="list-group-item list-group-item-action flex-column align-items-start">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <!-----------------게임중 / 대기중 -------------------->
-                                    <span id="state"
-                                          th:text="${room.state}"
-                                          class="badge badge-primary badge-pill"></span>
-                                    <!-----------------비밀방 여부 -------------------->
-                                    <div class="d-flex w-100 justify-content-between">
-                                    <span id="close" th:if="${room.getClose()}">
-                                        <img class="lock_thumbnail" src="/images/lock.png"/>
-                                    </span>
-                                        <span id="open" th:unless="${room.getClose()}">
-                                    </span>
-                                    </div>
-                                </div>
-                                <div class="contaniner row" style="text-align: left">
-                                    <!---------------- 방 제목 ----------------------------->
-                                    <div class="col-11">
-                                        <h5 class="mb-1" th:text="${room.title}"></h5>
-                                    </div>
-                                    <!-----------------참여인원 / 정원 -------------------->
-                                    <div class="col-1">
-                                        <span class="mb-1" th:text="${room.head}"></span>/
-                                        <span class="mb-1" th:text="${room.capacity}"></span>
-                                    </div>
-                                </div>
-                            </a>
-                            <!--------------------비밀방 비밀번호 입력 ----------------------->
-<!--                            <div th:id="'passwordInput_' + ${room.id}" class="password-input" style="display: none;">-->
-<!--                                <input type="text" name="userInput" id="userInput"/>-->
-<!--                                <button type="button" id="password-submit" name="password-submit" class="submit_btn"-->
-<!--                                        th:attr="data-roomId=${room.id},data-nickName=${member.getNickname()},data-isClose=${room.close},data-roomPassword=${room.password}">-->
-<!--                                    확인-->
-<!--                                </button>-->
+                <!----------------------- 채팅방 목록 ------------------------------------------------------->
+<!--                <div class="chat_list_ui" id="chatRoom">-->
+<!--                    <div th:if="${allChatRooms != null}">-->
+<!--                        &lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; 채팅방 하나씩 -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
+<!--                        <div th:id="'room_' + ${i.index}" class="list-group" th:each="room, i: ${allChatRooms}">-->
+<!--                            <a th:href="@{/chat/{roomId}/{nickName} (roomId=${room.id},nickName=${member.getNickname()})}"-->
+<!--                               th:attrappend="roomId=${room.id},nickName=${member.getNickname()},isClose=${room.getClose()}"-->
+<!--                               id="chatroom-url" name="chatroom-url"-->
+<!--                               class="list-group-item list-group-item-action flex-column align-items-start">-->
+<!--                                <div class="d-flex w-100 justify-content-between">-->
+<!--                                    &lt;!&ndash;-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;게임중 / 대기중 &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
+<!--                                    <span id="state"-->
+<!--                                          th:text="${room.state}"-->
+<!--                                          class="badge badge-primary badge-pill"></span>-->
+<!--                                    &lt;!&ndash;-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; 공개방 / 비밀방 &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
+<!--                                    <div class="d-flex w-100 justify-content-between">-->
+<!--                                    <span id="close" th:if="${room.getClose()}">-->
+<!--                                        <img class="lock_thumbnail" src="/images/lock.png"/>-->
+<!--                                    </span>-->
+<!--                                        <span id="open" th:unless="${room.getClose()}">-->
+<!--                                    </span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="contaniner row" style="text-align: left">-->
+<!--                                    &lt;!&ndash;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; 방 제목 -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
+<!--                                    <div class="col-11">-->
+<!--                                        <h5 class="mb-1" th:text="${room.title}"></h5>-->
+<!--                                    </div>-->
+<!--                                    &lt;!&ndash;-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;참여인원 / 정원 &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
+<!--                                    <div class="col-1">-->
+<!--                                        <span class="mb-1" th:text="${room.head}"></span>/-->
+<!--                                        <span class="mb-1" th:text="${room.capacity}"></span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </a>-->
+<!--                            &lt;!&ndash;-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;비밀방 비밀번호 입력 Modal &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&ndash;&gt;-->
+<!--                            <div th:id="'passwordInput_' + ${room.id}" id="modal" class="searchModal password-input">-->
+<!--                                <div class="search-modal-content">-->
+<!--                                    <div class="page-header">-->
+<!--                                        <h1>MODAL</h1>-->
+<!--                                    </div>-->
+<!--                                    <div class="row">-->
+<!--                                        <div class="col-sm-12">-->
+<!--                                            <div class="row">-->
+<!--                                                <div class="col-sm-6">-->
+<!--                                                    <h5> 비밀번호를 입력하세요.</h5>-->
+<!--                                                </div>-->
+<!--                                                <div class="col-sm-6">-->
+<!--                                                    <div th:id="'passwordInput_' + ${room.id}" class="password-input">-->
+<!--                                                        <input type="text" name="userInput" id="userInput"/>-->
+<!--                                                        <button type="button" id="password-submit" name="password-submit" class="submit_btn"-->
+<!--                                                                th:attr="data-roomId=${room.id},data-nickName=${member.getNickname()},data-isClose=${room.close},data-roomPassword=${room.password}">-->
+<!--                                                            확인-->
+<!--                                                        </button>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                    <div class="btn" onClick="closeModal()">-->
+<!--            <span class="pop_bt modalCloseBtn">닫기</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
 <!--                            </div>-->
-                            <!-- Modal -->
-
-                            <!--------------------비밀방 비밀번호 입력 Modal ----------------------->
-                            <div th:id="'passwordInput_' + ${room.id}" id="modal" class="searchModal password-input">
-                                <div class="search-modal-content">
-                                    <div class="page-header">
-                                        <h1>MODAL</h1>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="row">
-                                                <div class="col-sm-6">
-                                                    <h5> 비밀번호를 입력하세요.</h5>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div th:id="'passwordInput_' + ${room.id}" class="password-input">
-                                                        <input type="text" name="userInput" id="userInput"/>
-                                                        <button type="button" id="password-submit" name="password-submit" class="submit_btn"
-                                                                th:attr="data-roomId=${room.id},data-nickName=${member.getNickname()},data-isClose=${room.close},data-roomPassword=${room.password}">
-                                                            확인
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="btn" onClick="closeModal()">
-            <span class="pop_bt modalCloseBtn">닫기</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
             </div>
 
             <!---------------------- script ----------------------->
             <th:block layout:fragment="script">
                 <script th:inline="javascript">  // 자바스크립트 인라인
+                // 페이지 로딩 시 바로 작동하는 함수
+                $(function () {
+                    // 프로필 정보 가져오기
+                    $.get("/member/info",
+                        function (data) {
+                            console.log(data.data);
+                            $("#level").text(data.data.level);
+                            // $("#profileImg").attr("src", "../images/profile_01.jpg");
+                            $("#profileImg").attr("src", data.data.profileImg);
+                            $("#nickName").text(data.data.nickname);
+                        })
+
+                });
 
                 // Modal 닫기
                 function closeModal() {
@@ -204,7 +211,6 @@
 
                 // 비밀번호 제출
                 $("button[name='password-submit']").click(function (event) {
-
                     event.preventDefault();
 
                     const roomId = $(this).attr("data-roomId");

@@ -50,6 +50,25 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)));
     }
 
+
+    /**
+     * 메인페이지 사용자 프로필 간단 정보 조회
+     */
+    public MemberSimpleProfileResponse getUserSimpleProfileInfo(String accessToken) {
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
+
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if(optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
+
+        return MemberSimpleProfileResponse.of(optionalMemberGameInfo.get(), optionalMember.get().getId());
+    }
+
+
+
     /**
      * 사용자 프로필 정보 반환
      */

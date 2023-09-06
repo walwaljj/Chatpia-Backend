@@ -14,6 +14,8 @@ public interface MemberService {
     // 사용자 정보 API
     MemberInfoResponse getUserInfo(String accessToken);
 
+    // 메인페이지 사용자 프로필 정보 호출
+    MemberSimpleProfileResponse getUserSimpleProfileInfo(String accessToken);
     // 사용자 프로필 정보 호출
     MemberProfileResponse getUserProfileInfo(String accessToken);
 
