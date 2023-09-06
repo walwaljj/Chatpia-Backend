@@ -6,6 +6,7 @@ import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.domain.dto.member.MemberProfileResponse;
 import com.springles.exception.CustomException;
+import com.springles.jwt.JwtTokenUtils;
 import com.springles.service.ChatRoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -26,6 +27,7 @@ public class ChatRoomUiController {
 
     private final MemberUiController memberUiController;
     private final ChatRoomService chatRoomService;
+    private final JwtTokenUtils jwtTokenUtils;
 
     // 홈으로 가는 controller : addAttribute 로 username 을 전달 해주고 있다.
 //    @GetMapping("/detail.html")
@@ -66,7 +68,7 @@ public class ChatRoomUiController {
     ) {
 
         // 목록 전체 조회
-        String accessToken = (String)request.getAttribute("accessToken");
+        String accessToken = jwtTokenUtils.atkFromCookie(request);
 
         // 회원 정보 호출
 //        MemberInfoResponse info = memberUiController.info(accessToken);
