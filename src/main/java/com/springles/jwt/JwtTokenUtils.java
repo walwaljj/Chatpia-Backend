@@ -155,7 +155,7 @@ public class JwtTokenUtils {
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60);  // 테스트용 1시간
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+//        cookie.setSecure(true);   // 사파리 브라우저에서 쿠키 저장이 안되는 이슈 해결을 위해 설정 해제
         response.addCookie(cookie);
     }
 
@@ -166,7 +166,7 @@ public class JwtTokenUtils {
         cookie.setPath("/");
         cookie.setMaxAge(0);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+//        cookie.setSecure(true);   // 사파리 브라우저에서 쿠키 저장이 안되는 이슈 해결을 위해 설정 해제
         response.addCookie(cookie);
     }
 
