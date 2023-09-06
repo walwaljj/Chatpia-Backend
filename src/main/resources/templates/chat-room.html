@@ -28,7 +28,7 @@
                                     <div class="row">
                                         <div class="col">
                                             방 제목
-                                            <input type="text" class="form-control" id="room-title" name="room-title" th:value="${chatroom.title}">
+                                            <input type="text" class="form-control" id="room-title" name="room-name" th:value="${chatroom.title}">
                                         </div>
                                     </div>
                                     <div class="row">
@@ -152,9 +152,9 @@
         const nickname = decodeURI(pathname.split("/")[3]);
 
         function getRoomName() {
-            fetch(`/chat/rooms/${roomId}/name`).then((response) => {
+            fetch(`/chat/rooms/${roomId}/${nickname}`).then((response) => {
                 response.json().then((responseBody) => {
-                    console.log(responseBody);
+                    console.log("GetRoomName 결과: "+responseBody);
                     document.getElementById('room-name').innerHTML = responseBody.roomName;
                 })
             });
@@ -166,10 +166,11 @@
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function(frame) {
                 console.log('Connected: ' + frame);
-                stompClient.subscribe(`/sub/chat/${roomId}`, function(message) {
+                stompClient.subscribe(`/sub/chat/${roomId}`, (message) => {
+                    console.log("메시지: " + JSON.parse(message.body))
                     receiveMessage(JSON.parse(message.body));
                 });
-                stompClient.subscribe(`/sub/chat/${roomId}/"playerList`, function (message){
+                stompClient.subscribe(`/sub/chat/${roomId}/playerList`, function (message){
                     // 채팅방 참여자 목록 갱신
                 })
             });
@@ -177,10 +178,14 @@
 
         function receiveMessage(messageOutput) {
             const response = document.getElementById('response');
+            console.log(response)
             const p = document.createElement('p');
             p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(messageOutput.sender + ": "
-                + messageOutput.message + " (" + messageOutput.time + ")"));
+            p.appendChild(document.createTextNode(
+                " (" + messageOutput.time + ") "
+                +messageOutput.sender
+                + ": "
+                + messageOutput.message));
             response.appendChild(p);
         }
 
@@ -190,8 +195,7 @@
             const message = messageInput.value
             stompClient.send(`/pub/chat/${roomId}`, {
                     "Authorization": "Bearer Token_here"
-                },
-                message);
+                },message);
             messageInput.value = null
         })
 

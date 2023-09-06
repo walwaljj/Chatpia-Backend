@@ -81,7 +81,6 @@
                         type: 'POST',
                         contentType: 'application/json',
                         data: json,
-
                         success: function(data) {
                             stompClient.send(`/pub/gameCreate/${data.data.id}`)
                             // response data에서 방장 이름 가져오기

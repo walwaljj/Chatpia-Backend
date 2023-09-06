@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 public class GameSession {
 
     @Id
+    @Indexed
     private Long roomId; // 방 id로 아이디 설정
 
     @Indexed

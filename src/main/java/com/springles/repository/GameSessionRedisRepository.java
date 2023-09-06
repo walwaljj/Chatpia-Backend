@@ -7,4 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 public interface GameSessionRedisRepository extends CrudRepository<GameSession, Long> {
 
     Optional<GameSession> findByHostId(Long playerId);
+
+    Optional<GameSession> findByRoomId(Long roomId);
 }
