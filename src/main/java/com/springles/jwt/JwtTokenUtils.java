@@ -9,6 +9,7 @@ import com.springles.repository.RefreshTokenRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,14 +75,17 @@ public class JwtTokenUtils {
         Optional<RefreshToken> optionalRefreshToken = refreshTokenRedisRepository.findById(refreshTokenId);
         if(optionalRefreshToken.isEmpty()) {
             log.warn("refresh token이 DB에 존재하지 않음");
-//            throw new CustomException(ErrorCode.NO_JWT_TOKEN);
+
             return "";
         }
 
         // refreshToken이 유효한지 확인
         if(!memberJpaRepository.existsByMemberName(optionalRefreshToken.get().getMemberName())) {
             log.warn("refresh token이 유효하지 않음");
-//            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+
+            // DB에서 refreshToken 삭제
+            refreshTokenRedisRepository.deleteById(refreshTokenId);
+
             return "";
         }
 
@@ -125,6 +129,9 @@ public class JwtTokenUtils {
         } catch (IllegalArgumentException e) {
             log.warn("잘못된 JWT 토큰");
             return 0;
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            return 0;
         }
     }
 
@@ -150,5 +157,41 @@ public class JwtTokenUtils {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         response.addCookie(cookie);
+    }
+
+    // Token 쿠키 초기화 설정
+    public void setInitTokenCookie(String name, String value, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setDomain("localhost");
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
+    }
+
+    // 쿠키에서 accessToken 호출
+    public String atkFromCookie(HttpServletRequest request) {
+        String accessToken = "";
+        Cookie[] cookies = request.getCookies();
+
+        if(cookies.length != 0) {
+            log.info("utils: 쿠키 있음");
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    log.info("utils: accessToken 있음");
+                    accessToken = cookie.getValue();
+                    log.info("utils: " + accessToken);
+                    break;
+                }
+            }
+            if(accessToken.equals("")) {
+                log.info("utils: accessToken 없음");
+                throw new CustomException(ErrorCode.NOT_AUTHORIZED_CONTENT);
+            }
+        } else {
+            throw new CustomException(ErrorCode.NOT_AUTHORIZED_CONTENT);
+        }
+        return accessToken;
     }
 }
