@@ -1,0 +1,35 @@
+spring:
+  datasource:
+    #    url: jdbc:h2:tcp://localhost/~/springles
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: ${NAVER_MAIL_PORT}
+    NAVER_MAIL_USERNAME: ${NAVER_MAIL_USERNAME}
+    NAVER_MAIL_PASSWORD: ${NAVER_MAIL_PASSWORD}
+
+jwt:
+  secret: dhwhokdfnpwkempfnwiofnpwkempfnwiofnpwkempfnwiofnpwkempfnwio
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace
+
+
+# H2 Console 설정 (test 프로파일에서만 활성화)
+h2:
+  console:
+    enabled: true
+    path: /h2-console
