@@ -1,5 +1,6 @@
 package com.springles.domain.dto.member;
 
+import com.springles.domain.entity.Member;
 import com.springles.domain.entity.MemberRecord;
 import lombok.Builder;
 import lombok.Getter;
@@ -62,7 +63,7 @@ public class MemberRecordResponse {
 
         return MemberRecordResponse.builder()
                 .id(memberRecord.getId())
-                .memberId(memberRecord.getMemberId())
+                .memberId(memberRecord.getMember().getId())
                 .mafiaCnt(memberRecord.getMafiaCnt())
                 .citizenCnt(memberRecord.getCitizenCnt())
                 .policeCnt(memberRecord.getPoliceCnt())

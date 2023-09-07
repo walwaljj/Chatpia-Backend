@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -46,6 +47,13 @@ public class GameRecord {
     @Column(nullable = false)
     private int duration; // 게임 진행 시간
 
-    // entity 맵핑 필요
-    private Long memberId;
+    @ManyToMany
+    @JoinTable(
+            name = "game_member_mapping_table",
+            joinColumns = @JoinColumn(name = "game_record_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_id")
+    )
+    private final List<Member> memberList = new ArrayList<>();
+
+
 }
