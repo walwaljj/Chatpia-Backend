@@ -32,6 +32,7 @@ public class GameSessionManager {
     private final RoleManager roleManager;
     private final MemberJpaRepository memberJpaRepository;
     private final ChatRoomJpaRepository chatRoomJpaRepository;
+    private final MessageManager messageManager;
 
     /* 게임 세션 생성 */
     public void createGame(Long roomId) {
@@ -74,6 +75,7 @@ public class GameSessionManager {
         if (!players.isEmpty()) {
             throw new CustomException(ErrorCode.GAME_PLAYER_EXISTS);
         }
+        chatRoomJpaRepository.deleteById(roomId);
         gameSessionRedisRepository.deleteById(roomId);
     }
 
@@ -91,7 +93,13 @@ public class GameSessionManager {
         // 남은 플레이어가 존재하고 방장이 나갔다면 랜덤으로 방장 넘겨주기
         else if (Objects.equals(gameSession.getHostId(), member.getId())) {
             Random random = new Random();
-            gameSession.changeHost(players.get(random.nextInt(players.size())).getMemberId());
+            Player nextHost = players.get(random.nextInt(players.size()));
+            gameSession.changeHost(nextHost.getMemberId());
+            chatRoomJpaRepository.findByIdCustom(roomId).changeHost(nextHost.getMemberId());
+            messageManager.sendMessage(
+                "/sub/chat/"+roomId,
+                nextHost.getMemberName()+"님이 방장이 되었습니다.",
+                roomId, "admin");
             gameSessionRedisRepository.save(gameSession);
         }
     }

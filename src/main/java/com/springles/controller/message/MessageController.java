@@ -12,6 +12,7 @@ import com.springles.game.ChatMessage;
 import com.springles.game.GameSessionManager;
 import com.springles.game.MessageManager;
 import com.springles.service.ChatRoomService;
+import com.springles.service.MemberService;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +35,7 @@ public class MessageController {
     private final GameSessionManager gameSessionManager;
     private final MessageManager messageManager;
     private final ChatRoomService chatRoomService;
+    private final MemberService memberService;
 
     /*메세지 전송*/
     @MessageMapping("/chat/{roomId}")
@@ -84,7 +86,7 @@ public class MessageController {
         // 게임 참여 메시지 전송
         messageManager.sendMessage(
             "/sub/chat/" + roomId,
-            memberName + "님이 입장하셨습니다.",
+            memberName + "님이 입장했습니다.",
             roomId, "admin");
     }
 
@@ -104,7 +106,7 @@ public class MessageController {
         // 게임 퇴장 메시지 전송
         messageManager.sendMessage(
             "/sub/chat/" + roomId,
-            memberName + "님이 퇴장하셨습니다.",
+            memberName + "님이 퇴장했습니다.",
             roomId, "admin"
         );
     }
@@ -113,11 +115,32 @@ public class MessageController {
     @MessageMapping("/gameStart/{roomId}")
     public void sendMessage_GameStart(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long roomId) {
+        log.info("요청자 정보: "+getMemberName(accessor));
 
+        // 방장만 게임을 시작 가능
+        if (memberService.findUserByName(getMemberName(accessor)).getId()
+            != chatRoomService.findChatRoomByChatRoomId(roomId).getOwnerId()) {
+            messageManager.sendMessage(
+                "/sub/chat/" + roomId + "/" + getMemberName(accessor),
+                "방장만 게임을 시작할 수 있습니다.", roomId, "admin");
+            return;
+        }
+
+        // 참여자 수가 5이상 10 이하여야 함.
+        int playerSize = gameSessionManager.findPlayersByRoomId(roomId).size();
+        if (playerSize < 5 || playerSize > 10) {
+            messageManager.sendMessage(
+                "/sub/chat/" + roomId + "/" + getMemberName(accessor),
+                "참여자 수가 부족합니다.", roomId, "admin");
+            return;
+        }
+
+        // 게임 시작 메시지 출력
         messageManager.sendMessage("/sub/chat/" + roomId,
             "게임이 시작되었습니다.",
             roomId, "admin");
 
+        // 게임 시작 -> 직업 랜덤 부여, 게임 페이즈 변경, 직업 설명
         List<Player> mafiaList = new ArrayList<>();
         gameSessionManager.startGame(roomId, getMemberName(accessor)).forEach(p -> {
             messageManager.sendMessage(
@@ -129,10 +152,10 @@ public class MessageController {
             }
         });
 
+        // 마피아들에게 마피아가 누구인지 알려주기
         String mafiaListString = mafiaList.stream()
             .map(Player::getMemberName)
             .collect(Collectors.joining(", "));
-
         mafiaList.forEach(m -> {
             messageManager.sendMessage(
                 "/sub/chat/" + roomId + "/" + m.getMemberName(),
@@ -140,6 +163,9 @@ public class MessageController {
                 roomId, "admin"
             );
         });
+
+        // 낮 로직으로 이동하기
+
     }
 
     /*게임 정보 수정?*/

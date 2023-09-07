@@ -60,4 +60,8 @@ public class ChatRoom {
         this.head = chatRoom.getHead();
         this.close = chatRoom.getClose();
     }
+
+    public void changeHost(Long nextHostId) {
+        this.ownerId = nextHostId;
+    }
 }

@@ -14,9 +14,9 @@ import java.util.Properties;
 public class MailConfig {
 
     // username, password 환경변수 설정 필요
-    @Value("${username}")
+    @Value("${NAVER_MAIL_USERNAME}")
     private String username;
-    @Value("${password}")
+    @Value("${NAVER_MAIL_PASSWORD}")
     private String password;
 
     @Bean
