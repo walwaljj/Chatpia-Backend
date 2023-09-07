@@ -3,10 +3,12 @@ package com.springles.controller.api;
 import com.springles.controller.ui.MemberUiController;
 import com.springles.domain.constants.ResponseCode;
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
+import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 import com.springles.domain.dto.member.MemberCreateRequest;
 import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.domain.dto.response.ResResult;
+import com.springles.exception.CustomException;
 import com.springles.service.ChatRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,8 +41,8 @@ public class ChatRoomController {
         Long id = info.getId();
         String memberName = info.getMemberName();
 
-        log.info("MemberCreateRequest.getMemberName() = {}",((MemberCreateRequest) auth.getPrincipal()).getMemberName()); // 인증 된 멤버 이름
-        log.info("MemberCreateRequest.isAuthenticated() = {}", auth.isAuthenticated()); // 인증 되었다면 true
+//        log.info("MemberCreateRequest.getMemberName() = {}",((MemberCreateRequest) auth.getPrincipal()).getMemberName()); // 인증 된 멤버 이름
+//        log.info("MemberCreateRequest.isAuthenticated() = {}", auth.isAuthenticated()); // 인증 되었다면 true
 
         // 응답 메시지 return
         ResponseCode responseCode = ResponseCode.CHATROOM_CREATE;
@@ -50,35 +54,74 @@ public class ChatRoomController {
                 .build(), HttpStatus.OK);
     }
 
-    /**
-     /chatrooms?title={title}
-     /chatrooms?nickname={nickname}
-     */
+    // 전체 채팅방 조회
     @GetMapping(value = "/chatrooms")
-    public ResponseEntity<ResResult> searchChatRooms(@RequestParam(value = "title", required = false) String title,
-                                                     @RequestParam(value = "nickname", required = false) String nickname) {
+    public ResponseEntity<ResResult> readChatRooms() {
 
-
-        Object chatRooms = null;
-
-        // title 로 검색
-        if (title != null) { chatRooms = chatRoomService.findChatRoomByTitle(title);}
-
-        // 방장 이름으로 검색
-        else if (nickname != null) { chatRooms = chatRoomService.findChatRoomByNickname(nickname); }
-
-        // 대기중인 모든 채팅방
-        else { chatRooms = chatRoomService.findAllChatRooms(); }
-
-        ResponseCode responseCode = ResponseCode.CHATROOM_SEARCH;
+        ResponseCode responseCode = ResponseCode.CHATROOM_READ;
 
         return new ResponseEntity<>(
                 ResResult.builder()
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(chatRooms)
+                        .data(chatRoomService.findAllChatRooms())
                         .build(), HttpStatus.OK);
+
+    }
+
+    /**
+     /chatrooms?title={title}
+     /chatrooms?nickname={nickname}
+     */
+    @GetMapping(value = "/chatrooms/search")
+    public ResponseEntity<?> searchChatRooms(@RequestParam(value = "searchContent", required = false, defaultValue = "") String searchContent
+    ) {
+//        try {
+        ResponseCode responseCode = ResponseCode.CHATROOM_SEARCH;
+        return new ResponseEntity<>(
+            ResResult.builder()
+                    .responseCode(responseCode)
+                    .code(responseCode.getCode())
+                    .message(responseCode.getMessage())
+                    .data(chatRoomService.findAllByTitleAndNickname(searchContent))
+                    .build(), HttpStatus.OK);
+
+//            List<ChatRoomResponseDto> allByTitleAndNickname = chatRoomService.findAllByTitleAndNickname(searchContent);
+//            model.addAttribute("allChatRooms", allByTitleAndNickname);
+
+            // 채팅방 검색이 잘 되지 않은 경우
+//        } catch (CustomException e) {
+//            // 검색어가 비어있을 때
+////                model.addAttribute("errorMessage", e.getMessage());
+//            }
+//            // 일치하는 방이 하나도 없을 때
+////            model.addAttribute("errorMessage", String.format("'%s'에 해당하는 유저 또는 방을 찾지 못해 전체 목록을 불러옵니다.",searchContent));
+//            // 전체 채팅 목록 불러오기
+//            List<ChatRoomResponseDto> allChatRooms = chatRoomService.findAllChatRooms();
+////            model.addAttribute("allChatRooms", allChatRooms);
+//        }
+
+//        Object chatRooms = null;
+//
+//        // title 로 검색
+//        if (title != null) { chatRooms = chatRoomService.findChatRoomByTitle(title);}
+//
+//        // 방장 이름으로 검색
+//        else if (nickname != null) { chatRooms = chatRoomService.findChatRoomByNickname(nickname); }
+//
+//        // 대기중인 모든 채팅방
+//        else { chatRooms = chatRoomService.findAllChatRooms(); }
+//
+//        ResponseCode responseCode = ResponseCode.CHATROOM_SEARCH;
+//
+//        return new ResponseEntity<>(
+//                ResResult.builder()
+//                        .responseCode(responseCode)
+//                        .code(responseCode.getCode())
+//                        .message(responseCode.getMessage())
+//                        .data(chatRooms)
+//                        .build(), HttpStatus.OK);
     }
 
     // 채팅방 수정

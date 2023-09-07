@@ -74,7 +74,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      */
     @Override
     public List<ChatRoomResponseDto> findAllChatRooms() {
-
         List<ChatRoom> findAllChatRooms = chatRoomJpaRepository.findAll();
         return findAllChatRooms.stream().map(ChatRoomResponseDto::of).toList();
 

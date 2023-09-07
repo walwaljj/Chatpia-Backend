@@ -7,14 +7,13 @@ import com.springles.valid.ValidationSequence;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+
 
 @Controller
 @RequestMapping("v1")
@@ -56,7 +55,6 @@ public class MemberUiController {
         if (memberGameInfoJpaRepository.existsByMemberId(memberId)) {
             return "redirect:index";
         }
-
         return "redirect:profile-settings";
     }
 

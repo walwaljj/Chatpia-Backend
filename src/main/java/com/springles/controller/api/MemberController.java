@@ -34,7 +34,6 @@ public class MemberController {
                         .build());
     }
 
-
     // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<ResResult> signup(
