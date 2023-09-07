@@ -18,8 +18,8 @@ jobs:
     env:
       NAVER_MAIL_PASSWORD: ${{ secrets.NAVER_MAIL_PASSWORD }}
       NAVER_MAIL_USERNAME: ${{ secrets.NAVER_MAIL_USERNAME }}
-      REDIS_HOST: localhost
-      REDIS_PORT: '6379'
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
       KAKAO_SNS_APP_KEY: ${{ secrets.KAKAO_SNS_APP_KEY }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
