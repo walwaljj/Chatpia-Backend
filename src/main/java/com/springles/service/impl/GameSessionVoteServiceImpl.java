@@ -39,14 +39,16 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     @Override
     public void startVote(Long roomId, int phaseCount, GamePhase phase, LocalDateTime time, Map<Long, GameRole> players) {
         log.info("Room {} start Vote for {}", roomId, phase);
+        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+        gameSession.setGamePhase(phase);
         voteRepository.startVote(roomId, phaseCount, phase, players);
         Timer timer = new Timer();
-        VoteFinTimerTask task = new VoteFinTimerTask(this);
-        task.setRoomId(roomId);
-        task.setPhaseCount(phaseCount);
-        task.setPhase(phase);
-        // 플레이어 하나당 20초의 회의 시간을 줌
-        timer.schedule(task, players.size() * 20000L);
+//        VoteFinTimerTask task = new VoteFinTimerTask(this);
+//        task.setRoomId(roomId);
+//        task.setPhaseCount(phaseCount);
+//        task.setPhase(phase);
+//        // 플레이어 하나당 20초의 회의 시간을 줌
+//        timer.schedule(task, players.size() * 20000L);
     }
 
     @Override

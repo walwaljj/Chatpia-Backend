@@ -11,6 +11,7 @@ import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.game.ChatMessage;
 import com.springles.game.GameSessionManager;
+import com.springles.game.MessageManager;
 import com.springles.repository.PlayerRedisRepository;
 import com.springles.service.GameSessionVoteService;
 import lombok.RequiredArgsConstructor;
@@ -35,11 +36,12 @@ public class VoteController {
     private final GameSessionVoteService gameSessionVoteService;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final PlayerRedisRepository playerRedisRepository;
+    private final MessageManager messageManager;
 
-    @MessageMapping("/chat/{roomId}/start")
+    @MessageMapping("/chat/{roomId}/dayStart")
     private void voteStart (SimpMessageHeaderAccessor accessor, @DestinationVariable Long roomId) {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
-        gameSession.changePhase(GamePhase.DAY_DISCUSSION, 100);
+        gameSession.changePhase(GamePhase.DAY_VOTE, 100);
         gameSession.passADay();
 
         // 종료된 게임인지 체크
@@ -62,22 +64,35 @@ public class VoteController {
 
         gameSessionVoteService.startVote(roomId, gameSession.getPhaseCount(),
                 gameSession.getGamePhase(), gameSession.getTimer(), alivePlayerMap);
+        int day = gameSession.getDay();
+
+        // 투표 시작 메시지 전송
+        messageManager.sendMessage(
+                "/sub/chat/" + roomId,
+                 day + "번째 날 아침이 밝았습니다. 투표를 시작합니다.",
+                roomId, "admin"
+        );
     }
 
-    @MessageMapping("/pub/chat/{roomId}/vote")
+    @MessageMapping("/chat/{roomId}/vote")
     private void dayVote(SimpMessageHeaderAccessor accessor,
                          @DestinationVariable Long roomId,
                          @Payload GameSessionVoteRequestDto request) {
-        String playerName = accessor.getUser().getName();
+        String playerName = getMemberName(accessor);
+        log.info("Player {} 로그로그", playerName);
         Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
+        log.info("Player {} vote {}", playerName, request.getVote());
 
         Map<Long, Long> voteResult = gameSessionVoteService.vote(roomId, playerId, request);
         if (voteResult == null) {
             throw new CustomException(ErrorCode.FAIL_VOTE);
         }
         else {
-            simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId,
-                    VoteResultResponseDto.of(voteResult));
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    VoteResultResponseDto.of(voteResult).toString(),
+                    roomId, "admin"
+            );
         }
     }
 
@@ -177,5 +192,8 @@ public class VoteController {
                 gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
             }
         }
+    }
+    public String getMemberName(SimpMessageHeaderAccessor accessor) {
+        return accessor.getUser().getName().split(",")[1].split(":")[1].trim();
     }
 }

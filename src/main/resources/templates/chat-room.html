@@ -130,6 +130,19 @@
         </div>-->
       </div>
 <!--            투표 테스트를 위한 임시 버튼-->
+      <div>
+        <form class="container row" id="vote-form">
+          <select id="vote-select" class="form-select" aria-label="Default select example">
+            <option selected>Open this select menu</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+          </select>
+          <button id="submit-vote" class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px" type="submit">투표하기
+          </button>
+        </form>
+      </div>
+
             <form class="container row" id="vote-test">
                 <input class="chat_input_ui col-11" style="margin:0;" type="text" id="vote" placeholder="vote"/>
                 <button class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px" type="submit">투표 시작
@@ -194,6 +207,7 @@
         // 채팅방 목록 URL 구독
         stompClient.subscribe(`/sub/chat/${roomId}/playerList`, function (message) {
           updatePlayerList(message)
+          updateVoteList(message)
         })
 
         // 개인 채팅 URL 구독
@@ -237,6 +251,19 @@
       document.getElementById('gamePlayer').innerText = i;
     }
 
+    function updateVoteList(message) {
+      const list = document.getElementById('vote-select');
+      list.innerHTML = "";
+      let i = 0
+      for (const player of JSON.parse(message.body)) {
+        const option = document.createElement('option');
+        option.value = player.memberId;
+        option.text = player.memberName;
+        list.appendChild(option);
+        i++;
+      }
+    }
+
     function gameStart() {
       stompClient.send(`/pub/gameStart/${roomId}`)
     }
@@ -262,12 +289,31 @@
 // 투표 테스트를 위한 임시 코드
         document.getElementById("vote-test").addEventListener("submit", (event) => {
             event.preventDefault()
-            stompClient.send(`/pub/chat/${roomId}/start`, {
-                "Authorization": "Bearer Token_here"
+            stompClient.send(`/pub/chat/${roomId}/dayStart`, {
+                "Authorization": getCookie("accessToken")
             });
             // /pub/chat/{roomId}/start
 
         })
+
+    // 투표 제출이 되는지
+    document.getElementById("vote-form").addEventListener("submit", (event) => {
+      event.preventDefault()
+      const list = document.getElementById('vote-select');
+      const selectedIndex = list.selectedIndex;
+      const selectedOption = list.options[selectedIndex];
+      const selectedValue = selectedOption.value;
+      console.log(selectedValue);
+      const message = JSON.stringify({
+        'phase': 'DAY_VOTE',
+        'vote': selectedValue
+      });
+      console.log(message);
+      stompClient.send(`/pub/chat/${roomId}/vote`, {
+                "Authorization": getCookie("accessToken")
+              },
+              message);
+    })
     document.getElementById("message-form").addEventListener("submit", (event) => {
       event.preventDefault()
       const messageInput = document.getElementById('message');
