@@ -94,8 +94,7 @@
         </div>
         <!-- 모달 끝 -->
         <div class="nav-item">
-          <a class="nav-link text-white" href="#"
-             th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).WAITING.getValue()}">게임시작</a>
+          <a class="nav-link text-white" onclick=gameStart()>게임시작</a>
           <a class="nav-link text-white" href="#"
              th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).PLAYING.getValue()}">내
             직업 설명</a>

@@ -11,7 +11,6 @@ import com.springles.repository.MemberGameInfoJpaRepository;
 import com.springles.service.MemberService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +47,12 @@ public class MemberServiceImpl implements MemberService {
 
         return MemberInfoResponse.of(memberRepository.findByMemberName(memberName) // 닉네임으로 info dto 반환
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)));
+    }
+
+    @Override
+    public MemberInfoResponse findUserByName(String memberName) {
+        return MemberInfoResponse.of(memberRepository.findByMemberName(memberName)
+            .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER)));
     }
 
     /**

@@ -1,11 +1,6 @@
 insert into member
 (email,is_deleted,member_name,password,role)
 values
-    ('admin@naver.com',0,'admin123','$2a$10$jWpTgBFPm4f77Jklchp7iu/oe0uaB8VeaeBiEueRp3/xOlFLvkPqC', 'USER');
-
-insert into member
-(email,is_deleted,member_name,password,role)
-values
     ('test1@naver.com',0,'test1','$2a$10$jWpTgBFPm4f77Jklchp7iu/oe0uaB8VeaeBiEueRp3/xOlFLvkPqC', 'USER');
 insert into member
 (email,is_deleted,member_name,password,role)
@@ -14,7 +9,7 @@ values
 insert into member
 (email,is_deleted,member_name,password,role)
 values
-
+    ('test3@naver.com',0,'test3','$2a$10$jWpTgBFPm4f77Jklchp7iu/oe0uaB8VeaeBiEueRp3/xOlFLvkPqC', 'USER');
 insert into member
 (email,is_deleted,member_name,password,role)
 values
@@ -31,16 +26,19 @@ insert into member
 (email,is_deleted,member_name,password,role)
 values
     ('test7@naver.com',0,'test7','$2a$10$jWpTgBFPm4f77Jklchp7iu/oe0uaB8VeaeBiEueRp3/xOlFLvkPqC', 'USER');
-
+insert into member
+(email,is_deleted,member_name,password,role)
+values
+    ('test7@naver.com',0,'test8','$2a$10$jWpTgBFPm4f77Jklchp7iu/oe0uaB8VeaeBiEueRp3/xOlFLvkPqC', 'USER');
 
 insert into member_game_info
 (is_observer, exp, member_game_info_id, member_id, in_game_role, level, nickname, profile_img)
 values
-    (0,'0','1','1','NONE','BEGINNER','admin','PROFILE01');
+    (0,'0','1','1','NONE','BEGINNER','test1','PROFILE01');
 insert into member_game_info
 (is_observer, exp, member_game_info_id, member_id, in_game_role, level, nickname, profile_img)
 values
-    (0,'0','2','2','NONE','BEGINNER','test1','PROFILE01');
+    (0,'0','2','2','NONE','BEGINNER','test2','PROFILE01');
 insert into member_game_info
 (is_observer, exp, member_game_info_id, member_id, in_game_role, level, nickname, profile_img)
 values
@@ -61,9 +59,7 @@ insert into member_game_info
 (is_observer, exp, member_game_info_id, member_id, in_game_role, level, nickname, profile_img)
 values
     (0,'0','7','7','NONE','BEGINNER','test7','PROFILE01');
-
-
-insert into chat_room
-(close, capacity, chatroom_id, head, owner_id, password, state, title)
+insert into member_game_info
+(is_observer, exp, member_game_info_id, member_id, in_game_role, level, nickname, profile_img)
 values
-    (0, '7', '1', '0', '1', '', 'WAITING', 'mafia');
+    (0,'0','8','8','NONE','BEGINNER','test8','PROFILE01');

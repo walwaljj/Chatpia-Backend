@@ -21,7 +21,7 @@ public class RoleExplainMessage {
 
     public RoleExplainMessage(GameRole gameRole, String time) {
         this.gameRole = gameRole;
-        this.message = "당신의 직업은 " + gameRole + "입니다.";
+        this.message = "당신의 직업은 " + gameRole.getVal() + "입니다.";
         this.sender = "admin";
         this.time = time;
     }
