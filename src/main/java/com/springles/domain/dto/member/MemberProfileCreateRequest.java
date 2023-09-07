@@ -3,6 +3,7 @@ package com.springles.domain.dto.member;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.constants.Level;
 import com.springles.domain.constants.ProfileImg;
+import com.springles.domain.entity.Member;
 import com.springles.domain.entity.MemberGameInfo;
 import com.springles.valid.ValidationGroups;
 import jakarta.validation.constraints.NotBlank;
@@ -27,7 +28,7 @@ public class MemberProfileCreateRequest {
 
     private ProfileImg profileImg;
 
-    public MemberGameInfo newMemberGameInfo(MemberProfileCreateRequest memberDto, Long memberId) {
+    public MemberGameInfo newMemberGameInfo(MemberProfileCreateRequest memberDto, Member member) {
 
         if(memberDto.getProfileImgNum() == 1) {
             profileImg = ProfileImg.PROFILE01;
@@ -50,7 +51,7 @@ public class MemberProfileCreateRequest {
                 .exp(0L)
                 .inGameRole(GameRole.NONE)
                 .isObserver(false)
-                .memberId(memberId)
+                .member(member)
                 .build();
     }
 }

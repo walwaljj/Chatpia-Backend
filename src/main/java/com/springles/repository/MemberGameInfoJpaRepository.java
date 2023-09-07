@@ -1,5 +1,6 @@
 package com.springles.repository;
 
+import com.springles.domain.entity.Member;
 import com.springles.domain.entity.MemberGameInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

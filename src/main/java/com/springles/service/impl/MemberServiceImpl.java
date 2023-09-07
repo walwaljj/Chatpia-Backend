@@ -63,7 +63,7 @@ public class MemberServiceImpl implements MemberService {
 
         Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
 
-        return MemberProfileResponse.of(optionalMemberGameInfo.get(), optionalMember.get().getId());
+        return MemberProfileResponse.of(optionalMemberGameInfo.get(), optionalMember.get());
     }
 
     /**
@@ -440,8 +440,8 @@ public class MemberServiceImpl implements MemberService {
         }
 
         MemberProfileCreateRequest newMemberInfo = new MemberProfileCreateRequest();
-        MemberGameInfo newMemberGameInfo = memberGameInfoJpaRepository.save(newMemberInfo.newMemberGameInfo(memberDto, optionalMember.get().getId()));
-        return MemberProfileResponse.of(newMemberGameInfo, optionalMember.get().getId());
+        MemberGameInfo newMemberGameInfo = memberGameInfoJpaRepository.save(newMemberInfo.newMemberGameInfo(memberDto, optionalMember.get()));
+        return MemberProfileResponse.of(newMemberGameInfo, optionalMember.get());
     }
 
 
@@ -474,7 +474,7 @@ public class MemberServiceImpl implements MemberService {
         MemberGameInfo updateInfo = memberProfileUpdateRequest.updateMemberGameInfo(optionalMemberGameInfo.get(), memberDto);
         memberGameInfoJpaRepository.save(updateInfo);
 
-        return MemberProfileResponse.of(updateInfo, optionalMember.get().getId());
+        return MemberProfileResponse.of(updateInfo, optionalMember.get());
     }
 
 
@@ -528,7 +528,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         // 가장 최근 게임기록
-        GameRecord gameRecord = gameRecordJpaRepository.findTOP1ByMemberIdOrderByIdDesc(memberId);
+        GameRecord gameRecord = gameRecordJpaRepository.findTOP1MemberIdOrderByIdDesc(memberId);
 
         // 현재 레벨
         Level level = optionalMemberGameInfo.get().getLevel();
@@ -566,7 +566,7 @@ public class MemberServiceImpl implements MemberService {
         // 멤버 게임정보 업데이트
         MemberGameInfo updateLevelAndExp = MemberGameInfo.builder()
                 .id(optionalMemberGameInfo.get().getId())
-                .memberId(optionalMemberGameInfo.get().getMemberId())
+                .member(optionalMemberGameInfo.get().getMember())
                 .nickname(optionalMemberGameInfo.get().getNickname())
                 .profileImg(optionalMemberGameInfo.get().getProfileImg())
                 .level(level)
@@ -575,7 +575,7 @@ public class MemberServiceImpl implements MemberService {
                 .build();
 
         memberGameInfoJpaRepository.save(updateLevelAndExp);
-        return MemberProfileResponse.of(updateLevelAndExp, memberId);
+        return MemberProfileResponse.of(updateLevelAndExp, optionalMemberGameInfo.get().getMember());
     }
 
 
@@ -666,7 +666,7 @@ public class MemberServiceImpl implements MemberService {
         MemberRecord memberRecord = optionalMemberRecord.get();
 
         // 가장 최근에 한 gameRecord(게임 정보)
-        GameRecord gameRecord = gameRecordJpaRepository.findTOP1ByMemberIdOrderByIdDesc(memberId);
+        GameRecord gameRecord = gameRecordJpaRepository.findTOP1MemberIdOrderByIdDesc(memberId);
 
         // 게임 속 내 역할
         String inGameRole = optionalMemberGameInfo.get().getInGameRole().getVal();
@@ -697,7 +697,7 @@ public class MemberServiceImpl implements MemberService {
 
         MemberRecord updateMemberRecord = MemberRecord.builder()
                 .id(memberRecord.getId())
-                .memberId(memberId)
+                .member(optionalMemberRecord.get().getMember())
                 .mafiaCnt(mafiaCnt)
                 .citizenCnt(citizenCnt)
                 .policeCnt(policeCnt)
@@ -824,7 +824,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return MemberRecord.builder()
-                .memberId(optionalMember.get().getId())
+                .member(optionalMember.get())
                 .mafiaCnt(0L)
                 .citizenCnt(0L)
                 .doctorCnt(0L)
