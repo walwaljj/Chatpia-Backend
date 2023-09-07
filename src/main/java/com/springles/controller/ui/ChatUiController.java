@@ -7,6 +7,7 @@ import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.game.GameSessionManager;
+import com.springles.jwt.JwtTokenUtils;
 import com.springles.service.ChatRoomService;
 import com.springles.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ public class ChatUiController {
     private final MemberService memberService;
     private final MemberUiController memberUiController;
     private final GameSessionManager gameSessionManager;
+    private final JwtTokenUtils jwtTokenUtils;
 
     @GetMapping("rooms")
     public String rooms() {
@@ -58,7 +60,7 @@ public class ChatUiController {
                             HttpServletRequest request, Model model){
 
         // 멤버 정보
-        String accessToken = (String)request.getAttribute("accessToken");
+        String accessToken = jwtTokenUtils.atkFromCookie(request);
         MemberInfoResponse memberInfo = memberUiController.info(accessToken);
         model.addAttribute("member",memberInfo);
 
@@ -100,7 +102,7 @@ public class ChatUiController {
     @GetMapping("quick-enter")
     public String quickEnterRoom( HttpServletRequest request, Model model){
 
-        String accessToken = (String)request.getAttribute("accessToken");
+        String accessToken = jwtTokenUtils.atkFromCookie(request);
         MemberInfoResponse memberInfo = memberUiController.info(accessToken);
 
         model.addAttribute("member",memberInfo);

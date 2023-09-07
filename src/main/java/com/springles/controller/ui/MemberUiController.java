@@ -1,6 +1,9 @@
 package com.springles.controller.ui;
 
 import com.springles.domain.dto.member.*;
+import com.springles.exception.CustomException;
+import com.springles.exception.constants.ErrorCode;
+import com.springles.jwt.JwtTokenUtils;
 import com.springles.repository.MemberGameInfoJpaRepository;
 import com.springles.service.MemberService;
 import com.springles.valid.ValidationSequence;
@@ -24,6 +27,7 @@ public class MemberUiController {
 
     private final MemberService memberService;
     private final MemberGameInfoJpaRepository memberGameInfoJpaRepository;
+    private final JwtTokenUtils jwtTokenUtils;
 
     // 회원가입 페이지 조회
     @GetMapping("/signup")
@@ -82,7 +86,7 @@ public class MemberUiController {
             HttpServletRequest request
     ) {
         // accessToken 추출
-        String accessToken = (String) request.getAttribute("accessToken");
+        String accessToken = jwtTokenUtils.atkFromCookie(request);
 
         // 프로필 조회
         MemberProfileRead profileInfo = memberService.readProfile(accessToken);
@@ -96,17 +100,15 @@ public class MemberUiController {
         return "member/my-page";
     }
 
+
     // 회원 정보 변경 페이지 조회
     @GetMapping("/my-page/info")
     public String memberInfo(
             Model model,
-            @ModelAttribute("memberInfo") MemberUpdateRequest memberDto,
             HttpServletRequest request
     ) {
-        String accessToken = (String) request.getAttribute("accessToken");
+        String accessToken = jwtTokenUtils.atkFromCookie(request);
         MemberInfoResponse memberInfo = memberService.getUserInfo(accessToken);
-
-        model.addAttribute("memberInfo", memberDto);
         model.addAttribute("rawMemberInfo", memberInfo);
 
         return "member/member-info";
@@ -114,23 +116,14 @@ public class MemberUiController {
 
     // 회원 탈퇴 페이지 조회
     @GetMapping("/my-page/sign-out")
-    public String signOut(
-            Model model,
-            @ModelAttribute("member") MemberDeleteRequest memberDto,
-            HttpServletRequest request
-    ) {
-        model.addAttribute("member", memberDto);
+    public String signOut() {
         return "member/member-sign-out";
     }
 
 
     // 프로필 설정 페이지 조회
     @GetMapping("/profile-settings")
-    public String profileSetting(
-            Model model,
-            @ModelAttribute("member") MemberProfileCreateRequest memberDto
-    ) {
-        model.addAttribute("member", memberDto);
+    public String profileSetting() {
         return "member/profile-settings";
     }
 
@@ -142,11 +135,9 @@ public class MemberUiController {
             @ModelAttribute("profile") MemberProfileUpdateRequest memberDto,
             HttpServletRequest request
     ) {
-        // accessToken 추출
-        String accessToken = (String) request.getAttribute("accessToken");
+        String accessToken = jwtTokenUtils.atkFromCookie(request);
         MemberProfileRead rawProfile = memberService.readProfile(accessToken);
 
-        model.addAttribute("profile", memberDto);
         model.addAttribute("rawProfile", rawProfile);
         return "member/profile-change";
     }
@@ -172,7 +163,7 @@ public class MemberUiController {
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60);  // 1시간(테스트용)
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+//        cookie.setSecure(true);   // 사파리 브라우저에서 쿠키 저장이 안되는 이슈 해결을 위해 설정 해제
         response.addCookie(cookie);
     }
 
@@ -184,7 +175,7 @@ public class MemberUiController {
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24 * 14);    // 2주
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+//        cookie.setSecure(true);   // 사파리 브라우저에서 쿠키 저장이 안되는 이슈 해결을 위해 설정 해제
         response.addCookie(cookie);
     }
 }

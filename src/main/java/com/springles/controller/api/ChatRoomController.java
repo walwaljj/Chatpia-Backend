@@ -8,6 +8,7 @@ import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 import com.springles.domain.dto.member.MemberCreateRequest;
 import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.domain.dto.response.ResResult;
+import com.springles.jwt.JwtTokenUtils;
 import com.springles.service.ChatRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,13 +28,14 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
     private final MemberUiController memberUiController;
+    private final JwtTokenUtils jwtTokenUtils;
 
     // 채팅방 생성
     @Operation(summary = "채팅방 생성", description = "채팅방 생성")
     @PostMapping(value = "/chatrooms")
     public ResponseEntity<ResResult> createChatRoom(@Valid @RequestBody ChatRoomReqDTO chatRoomReqDTO, HttpServletRequest request, Authentication auth){
 
-        String accessToken = (String) request.getAttribute("accessToken");
+        String accessToken = jwtTokenUtils.atkFromCookie(request);
         MemberInfoResponse info = memberUiController.info(accessToken);
         Long id = info.getId();
         String memberName = info.getMemberName();

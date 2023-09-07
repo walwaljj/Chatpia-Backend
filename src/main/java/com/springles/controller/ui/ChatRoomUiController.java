@@ -6,6 +6,7 @@ import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.domain.dto.member.MemberProfileResponse;
 import com.springles.exception.CustomException;
+import com.springles.jwt.JwtTokenUtils;
 import com.springles.service.ChatRoomService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -26,6 +27,7 @@ public class ChatRoomUiController {
 
     private final MemberUiController memberUiController;
     private final ChatRoomService chatRoomService;
+    private final JwtTokenUtils jwtTokenUtils;
 
     // 채팅방 만들기 페이지 (GET)
     @GetMapping("add")
@@ -40,7 +42,8 @@ public class ChatRoomUiController {
                                @RequestParam(value = "search-content", required = false, defaultValue = "") String searchContent
     ) {
         // 목록 전체 조회
-        String accessToken = (String)request.getAttribute("accessToken");
+        String accessToken = jwtTokenUtils.atkFromCookie(request);
+
         // 회원 정보 호출
 //        MemberInfoResponse info = memberUiController.info(accessToken);
         // 회원 프로필 정보 호출
