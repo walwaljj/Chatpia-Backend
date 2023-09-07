@@ -6,7 +6,6 @@ import com.springles.domain.constants.ProfileImg;
 import com.springles.domain.entity.GameRecord;
 import com.springles.domain.entity.Member;
 import com.springles.domain.entity.MemberGameInfo;
-import com.springles.repository.support.MemberGameInfoJpaRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
