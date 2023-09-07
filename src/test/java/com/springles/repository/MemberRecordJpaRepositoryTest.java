@@ -1,8 +1,6 @@
 package com.springles.repository;
 
-import com.springles.domain.entity.MemberGameInfo;
 import com.springles.domain.entity.MemberRecord;
-import com.springles.repository.support.MemberGameInfoJpaRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;

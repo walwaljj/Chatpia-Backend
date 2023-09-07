@@ -69,7 +69,7 @@
         <!-- 카카오  -->
         else if (sns == 'kakaotalk') {
             // 사용할 앱의 JavaScript 키 설정
-            Kakao.init('1f068199be43767b197138dfc91f1cb6');
+            Kakao.init(`${KAKAO_SNS_APP_KEY}`);
 
             // 카카오링크 버튼 생성
             Kakao.Link.createDefaultButton({
