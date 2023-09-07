@@ -227,7 +227,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 jwtTokenUtils.setInitTokenCookie("refreshTokenId", null, response);
 
                 // 예외 처리(로그인 화면으로 이동)
-                throw new CustomException(ErrorCode.NO_JWT_TOKEN);
+                throw new CustomException(ErrorCode.LOGOUT_TOKEN);
             }
             // atk가 없고 rtk만 있을 경우
         } else if (!refreshTokenId.equals("")) {
