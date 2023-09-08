@@ -102,7 +102,7 @@
                 // 페이지 로딩 시 동작
                 $(function () {
                     // 프로필 정보 조회
-                    $.get("/member/info",
+                    $.get("/member/info/profile/simple",
                         function (data) {
                             $("#level").text(data.data.level);
                             $("#profileImg").attr("src", data.data.profileImg);

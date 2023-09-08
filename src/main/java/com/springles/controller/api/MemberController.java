@@ -22,8 +22,8 @@ public class MemberController {
     private final MemberService memberService;
     private final CookieService cookieService;
 
-    // 멤버 정보 조회
-    @GetMapping("/info")
+    // 멤버 프로필 조회(simple)
+    @GetMapping("/info/profile/simple")
     public ResponseEntity<ResResult> profileInfo(HttpServletRequest request) {
         // 멤버 정보 가져오기
         String accessToken = (String)request.getAttribute("accessToken");
@@ -69,6 +69,23 @@ public class MemberController {
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
                         .data(memberService.updateInfo(memberDto, accessToken))
+                        .build());
+    }
+
+    // 회원 정보 조회
+    @GetMapping("/info")
+    public ResponseEntity<ResResult> readInfo(
+            HttpServletRequest request
+    ) {
+        String accessToken = cookieService.atkFromCookie(request);
+        ResponseCode responseCode = ResponseCode.MEMBER_DETAIL;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.readInfo(accessToken))
                         .build());
     }
 
@@ -208,8 +225,9 @@ public class MemberController {
     // 프로필 조회
     @GetMapping("/info/profile")
     public ResponseEntity<ResResult> readProfile(
-            @RequestHeader(value = "Authorization") String authHeader
+            HttpServletRequest request
     ) {
+        String accessToken = cookieService.atkFromCookie(request);
         ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_READ;
 
         return ResponseEntity.ok(
@@ -217,7 +235,7 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.readProfile(authHeader))
+                        .data(memberService.readProfile(accessToken))
                         .build()
         );
     }
@@ -262,8 +280,9 @@ public class MemberController {
     // 멤버 게임 기록 조회
     @GetMapping("/record")
     public ResponseEntity<ResResult> readRecord(
-            @RequestHeader(value = "Authorization") String authHeader
+            HttpServletRequest request
     ) {
+        String accessToken = cookieService.atkFromCookie(request);
         ResponseCode responseCode = ResponseCode.MEMBER_GAME_RECORD_READ;
 
         return ResponseEntity.ok(
@@ -271,7 +290,7 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.readRecord(authHeader))
+                        .data(memberService.readRecord(accessToken))
                         .build()
         );
     }

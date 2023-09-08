@@ -19,6 +19,7 @@ public class MemberProfileRead {
 
     private String nickname;
     private ProfileImg profileImg;
+    private String profileImgUrl;
     private String level;
     private Long exp;
     private String nextLevel;
