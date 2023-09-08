@@ -9,6 +9,7 @@ import com.springles.domain.dto.member.MemberCreateRequest;
 import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.domain.dto.response.ResResult;
 import com.springles.exception.CustomException;
+import com.springles.exception.constants.ErrorCode;
 import com.springles.service.ChatRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,6 +53,23 @@ public class ChatRoomController {
                 .message(responseCode.getMessage())
                 .data(chatRoomService.createChatRoom(chatRoomReqDTO, id, memberName))
                 .build(), HttpStatus.OK);
+    }
+
+    // 채팅방 1개 조회
+    @GetMapping(value="/chatroom/{roomId}")
+    public ResponseEntity<ResResult> readChatRoom(
+            @PathVariable Long roomId
+    ){
+
+        ResponseCode responseCode = ResponseCode.CHATROOM_READ;
+
+        return new ResponseEntity<>(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(chatRoomService.findChatRoomByChatRoomId(roomId))
+                        .build(), HttpStatus.OK);
     }
 
     // 전체 채팅방 조회
