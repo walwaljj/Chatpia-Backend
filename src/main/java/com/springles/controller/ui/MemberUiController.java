@@ -61,20 +61,20 @@ public class MemberUiController {
     // 마이페이지 조회
     @GetMapping("/my-page")
     public String memberProflie(
-            Model model,
-            HttpServletRequest request
+//            Model model,
+//            HttpServletRequest request
     ) {
-        // accessToken 추출
-        String accessToken = cookieService.atkFromCookie(request);
-
-        // 프로필 조회
-        MemberProfileRead profileInfo = memberService.readProfile(accessToken);
-
-        // 멤버 게임기록 조회
-        MemberRecordResponse memberRecord = memberService.readRecord(accessToken);
-
-        model.addAttribute("profileInfo", profileInfo);
-        model.addAttribute("record", memberRecord);
+//        // accessToken 추출
+//        String accessToken = cookieService.atkFromCookie(request);
+//
+//        // 프로필 조회
+//        MemberProfileRead profileInfo = memberService.readProfile(accessToken);
+//
+//        // 멤버 게임기록 조회
+//        MemberRecordResponse memberRecord = memberService.readRecord(accessToken);
+//
+//        model.addAttribute("profileInfo", profileInfo);
+//        model.addAttribute("record", memberRecord);
 
         return "member/my-page";
     }

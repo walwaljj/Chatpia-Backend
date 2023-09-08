@@ -193,8 +193,9 @@ public class MemberController {
     // 프로필 조회
     @GetMapping("/info/profile")
     public ResponseEntity<ResResult> readProfile(
-            @RequestHeader(value = "Authorization") String authHeader
+            HttpServletRequest request
     ) {
+        String accessToken = cookieService.atkFromCookie(request);
         ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_READ;
 
         return ResponseEntity.ok(
@@ -202,7 +203,7 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.readProfile(authHeader))
+                        .data(memberService.readProfile(accessToken))
                         .build()
         );
     }
@@ -247,8 +248,9 @@ public class MemberController {
     // 멤버 게임 기록 조회
     @GetMapping("/record")
     public ResponseEntity<ResResult> readRecord(
-            @RequestHeader(value = "Authorization") String authHeader
+            HttpServletRequest request
     ) {
+        String accessToken = cookieService.atkFromCookie(request);
         ResponseCode responseCode = ResponseCode.MEMBER_GAME_RECORD_READ;
 
         return ResponseEntity.ok(
@@ -256,7 +258,7 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.readRecord(authHeader))
+                        .data(memberService.readRecord(accessToken))
                         .build()
         );
     }

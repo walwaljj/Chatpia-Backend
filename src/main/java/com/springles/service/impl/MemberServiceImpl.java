@@ -526,6 +526,7 @@ public class MemberServiceImpl implements MemberService {
         return MemberProfileRead.builder()
                 .nickname(optionalMemberGameInfo.get().getNickname())
                 .profileImg(optionalMemberGameInfo.get().getProfileImg())
+                .profileImgUrl(optionalMemberGameInfo.get().getProfileImg().getFileUrl())
                 .level(optionalMemberGameInfo.get().getLevel().getName())
                 .exp(optionalMemberGameInfo.get().getExp())
                 // 최종레벨일 경우, nextLevel 비노출 필요
