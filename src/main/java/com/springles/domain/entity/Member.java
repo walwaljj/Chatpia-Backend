@@ -6,6 +6,9 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -37,6 +40,17 @@ public class Member {
     // 탈퇴 여부
     @NotNull
     private Boolean isDeleted;
+
+    @OneToOne(mappedBy = "member", fetch = FetchType.EAGER)
+    @PrimaryKeyJoinColumn(name = "member_game_info_id")
+    private MemberGameInfo memberGameInfo;
+
+    @OneToOne(mappedBy = "member", fetch = FetchType.EAGER)
+    @PrimaryKeyJoinColumn(name = "member_record_id")
+    private MemberRecord memberRecord;
+
+    @ManyToMany(mappedBy = "memberList", fetch = FetchType.LAZY)
+    private final List<GameRecord> gameRecordList = new ArrayList<>();
 
     @Override
     public String toString() {

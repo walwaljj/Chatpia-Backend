@@ -1,15 +1,11 @@
 package com.springles.jwt;
 
 import com.springles.domain.entity.RefreshToken;
-import com.springles.exception.CustomException;
-import com.springles.exception.constants.ErrorCode;
 import com.springles.repository.BlackListTokenRedisRepository;
 import com.springles.repository.MemberJpaRepository;
 import com.springles.repository.RefreshTokenRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -74,14 +70,17 @@ public class JwtTokenUtils {
         Optional<RefreshToken> optionalRefreshToken = refreshTokenRedisRepository.findById(refreshTokenId);
         if(optionalRefreshToken.isEmpty()) {
             log.warn("refresh token이 DB에 존재하지 않음");
-//            throw new CustomException(ErrorCode.NO_JWT_TOKEN);
+
             return "";
         }
 
         // refreshToken이 유효한지 확인
         if(!memberJpaRepository.existsByMemberName(optionalRefreshToken.get().getMemberName())) {
             log.warn("refresh token이 유효하지 않음");
-//            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+
+            // DB에서 refreshToken 삭제
+            refreshTokenRedisRepository.deleteById(refreshTokenId);
+
             return "";
         }
 
@@ -89,25 +88,7 @@ public class JwtTokenUtils {
         return generatedToken(optionalRefreshToken.get().getMemberName());
     }
 
-//    public boolean validate(String accessToken) {
-//        try {
-//            jwtParser.parseClaimsJws(accessToken);
-//            return true;
-//        } catch (ExpiredJwtException e) {
-//            log.warn("유효기간이 만료된 token");
-//            return false;
-//        } catch (MalformedJwtException e) {
-//            log.warn("유효하지 않은 jwt 서명");
-//            return false;
-//        } catch (UnsupportedJwtException e) {
-//            log.warn("지원되지 않는 JWT 토큰");
-//            return false;
-//        } catch (IllegalArgumentException e) {
-//            log.warn("잘못된 JWT 토큰");
-//            return false;
-//        }
-//    }
-
+    // accessToken 유효성 체크
     public int validate(String accessToken) {
         try {
             jwtParser.parseClaimsJws(accessToken).getBody();
@@ -125,13 +106,18 @@ public class JwtTokenUtils {
         } catch (IllegalArgumentException e) {
             log.warn("잘못된 JWT 토큰");
             return 0;
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            return 0;
         }
     }
 
+    // accessToken 파싱
     public Claims parseClaims(String accessToken) {
         return jwtParser.parseClaimsJws(accessToken).getBody();
     }
 
+    // accessToken 로그아웃 여부 체크
     public boolean isNotLogout(String accessToken) {
         if(!blackListTokenRedisRepository.existsByAccessToken(accessToken)) {
             return true;
@@ -139,16 +125,5 @@ public class JwtTokenUtils {
             log.warn("로그아웃 된 토큰");
             return false;
         }
-    }
-
-    // accessToken 쿠키 설정
-    public void setAtkCookie(String name, String value, HttpServletResponse response) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setDomain("localhost");
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60);  // 테스트용 1시간
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        response.addCookie(cookie);
     }
 }

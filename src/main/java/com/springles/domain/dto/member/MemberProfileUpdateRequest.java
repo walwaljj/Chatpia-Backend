@@ -42,7 +42,7 @@ public class MemberProfileUpdateRequest {
 
         return MemberGameInfo.builder()
                     .id(memberGameInfo.getId())
-                    .memberId(memberGameInfo.getMemberId())
+                    .member(memberGameInfo.getMember())
                     .nickname(memberDto.getNickname())
                     .profileImg(profileImg)
                     .level(memberGameInfo.getLevel())

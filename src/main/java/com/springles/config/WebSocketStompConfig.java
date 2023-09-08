@@ -7,6 +7,7 @@ import com.springles.game.NightVoteManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -27,7 +28,7 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
-        registry.addEndpoint("/chatting");
+        registry.addEndpoint("/chatting").setAllowedOrigins("*");
     }
 
 
@@ -41,9 +42,9 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/topic",
                 "/sub/chat",
             "/sub/gameStart",
-            "/sub/player",
             "/sub/joinGame",
-            "/sub/exitGame"
+            "/sub/exitGame",
+            "/sub/gameRole"
             );
 
         // 발신
@@ -69,6 +70,36 @@ public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
     @Bean
     public MessageListenerAdapter dayEliminationListener(DayEliminationManager subscriber) {
         return new MessageListenerAdapter(subscriber, "sendMessage");
+    }
+
+    @Bean
+    public ChannelTopic topicStartFin() {
+        return new ChannelTopic("START_FIN");
+    }
+
+    @Bean
+    public ChannelTopic topicDayDiscussionFin() {
+        return new ChannelTopic("DAY_DISCUSSION_FIN");
+    }
+
+    @Bean
+    public ChannelTopic topicDayEliminationFin() {
+        return new ChannelTopic("DAY_ELIMINAION_FIN");
+    }
+
+    @Bean
+    public ChannelTopic topicDayToNightFin() {
+        return new ChannelTopic("DAY_TO_NIGHT_FIN");
+    }
+
+    @Bean
+    public ChannelTopic topicNightVoteFin() {
+        return new ChannelTopic("NIGHT_VOTE_FIN");
+    }
+
+    @Bean
+    public ChannelTopic topicEnd() {
+        return new ChannelTopic("END");
     }
 
 

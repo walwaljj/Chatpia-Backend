@@ -3,6 +3,7 @@ package com.springles.repository;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.entity.Vote;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -13,11 +14,12 @@ import java.util.Map;
 
 @Repository
 @Getter
+@Slf4j
 public class VoteRedisRepository {
     // RedisTemplate: Redis 데이터베이스와 상호작용하기 위한 편리한 방법을 제공하는 도구
     private final RedisTemplate<String, Vote> redisTemplate;
     // HashOperations: Redis 해시에 데이터를 추가하고 조회하고 수정하고 삭제하는 작업을 간편하게 수행
-    private HashOperations<String, Long, Vote> opsHashVote;
+    private HashOperations<String, String, Vote> opsHashVote;
     private static final String key = "Vote";
 
     // 의존성 주입하고 초기 세팅
@@ -38,28 +40,34 @@ public class VoteRedisRepository {
                 // 존재하면 가져오기
                 vote = getVote(playerId);
             }
+            voteResult.put(playerId, vote);
             updateVote(playerId, vote);
         });
+        for(Long id : voteResult.keySet()) {
+            log.info("Player Id : {} Vote : {}", id, voteResult.get(id).toString());
+        }
         return voteResult;
     }
 
     // playerId에 해당하는 사용자가 남긴 투표가 존재하는지 검색
     public boolean isExist(Long playerId) {
-        return opsHashVote.hasKey(key, playerId);
+        return opsHashVote.hasKey(key, String.valueOf(playerId));
     }
 
     // playerId에 해당하는 사용자가 남긴 투표 반환
     public Vote getVote(Long playerId) {
-        return opsHashVote.get(key, playerId);
+
+        return opsHashVote.get(key, String.valueOf(playerId));
     }
 
     // Vote를 받아서 업데이트하는 함수
     private void updateVote(Long playerId, Vote vote) {
-        opsHashVote.put(key, playerId, vote);
+
+        opsHashVote.put(key, String.valueOf(playerId), vote);
     }
 
     private void deleteVote(Long playerId) {
-        opsHashVote.delete(key, playerId);
+        opsHashVote.delete(key, String.valueOf(playerId));
     }
 
 

@@ -90,4 +90,7 @@ public class GameSession {
         this.day++;
     }
 
+    public void setGamePhase(GamePhase phase) {
+        this.gamePhase = phase;
+    }
 }

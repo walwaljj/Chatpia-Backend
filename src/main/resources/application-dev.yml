@@ -1,13 +1,13 @@
 spring:
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/springles
-    username: root
-    password: abc123
+    url: jdbc:mysql://${DATASOURCE_URL_HOST}/springles
+    username: ${MYSQL_ROOT_USER}
+    password: ${MYSQL_ROOT_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -18,5 +18,12 @@ spring:
   sql:
     init:
       mode: always
+
+  mail:
+    host: smtp.gmail.com
+    port: ${NAVER_MAIL_PORT}
+    NAVER_MAIL_USERNAME: ${NAVER_MAIL_USERNAME}
+    NAVER_MAIL_PASSWORD: ${NAVER_MAIL_PASSWORD}
+
 jwt:
   secret: dhwhokdfnpwkempfnwiofnpwkempfnwiofnpwkempfnwiofnpwkempfnwio

@@ -14,26 +14,31 @@
                     <a sec:authorize="isAuthenticated()" class="nav-link text-muted" href="/v1/my-page">마이페이지</a>
                 </div>
                 <div class="nav-item">
-                    <a sec:authorize="isAnonymous()" class="nav-link text-muted" href="/v1/signup">회원가입</a>
-                    <a sec:authorize="isAuthenticated()" class="logout-btn nav-link text-muted"
-                       href="javascript:void(0);">로그아웃</a>
-                    <!--JwtTokenFilter 로직 수정 후 사용 예정-->
-<!--                    <th:block layout:fragment="script">-->
-<!--                        <script th:inline="javascript">-->
-<!--                            $(function () {-->
-<!--                                $.ajax({-->
-<!--                                    url: 'http://localhost:8080/member/logout',-->
-<!--                                    type: 'POST',-->
-<!--                                    success: function () {-->
-<!--                                        location.href = 'http://localhost:8080/v1/login-page'-->
-<!--                                    },-->
-<!--                                    error: function (response) {-->
-<!--                                        alert((response.responseJSON.message).split('##')[0])-->
-<!--                                    }-->
-<!--                                });-->
-<!--                            })-->
-<!--                        </script>-->
-<!--                    </th:block>-->
+                    <a sec:authorize="isAnonymous()" class="nav-link text-white" href="/v1/signup">회원가입</a>
+                    <a sec:authorize="isAuthenticated()" id="logout_btn" class="nav-link text-white" href="javascript:void(0);">로그아웃</a>
+
+                    <!------------------------------- 로그아웃 script ------------------------------->
+                    <th:block layout:fragment="script">
+                        <script th:inline="javascript">
+                            $(function () {
+                                $('#logout_btn').click((e) => {
+                                    if (confirm('로그아웃 하시겠습니까?')) {
+                                        $.ajax({
+                                            url: 'http://localhost:8080/member/logout',
+                                            type: 'POST',
+                                            success: function () {
+                                                location.href = 'http://localhost:8080/v1/login-page'
+                                            },
+                                            error: function (response) {
+                                                alert((response.responseJSON.message).split('##')[0])
+                                            }
+                                        })
+                                    }
+                                });
+                            })
+                        </script>
+                    </th:block>
+
                 </div>
             </div>
         </div>

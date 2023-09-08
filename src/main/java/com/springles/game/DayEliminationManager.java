@@ -30,16 +30,18 @@ public class DayEliminationManager {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final GameSessionManager gameSessionManager;
     private final PlayerRedisRepository playerRedisRepository;
+    private final MessageManager messageManager;
     private final GameSessionVoteService gameSessionVoteService;
     private final ObjectMapper objectMapper;
 
-    public void sendMessage(String message) {
-        DayEliminationMessage dayEliminationMessage =
-                objectMapper.convertValue(message, DayEliminationMessage.class);
+    public void sendMessage(DayEliminationMessage dayEliminationMessage) {
+        log.info("Day Elimination 단계까지 왔다");
         Long roomId = dayEliminationMessage.getRoomId();
         Long deadPlayerId = dayEliminationMessage.getDeadPlayerId();
 
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+        log.info("Room: {}, Dead Player Id: {}", roomId, deadPlayerId);
+        log.info("Room {} at Phase {}", roomId, gameSession.getGamePhase());
         // 관찰자 목록
         List<Long> victims = setDayToNight(gameSession, deadPlayerId);
 
@@ -63,7 +65,16 @@ public class DayEliminationManager {
         log.info("Room {} start Day {} {} ", roomId, gameSession.getDay(), gameSession.getGamePhase());
 
         // 죽인 결과 전송
-        simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId, GameStatusKillRes.of(gameSession, players, deadPlayer));
+//        messageManager.sendMessage(
+//                "/sub/chat/" + roomId,
+//                deadPlayer.getMemberName() + "님이 마피아로 지목되어 사망하셨습니다.",
+//                roomId, "admin"
+//        );
+//        messageManager.sendMessage(
+//                "/sub/chat/" + roomId,
+//                deadPlayer.getMemberName() + "님은 " + deadPlayer.getRole() + "입니다.",
+//                roomId, "admin"
+//        );
     }
 
     private List<Long> setDayToNight(GameSession gameSession, Long deadPlayerId)    {
@@ -89,6 +100,17 @@ public class DayEliminationManager {
             Player deadPlayer = deadPlayerOptional.get();
             // 아직 살아 있다면
             if (deadPlayer.isAlive()) {
+                // 죽인 결과 전송
+                messageManager.sendMessage(
+                        "/sub/chat/" + gameSession.getRoomId(),
+                        deadPlayer.getMemberName() + "님이 마피아로 지목되어 사망하셨습니다.",
+                        gameSession.getRoomId(), "admin"
+                );
+                messageManager.sendMessage(
+                        "/sub/chat/" + gameSession.getRoomId(),
+                        deadPlayer.getMemberName() + "님은 " + deadPlayer.getRole() + "입니다.",
+                        gameSession.getRoomId(), "admin"
+                );
                 // 죽임
                 deadPlayer.setAlive(false);
                 deadPlayer.setRole(GameRole.OBSERVER);

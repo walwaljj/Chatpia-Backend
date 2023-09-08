@@ -40,7 +40,7 @@ public class MemberGameInfo {
     @Column(nullable = false)
     private boolean isObserver;  // 게임 내 관찰자인지 여부
 
-    // entity 맵핑 필요
-    @Column(nullable = false)
-    private Long memberId;   // memberId
+    @OneToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 }

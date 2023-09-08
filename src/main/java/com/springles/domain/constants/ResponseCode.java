@@ -42,7 +42,11 @@ public enum ResponseCode {
 
     /* JWT */
     ACCESS_TOKEN_REISSUE(HttpStatus.OK, "200", "Access Token 재발급 성공"),
-    TOKEN_INFO_CHECK(HttpStatus.OK, "200", "Token 정보 조회 성공");
+    TOKEN_INFO_CHECK(HttpStatus.OK, "200", "Token 정보 조회 성공"),
+
+    /* COOKIE */
+    COOKIE_SET(HttpStatus.OK, "200", "쿠키 저장 성공"),
+    COOKIE_INIT(HttpStatus.OK, "200", "쿠키 초기화 성공");
 
     private final HttpStatus httpStatus;
     private final String code;

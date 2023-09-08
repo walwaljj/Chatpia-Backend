@@ -10,7 +10,9 @@ import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.domain.dto.response.ResResult;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
+import com.springles.jwt.JwtTokenUtils;
 import com.springles.service.ChatRoomService;
+import com.springles.service.CookieService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -31,13 +33,14 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
     private final MemberUiController memberUiController;
+    private final CookieService cookieService;
 
     // 채팅방 생성
     @Operation(summary = "채팅방 생성", description = "채팅방 생성")
     @PostMapping(value = "/chatrooms")
     public ResponseEntity<ResResult> createChatRoom(@Valid @RequestBody ChatRoomReqDTO chatRoomReqDTO, HttpServletRequest request, Authentication auth){
 
-        String accessToken = (String) request.getAttribute("accessToken");
+        String accessToken = cookieService.atkFromCookie(request);
         MemberInfoResponse info = memberUiController.info(accessToken);
         Long id = info.getId();
         String memberName = info.getMemberName();
@@ -142,4 +145,12 @@ public class ChatRoomController {
         chatRoomService.deleteChatRoom(memberId, chatroomid);
         return "redirect:/v1/chatrooms";
     }
+
+    @GetMapping("/chatRooms/{roomId}")
+    public ChatRoomResponseDto findRoomInfo(
+        @PathVariable Long roomId
+    ) {
+        return chatRoomService.findChatRoomByChatRoomId(roomId);
+    }
+
 }

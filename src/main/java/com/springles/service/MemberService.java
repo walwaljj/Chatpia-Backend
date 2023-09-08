@@ -16,6 +16,9 @@ public interface MemberService {
 
     // 메인페이지 사용자 프로필 정보 호출
     MemberSimpleProfileResponse getUserSimpleProfileInfo(String accessToken);
+
+    MemberInfoResponse findUserByName(String memberName);
+
     // 사용자 프로필 정보 호출
     MemberProfileResponse getUserProfileInfo(String accessToken);
 
@@ -42,6 +45,12 @@ public interface MemberService {
     MemberProfileResponse updateProfile(MemberProfileUpdateRequest memberDto, String accessToken);
 
     MemberProfileRead readProfile(String accessToken);
+
+    /** 멤버 프로필 존재 여부 조회
+     * exists메소드지만 boolean이 아닌 존재하는 member_id를 반환
+     *
+     * */
+    Long existsUserProfile(String accessToken);
 
     MemberProfileResponse levelUp(Long memberId);
 
