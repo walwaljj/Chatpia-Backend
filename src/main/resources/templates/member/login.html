@@ -9,21 +9,19 @@
     <div class="form-container">
         <div class="form-item">
             <div class="mb-4"><h5>로그인</h5></div>
-            <form th:action="@{/v1/login}" th:object="${memberDto}" method="post">
+            <form id="form">
                 <table class="table">
                     <tbody>
                     <div>
                         <label for="memberName">아이디</label>
-                        <input type="text" id="memberName" th:field="*{memberName}" class="form-control"
-                               placeholder="아이디를 입력하세요">
+                        <input type="text" id="memberName" class="form-control" placeholder="아이디를 입력하세요">
                     </div>
                     <div>
                         <label for="password">비밀번호</label>
-                        <input type="text" id="password" th:field="*{password}" class="form-control"
-                               placeholder="비밀번호를 입력하세요">
+                        <input type="text" id="password" class="form-control" placeholder="비밀번호를 입력하세요">
                     </div>
                     <div>
-                        <button class="submit_btn" type="submit">등록</button>
+                        <button class="submit_btn" type="button">로그인</button>
                     </div>
 
                 </table>
@@ -41,41 +39,104 @@
     </div>
 
 
-    <!---------------------- script ----------------------->
+    <!---------------------------------------------------------- script ---------------------------------------------------------->
     <script th:if="${param.error}">
         window.onload = function () {
             alert('다시 로그인해주세요.');
         }
     </script>
 
-<!--    <th:block layout:fragment="script">-->
-<!--        <script th:inline="javascript">-->
-<!--            $(function () {-->
-<!--                $('.submit_btn').click((e) => {-->
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            $(function () {
+                $('.submit_btn').click((e) => {
 
-<!--                    const form =new FormData();-->
-<!--                    form.append('memberName', $('#memberName').val())-->
-<!--                    form.append('password', $('#password').val())-->
+                    const memberName = $('#memberName').val()
+                    const password = $('#password').val()
+                    const json = JSON.stringify({
+                        'memberName': memberName,
+                        'password': password,
+                    });
 
-<!--                    const path = 'http://localhost:8080/v1/login'-->
+                    const path = 'http://localhost:8080/member/login'
 
-<!--                    $.ajax({-->
-<!--                        url: path,-->
-<!--                        type: 'POST',-->
-<!--                        data: form,-->
-<!--                        contentType: false,-->
-<!--                        processData: false,-->
-<!--                        success: function () {-->
-<!--                            location.href = 'http://localhost:8080/v1/index'-->
-<!--                        },-->
-<!--                        error: function (response) {-->
-<!--                            alert((response.responseJSON.message).split('##')[0])-->
-<!--                        }-->
-<!--                    });-->
-<!--                });-->
-<!--                return false;-->
-<!--            })-->
-<!--        </script>-->
-<!--    </th:block>-->
+                    $.ajax({
+                        url: path,
+                        type: 'POST',
+                        data: json,
+                        contentType: 'application/json',
+                        success: function (response) {
+
+                            // accessToken을 쿠키에 저장 ---------------------------
+                            $.ajax({
+                                    url: 'http://localhost:8080/cookie/atk',
+                                    type: 'POST',
+                                    data: JSON.stringify({
+                                        'key': 'accessToken',
+                                        'value': response.data.accessToken,
+                                    }),
+                                    contentType: 'application/json',
+                                    success: function () {
+                                        console.log('accessToken 쿠키 저장 완료')
+
+                                        // refreshTokenId를 쿠키에 저장 ---------------------------
+                                        $.ajax({
+                                            url: 'http://localhost:8080/cookie/rtk',
+                                            type: 'POST',
+                                            data: JSON.stringify({
+                                                'key': 'refreshTokenId',
+                                                'value': response.data.refreshToken.id,
+                                            }),
+                                            contentType: 'application/json',
+                                            success: function () {
+                                                console.log('refreshTokenId 쿠키 저장 완료')
+
+
+                                                // 이미 프로필이 설정되어 있는지 체크 ---------------------------
+                                                $.ajax({
+                                                    url: 'http://localhost:8080/member/info/profile/exists',
+                                                    type: 'POST',
+                                                    success: function (response) {
+                                                        console.log(response.data)
+                                                        if(response.data == null) {
+                                                            console.log('프로필이 이미 설정되어 있지 않음')
+                                                            location.href = 'http://localhost:8080/v1/profile-settings'
+                                                        } else {
+                                                            console.log('프로필이 이미 설정되어 있음')
+                                                            location.href = 'http://localhost:8080/v1/index'
+                                                        }
+                                                    },
+                                                    error: function (response) {
+                                                        console.log('프로필 존재 유무 확인 실패')
+                                                        alert((response.responseJSON.message).split('##')[0])
+                                                    }
+                                                });
+                                                // 이미 프로필이 설정되어 있는지 체크 끝---------------------------
+                                            },
+                                            error: function (response) {
+                                                console.log('refreshTokenId 쿠키 저장 실패')
+                                                alert((response.responseJSON.message).split('##')[0])
+                                            }
+                                        });
+                                        // refreshTokenId를 쿠키에 저장 끝---------------------------
+                                    },
+                                    error: function (response) {
+                                        console.log('accessToken 쿠키 저장 실패')
+                                        alert((response.responseJSON.message).split('##')[0])
+
+                                    }
+                                });
+                            // accessToken을 쿠키에 저장 끝---------------------------
+                        },
+                        error: function (response) {
+                            console.log('login post api 요청 실패')
+                            alert((response.responseJSON.message).split('##')[0])
+                        }
+                    });
+                });
+                return false;
+            })
+        </script>
+    </th:block>
 </div>
 </html>

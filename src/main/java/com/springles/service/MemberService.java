@@ -43,6 +43,12 @@ public interface MemberService {
 
     MemberProfileRead readProfile(String accessToken);
 
+    /** 멤버 프로필 존재 여부 조회
+     * exists메소드지만 boolean이 아닌 존재하는 member_id를 반환
+     *
+     * */
+    Long existsUserProfile(String accessToken);
+
     MemberProfileResponse levelUp(Long memberId);
 
     Level nextLevel(Level rawLevel);

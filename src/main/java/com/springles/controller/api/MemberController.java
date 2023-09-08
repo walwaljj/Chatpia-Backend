@@ -4,6 +4,7 @@ import com.springles.domain.constants.ResponseCode;
 import com.springles.domain.dto.member.*;
 import com.springles.domain.dto.response.ResResult;
 import com.springles.jwt.JwtTokenUtils;
+import com.springles.service.CookieService;
 import com.springles.service.MemberService;
 import com.springles.valid.ValidationSequence;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
-    private final JwtTokenUtils jwtTokenUtils;
+    private final CookieService cookieService;
 
     // 회원가입
     @PostMapping("/signup")
@@ -44,7 +45,7 @@ public class MemberController {
             @Validated({ValidationSequence.class}) @RequestBody MemberUpdateRequest memberDto,
             HttpServletRequest request
     ) {
-        String accessToken = jwtTokenUtils.atkFromCookie(request);
+        String accessToken = cookieService.atkFromCookie(request);
         ResponseCode responseCode = ResponseCode.MEMBER_UPDATE;
 
         return ResponseEntity.ok(
@@ -63,7 +64,7 @@ public class MemberController {
             @Validated({ValidationSequence.class}) @RequestBody MemberDeleteRequest memberDto,
             HttpServletRequest request
     ) {
-        String accessToken = jwtTokenUtils.atkFromCookie(request);
+        String accessToken = cookieService.atkFromCookie(request);
         memberService.signOut(memberDto, accessToken);
         ResponseCode responseCode = ResponseCode.MEMBER_DELETE;
 
@@ -99,7 +100,7 @@ public class MemberController {
     public ResponseEntity<ResResult> logout(
             HttpServletRequest request
     ) {
-        String accessToken = jwtTokenUtils.atkFromCookie(request);
+        String accessToken = cookieService.atkFromCookie(request);
         ResponseCode responseCode = ResponseCode.MEMBER_LOGOUT;
         memberService.logout(accessToken);
 
@@ -155,7 +156,7 @@ public class MemberController {
             @Validated({ValidationSequence.class}) @RequestBody MemberProfileCreateRequest memberDto,
             HttpServletRequest request
     ) {
-        String accessToken = jwtTokenUtils.atkFromCookie(request);
+        String accessToken = cookieService.atkFromCookie(request);
         ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_CREATE;
 
         return ResponseEntity.ok(
@@ -175,7 +176,7 @@ public class MemberController {
             @Validated({ValidationSequence.class}) @RequestBody MemberProfileUpdateRequest memberDto,
             HttpServletRequest request
     ) {
-        String accessToken = jwtTokenUtils.atkFromCookie(request);
+        String accessToken = cookieService.atkFromCookie(request);
         ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_UPDATE;
 
         return ResponseEntity.ok(
@@ -206,6 +207,23 @@ public class MemberController {
         );
     }
 
+    // 사용자 프로필 존재 유무 체크
+    @PostMapping("/info/profile/exists")
+    public ResponseEntity<ResResult> isExistsProfile(
+            HttpServletRequest request
+    ) {
+        String accessToken = cookieService.atkFromCookie(request);
+        ResponseCode responseCode = ResponseCode.MEMBER_PROFILE_READ;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.existsUserProfile(accessToken))
+                        .build()
+        );
+    }
 
     // 레벨업
     @PatchMapping("/levelup")
