@@ -119,10 +119,7 @@ public class ChatUiController {
             model.addAttribute("nextUrl", String.format("/v1/add"));
             return "check/confirm";
         }
-
-
     }
-
 
 
     // url 공유 하기 버튼

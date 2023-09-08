@@ -3,13 +3,16 @@ html {
     min-height: 100%;
     margin: 0;
 }
+
 body {
-    background-color:#F5F5F5
+
 }
 
 .navbar {
     padding-left: 40px;
     padding-right: 40px;
+    height: 8vh;
+    background-color:#F5F5F5
 }
 
 .index-container{
@@ -36,6 +39,8 @@ body {
 .card-header{
     text-align: left;
     background-color:#666666;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
 }
 
 .form-item {
@@ -46,10 +51,7 @@ body {
 .profile {
     border-radius: 14px;
     border: #666666 solid 1px;
-    /*width: 30vw;*/
     height: 30vh;
-    /*padding: 3px 6px;*/
-    /*background-color: blue;*/
 }
 
 .card-body2 {
@@ -64,7 +66,6 @@ body {
 }
 
 .my_bg {
-    /*background-image: url("../images/profile.png");*/
     background-size: 100% 100%;
     align-items:center;
     justify-content: center;
@@ -134,7 +135,7 @@ body {
 
 .cover {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     margin: 10px;
 }
 
