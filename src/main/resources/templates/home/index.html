@@ -11,16 +11,19 @@
                 <!-----------------------사용자 정보 ----------------------------------------------------------->
                 <div class="card profile">
                     <!---------레벨 ---------->
-                    <div class="card-header text-white" style="border-radius: 14px;" th:text="${member.getLevel()}"></div>
+                    <div class="card-header text-white">
+                        <p id="level"></p>
+                    </div>
                     <div class="card-body2 container row">
                         <!--------- 프로필 사진 -------->
-                        <div class="my_div my_bg col m-3 p-0">
-                            <img class="my_bg_img" id="profileImg" th:src="${member.getProfileImg().getFileUrl()}"
-                                 alt="프로필이미지"/>
+                        <div class="my_div my_bg col m-3 p-3">
+                            <img class="my_bg_img" id="profileImg" alt="프로필이미지"/>
                         </div>
                         <!--------------------- 닉네임 -------->
                         <div class="nick-name-box col p-3">
-                            <div class="nick-name" th:text="${member.getNickname()}"></div>
+                            <div class="nick-name">
+                                <p id="nickName"></p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -39,105 +42,53 @@
             <div class="col-7 center px-2 m-5">
                 <div class="container row cover">
                     <!------------------ 체크 박스 ------------------------>
-                    <div class="custom-control custom-checkbox my-1 mr-sm-2 check-box">
-                        <input type="checkbox"
-                               id="checkbox"
-                               name="checkbox"
-                               class="custom-control-input form-check-input">
-                        <label class="custom-control-label" for="checkbox">오픈&대기중</label>
-                    </div>
-                    <!------------------- 검색 ------------------------->
-                    <form class="form-inline" th:action="@{/v1/index}" method="get">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <button class="input-group-text" type="submit">
-                                    <img class="search_thumbnail" src="/images/search.png"/>
-                                </button>
-                            </div>
-                            <input class="form-control mr-sm-2" type="text" id="search-content" name="search-content"
-                                   placeholder="nickname or title"/>
-                        </div>
+<!--                    <div class="custom-control custom-checkbox my-1 mr-sm-2 check-box">-->
+<!--                        <input type="checkbox"-->
+<!--                               id="checkbox"-->
+<!--                               name="checkbox"-->
+<!--                               class="custom-control-input form-check-input"-->
+<!--                               onclick="chatRoomCheckboxFilter()">-->
+<!--                        <label class="custom-control-label" for="checkbox">오픈&대기중</label>-->
+<!--                    </div>-->
+                    <!------------------- 검색창 ------------------------->
+                    <form class="form-inline">
                         <!------------------ 리셋 ---------------------------->
                         <button type="button" class="btn btn-light my-1" onclick="clearButton()">리셋</button>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <input class="form-control mr-sm-2" type="text" id="search-content" name="search-content"
+                                       placeholder="nickname or title"/>
+
+                            </div>
+                            <button class="input-group-text" type="button" onclick="search()">
+                                <img class="search_thumbnail" src="/images/search.png"/>
+                            </button>
+                        </div>
                     </form>
                 </div>
                 <!------------------ 메시지 --------------------------->
-                <div th:if="${errorMessage}" id="errorMessage" class="alert alert-danger">
-                    <p th:text="${errorMessage}"></p>
-                </div>
+<!--                <div id="errorMessage" class="alert alert-danger">-->
+<!--                    <p></p>-->
+<!--                </div>-->
+                <!----------------------- 채팅방 목록 ------------------------------------------------------->
+                <div id="display"></div>
 
-                <!------------------ 채팅방 목록 ----------------------->
-                <div class="chat_list_ui" id="chatRoom">
-                    <div th:if="${allChatRooms != null}">
-                        <div th:id="'room_' + ${i.index}" class="list-group" th:each="room, i: ${allChatRooms}">
-                            <a th:href="@{/chat/{roomId}/{nickName} (roomId=${room.id},nickName=${member.getNickname()})}"
-                               th:attrappend="roomId=${room.id},nickName=${member.getNickname()},isClose=${room.getClose()}"
-                               id="chatroom-url" name="chatroom-url"
-                               class="list-group-item list-group-item-action flex-column align-items-start">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <!-----------------게임중 / 대기중 -------------------->
-                                    <span id="state"
-                                          th:text="${room.state}"
-                                          class="badge badge-primary badge-pill"></span>
-                                    <!-----------------비밀방 여부 -------------------->
-                                    <div class="d-flex w-100 justify-content-between">
-                                    <span id="close" th:if="${room.getClose()}">
-                                        <img class="lock_thumbnail" src="/images/lock.png"/>
-                                    </span>
-                                        <span id="open" th:unless="${room.getClose()}">
-                                    </span>
-                                    </div>
-                                </div>
-                                <div class="contaniner row" style="text-align: left">
-                                    <!---------------- 방 제목 ----------------------------->
-                                    <div class="col-11">
-                                        <h5 class="mb-1" th:text="${room.title}"></h5>
-                                    </div>
-                                    <!-----------------참여인원 / 정원 -------------------->
-                                    <div class="col-1">
-                                        <span class="mb-1" th:text="${room.head}"></span>/
-                                        <span class="mb-1" th:text="${room.capacity}"></span>
-                                    </div>
-                                </div>
-                            </a>
-                            <!--------------------비밀방 비밀번호 입력 ----------------------->
-<!--                            <div th:id="'passwordInput_' + ${room.id}" class="password-input" style="display: none;">-->
-<!--                                <input type="text" name="userInput" id="userInput"/>-->
-<!--                                <button type="button" id="password-submit" name="password-submit" class="submit_btn"-->
-<!--                                        th:attr="data-roomId=${room.id},data-nickName=${member.getNickname()},data-isClose=${room.close},data-roomPassword=${room.password}">-->
-<!--                                    확인-->
-<!--                                </button>-->
-<!--                            </div>-->
-                            <!-- Modal -->
-
-                            <!--------------------비밀방 비밀번호 입력 Modal ----------------------->
-                            <div th:id="'passwordInput_' + ${room.id}" id="modal" class="searchModal password-input">
-                                <div class="search-modal-content">
-                                    <div class="page-header">
-                                        <h1>MODAL</h1>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="row">
-                                                <div class="col-sm-6">
-                                                    <h5> 비밀번호를 입력하세요.</h5>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div th:id="'passwordInput_' + ${room.id}" class="password-input">
-                                                        <input type="text" name="userInput" id="userInput"/>
-                                                        <button type="button" id="password-submit" name="password-submit" class="submit_btn"
-                                                                th:attr="data-roomId=${room.id},data-nickName=${member.getNickname()},data-isClose=${room.close},data-roomPassword=${room.password}">
-                                                            확인
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="btn" onClick="closeModal()">
-            <span class="pop_bt modalCloseBtn">닫기</span>
-                                    </div>
-                                </div>
+                <!-- 비밀방 입장 시 비밀번호 입력 Modal  -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">비밀방 입장</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="password" class="form-control" id="userInput" placeholder="비밀번호를 입력하세요.">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                                <button type="button" class="btn btn-primary" name="password-submit">확인</button>
                             </div>
                         </div>
                     </div>
@@ -148,83 +99,167 @@
             <th:block layout:fragment="script">
                 <script th:inline="javascript">  // 자바스크립트 인라인
 
-                // Modal 닫기
-                function closeModal() {
-                    $('.searchModal').hide();
-                };
+                // 페이지 로딩 시 동작
+                $(function () {
+                    // 프로필 정보 조회
+                    $.get("/member/info",
+                        function (data) {
+                            $("#level").text(data.data.level);
+                            $("#profileImg").attr("src", data.data.profileImg);
+                            $("#nickName").text(data.data.nickname);
+                        })
+                    });
+                    // 채팅방 전체 목록 조회
+                    $.get("/v1/chatrooms",
+                        function(data) {
+                            chatRoomList(data)
+                    });
 
-                $('#checkbox').on('click', function () {
-                    const checkBtn = document.getElementById('checkbox');
-                    let allChatRooms = [[${allChatRooms}]];
-                    if (allChatRooms.length === 0) return;
-                    allChatRooms = [[${allChatRooms}]];
-                    console.log("allChatRooms : " + allChatRooms);
-                    // 필터를 적용해야하는 경우라면
-                    if (checkBtn.checked) {
+                // 채팅방 입장
+                function enterRoom(chatRoomId, isClose) {
+                    // 비밀방은 비밀번호 입력 Modal
+                    if (isClose === true) {
+                        const modal = document.getElementById("exampleModal");
+                        // modal.style.display = "block";
+                        $("button[name='password-submit']").click(function (event) {
+                            event.preventDefault();
+                            $.ajax({
+                                url: `/v1/chatroom/${chatRoomId}`,
+                                type: 'GET',
+                                success: function(data) {
+                                    const nickName = document.getElementById("nickName").innerText;
+                                    const userInput = document.getElementById('userInput').value;
+                                    const roomPassword = data.data.password;
 
-                        for (var i = 0; i < allChatRooms.length; i++) {
-                            // 비밀방 또는 게임중이면 HIDE
-                            if (allChatRooms[i].close || allChatRooms[i].state === "PLAYING") {
-                                document.getElementById('room_' + i).style.display = "none";
-                            }
-                        }
+                                    if (roomPassword !== userInput) {
+                                        alert('비밀번호가 일치하지 않습니다.')
+                                    } else {
+                                        window.location.href = '/chat/' + chatRoomId + '/' + nickName; // 맞다면 이동
+                                    }
+                                },
+                                error: function(response) {
+                                    alert(JSON.stringify(response))
+                                },
+                            });
+                        });
+
+                        // 오픈방이면 바로 이동
                     } else {
-                        for (var i = 0; i < allChatRooms.length; i++) {
-                            document.getElementById('room_' + i).style.display = "";
-                        }
+                        const nickName = document.getElementById("nickName").innerText
+                        window.location.href = '/chat/' + chatRoomId + '/' + nickName;
                     }
-
-                });
-
-                // 검색 리셋
-                function clearButton() {
-                    window.location.href = "/v1/index";
                 }
 
-                // 채팅방 선택 후 비밀방 여부 확인, 비밀번호 입력창 띄우기
-                $("a[name='chatroom-url']").click(function (event) {
+                // 채팅방 목록 생성
+                    function chatRoomList(data){
+                    var html = `<div id="chatroomList" style=" padding: 3vh; height:50vh; width:100%; overflow-y:scroll;">`
+                    $.each(data.data, function (index, item) {
+                        // 채팅방 선택 시 입장 enterRoom 함수 실행
+                        html += `<a onclick="enterRoom(${item.id}, ${item.close});"
+                                    class="list-group-item list-group-item-action flex-column align-items-start"
+                                    id="chatroom"
+                                    data-toggle="${modal_info2()}"
+                                    data-target="${modal_info()}"
+                                    >`
+                            + `<div class="test d-flex w-100 justify-content-between">`
+                            + `<span class="state badge badge-primary badge-pill">` + item.state + `</span>`
+                            + `<div class="d-flex w-100 justify-content-between">`
+                            + `<span class="mb-1">`
+                            + `<img id="roomImage" class="lock_thumbnail" src="${img_info()}">`
+                            + `</span>`
+                            + `</div>`
+                            + `</div>`
+                            + `<div class="contaniner row" style="text-align: left">`
+                            // 방 제목
+                            + `<div class="col-10">`
+                            + `<h5 class="mb-1">` + item.title + `</h5>`
+                            + `</div>`
+                            // 참여 인원 / 정원
+                            + `<div class="col-1">`
+                            + `<span class="mb-1">` + item.head + `</span>` + "/"
+                            + `<span class="mb-1">` + item.capacity + `</span>`
+                            + `</div>`
+                            + `</div>`
 
-                    event.preventDefault();
-                    const roomId = $(this).attr("roomId");
-                    const isClose = $(this).attr("isClose");
-                    const nickname = $(this).attr("nickname");
-                    const passwordInputDiv = document.getElementById("passwordInput_" + roomId);// passwordInputDiv 요소 가지고 옴.
+                        // 비밀방인 경우 열쇠 이미지 , 공개방인 경우 이미지 없음
+                        function img_info() {
+                            if (item.close) {
+                                return "/images/lock.png";
+                            } else {
+                                return "";
+                            }
+                        }
 
-                    console.log(roomId);
-                    console.log(isClose);
-                    console.log(nickname);
+                        function modal_info() {
+                            if (item.close) {
+                                return "#exampleModal";
+                            } else {
+                                return "";
+                            }
+                        }
 
-                    if (isClose === 'true') { // 비밀방이면
-                        passwordInputDiv.style.display = "block"; // 비밀번호 입력가능한 Modal 표출
-                        // $("#modal").show();
-                    } else {
-                        window.location.href = '/chat/' + roomId + '/' + nickname; // 오픈방이면 input 을 보여주지 않고 chat room 으로 이동시킴
+                        function modal_info2() {
+                            if (item.close) {
+                                return "modal";
+                            } else {
+                                return "";
+                            }
+                        }
+                    })
+                    html += "</a>";
+                    html += "</div>";
+                    $("#display").empty();
+                    $("#display").append(html);
+                }
+
+                // 채팅방 검색
+                function search(){
+                    const content = $('#search-content').val();
+                    // 검색어가 없는 경우 아무 실행도 하지 않습니다.
+                    if(content === ''){
+                        return false;
                     }
-                });
+                    // 검색어가 있는 경우
+                    $.ajax({
+                        url: `/v1/chatroom/search?content=${content}`,
+                        type: 'GET',
+                        success: function(data) {
+                            // 검색 결과에 따라 채팅방 목록 바꾸기
+                            chatRoomList(data);
+                        },
+                        error: function(response) {
+                            // 오류메시지 alert (해당하는 방이 없는 경우)
+                            alert(JSON.stringify(response.responseJSON.message));
+                        },
+                    });
+                }
 
-                // 비밀번호 제출
-                $("button[name='password-submit']").click(function (event) {
+                // checkbox
+                // function chatRoomCheckboxFilter(){
+                //     const checkBtn = document.getElementById('checkbox');
+                //     let allChatRooms = [[${allChatRooms}]];
+                //     if (allChatRooms.length === 0) return;
+                //     allChatRooms = [[${allChatRooms}]];
+                //     // 필터를 적용해야하는 경우라면
+                //     if (checkBtn.checked) {
+                //         for (var i = 0; i < allChatRooms.length; i++) {
+                //             // 비밀방 또는 게임중이면 HIDE
+                //             if (allChatRooms[i].close || allChatRooms[i].state === "PLAYING") {
+                //                 document.getElementById('room_' + i).style.display = "none";
+                //             }
+                //         }
+                //     } else {
+                //         for (var i = 0; i < allChatRooms.length; i++) {
+                //             document.getElementById('room_' + i).style.display = "";
+                //         }
+                //     }
+                // }
 
-                    event.preventDefault();
-
-                    const roomId = $(this).attr("data-roomId");
-                    const isClose = $(this).attr("data-isClose");
-                    const nickname = $(this).attr("data-nickname");
-                    const roomPassword = $(this).attr("data-roomPassword");
-                    const userInput = $(this).prev().val();
-
-                    console.log(roomPassword);
-                    console.log(isClose);
-                    console.log(nickname);
-                    console.log("userInput = " + userInput);
-
-                    if (roomPassword !== userInput) {
-                        alert('비밀번호가 일치하지 않습니다.')
-                        event.preventDefault();
-                    } else {
-                        window.location.href = '/chat/' + roomId + '/' + nickname; // 맞다면 이동
-                    }
-                });
+                // 검색어 리셋
+                function clearButton() {
+                    // 검색어 input 비우기
+                    $('#search-content').val("");
+                }
                 </script>
             </th:block>
         </div>

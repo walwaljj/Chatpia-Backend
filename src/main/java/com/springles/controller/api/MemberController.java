@@ -22,6 +22,21 @@ public class MemberController {
     private final MemberService memberService;
     private final CookieService cookieService;
 
+    // 멤버 정보 조회
+    @GetMapping("/info")
+    public ResponseEntity<ResResult> profileInfo(HttpServletRequest request) {
+        // 멤버 정보 가져오기
+        String accessToken = (String)request.getAttribute("accessToken");
+        ResponseCode responseCode = ResponseCode.MEMBER_DETAIL;
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.getUserSimpleProfileInfo(accessToken))
+                        .build());
+    }
+
     // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<ResResult> signup(
