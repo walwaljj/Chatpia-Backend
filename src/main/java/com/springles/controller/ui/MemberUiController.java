@@ -28,7 +28,6 @@ public class MemberUiController {
         return "member/login";
     }
 
-
     // 아이디 찾기 페이지 조회
     @GetMapping("/vertification-id")
     public String vertificationId() {
@@ -81,11 +80,5 @@ public class MemberUiController {
     // 사용자 정보 요청
     public MemberInfoResponse info(String authHeader) {
         return memberService.getUserInfo(authHeader);
-    }
-
-
-    // 사용자 프로필 정보 요청
-    public MemberProfileResponse profileInfo(String accessToken) {
-        return memberService.getUserProfileInfo(accessToken);
     }
 }

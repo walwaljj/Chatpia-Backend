@@ -74,7 +74,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      */
     @Override
     public List<ChatRoomResponseDto> findAllChatRooms() {
-
         List<ChatRoom> findAllChatRooms = chatRoomJpaRepository.findAll();
         return findAllChatRooms.stream().map(ChatRoomResponseDto::of).toList();
 
@@ -205,7 +204,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
         List<ChatRoomResponseDto> list = new ArrayList<>();
 
-        // 만약 검색어가 없다면 NO_CONTENT 반환
+        // 검색어가 비어 있는 경우
         if (searchContent.isEmpty()) {
             throw new CustomException(ErrorCode.NO_CONTENT);
         }
@@ -216,13 +215,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         list.addAll(chatRoomByTitle);
         list.addAll(chatRoomByNickname);
 
-        // 검색 결과가 비어있다면 NOT_FOUND_ROOM 반환
+        //  검색 결과 일치하는 채팅방이 없는 경우 ''에 대한 검색 결과는 없습니다.
         if (list.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_ROOM);
         }
 
+        // 검색 결과 반환
         return list.stream().distinct().toList();
-
     }
 
     // 채팅방 입장 시 채팅 정보 받아오기

@@ -9,8 +9,10 @@ permissions:
   contents: read
 
 jobs:
+  secrets: inherit
   build:
     runs-on: ubuntu-latest # (3).OS환경
+    secrets: inherit
 
     if: github.event.pull_request.merged == true && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'develop')
 
@@ -51,7 +53,7 @@ jobs:
           utcOffset: "+09:00" # (8).build 시점의 시간 확보
 
       - name: Show Current Time
-        run: echo "CurrentTime=$"
+        run: echo "CurrentTime=${{ steps.current-time.outputs.time }}"
         shell: bash # (9).확보한 시간 보여 주기
 
       - name: Test with Gradle
@@ -65,7 +67,7 @@ jobs:
           utcOffset: "+09:00" # (11).test 시점의 시간 확보
 
       - name: Show Current Time test
-        run: echo "CurrentTime=$"
+        run: echo "CurrentTime=$"{{ steps.current-time.outputs.time }}"
         shell: bash # (12).확보한 시간 보여 주기
 
       - name: Run string replace
@@ -103,6 +105,7 @@ jobs:
           environment_name: Springles-dev-env
           version_label: "the-simple-engineer-deployment-${{ steps.format-time.outputs.replaced }}"
           region: ap-northeast-2
-          deployment_package: docker-compose.yml
+#          deployment_package: docker-compose.yml
+          deployment_package: deploy/deploy.zip
           wait_for_environment_recovery: 60
 #          use_existing_version_if_available: true

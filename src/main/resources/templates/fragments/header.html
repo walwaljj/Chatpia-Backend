@@ -4,20 +4,14 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <div th:fragment="header">
-    <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #666666; height: 10vh;">
-        <!--        <button class="navbar-toggler" type="button" data-toggle="collapse"-->
-        <!--                data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03"-->
-        <!--                aria-expanded="false" aria-label="Toggle navigation">-->
-        <!--            <span class="navbar-toggler-icon"></span>-->
-        <!--        </button>-->
-        <a class="navbar-brand" href="/v1/index">Chatfia</a>
-
+    <nav class="navbar navbar-expand-sm">
+        <a class="navbar-brand text-muted" href="/v1/index">Chatfia</a>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
             <div class="form-inline my-2 my-lg-0">
                 <div class="nav-item">
-                    <a sec:authorize="isAnonymous()" class="nav-link text-white" href="/v1/login-page">로그인</a>
-                    <a sec:authorize="isAuthenticated()" class="nav-link text-white" href="/v1/my-page">마이페이지</a>
+                    <a sec:authorize="isAnonymous()" class="nav-link text-muted" href="/v1/login-page">로그인</a>
+                    <a sec:authorize="isAuthenticated()" class="nav-link text-muted" href="/v1/my-page">마이페이지</a>
                 </div>
                 <div class="nav-item">
                     <a sec:authorize="isAnonymous()" class="nav-link text-white" href="/v1/signup">회원가입</a>
@@ -44,6 +38,7 @@
                             })
                         </script>
                     </th:block>
+
                 </div>
             </div>
         </div>
