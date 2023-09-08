@@ -22,8 +22,8 @@ public class MemberController {
     private final MemberService memberService;
     private final CookieService cookieService;
 
-    // 멤버 정보 조회
-    @GetMapping("/info")
+    // 멤버 프로필 조회(simple)
+    @GetMapping("/info/profile/simple")
     public ResponseEntity<ResResult> profileInfo(HttpServletRequest request) {
         // 멤버 정보 가져오기
         String accessToken = (String)request.getAttribute("accessToken");
