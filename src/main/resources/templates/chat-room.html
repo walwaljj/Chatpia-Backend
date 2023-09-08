@@ -227,7 +227,7 @@
         stompClient.subscribe(`/sub/chat/${roomId}/gameRole/${nickname}`, (message => {
           const body = JSON.parse(message.body)
           console.log("역할 설명 메시지: " + body)
-          stompClient.subscribe(`/sub/chat/${roomId}/${body.gameRole}`)
+          stompClient.subscribe(`/sub/chat/${roomId}/${body.gameRole}`) // 직업 url
           stompClient.unsubscribe(`/sub/chat/${roomId}/playerRole/${nickname}`)
           receiveMessage(body)
         }))

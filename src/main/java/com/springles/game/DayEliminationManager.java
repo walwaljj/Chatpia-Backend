@@ -27,12 +27,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class DayEliminationManager {
-    private final SimpMessagingTemplate simpMessagingTemplate;
     private final GameSessionManager gameSessionManager;
     private final PlayerRedisRepository playerRedisRepository;
     private final MessageManager messageManager;
-    private final GameSessionVoteService gameSessionVoteService;
-    private final ObjectMapper objectMapper;
+
 
     public void sendMessage(DayEliminationMessage dayEliminationMessage) {
         log.info("Day Elimination 단계까지 왔다");

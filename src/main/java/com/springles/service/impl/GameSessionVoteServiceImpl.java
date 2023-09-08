@@ -28,8 +28,6 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     private final VoteRepository voteRepository;
     private final GameSessionManager gameSessionManager;
     private final PlayerRedisRepository playerRedisRepository;
-    private final SimpMessagingTemplate simpMessagingTemplate;
-   // private final DayDiscussionManager dayDiscussionManager;
 
 
     @Override

@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.index.Indexed;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 @RedisHash(value = "GameSession")
 public class GameSession {
@@ -50,7 +51,7 @@ public class GameSession {
             .hostId(chatRoom.getOwnerId())
             .gamePhase(GamePhase.READY)
             .phaseCount(0)
-            .day(0)
+            .day(1)
             .build();
     }
 
@@ -62,7 +63,7 @@ public class GameSession {
         this.alivePolice += gameRoleNum.getPolice();
         this.gamePhase = GamePhase.START;
         this.phaseCount = 0;
-        this.day = 0;
+        this.day = 1;
         return this;
     }
 
@@ -90,7 +91,4 @@ public class GameSession {
         this.day++;
     }
 
-    public void setGamePhase(GamePhase phase) {
-        this.gamePhase = phase;
-    }
 }

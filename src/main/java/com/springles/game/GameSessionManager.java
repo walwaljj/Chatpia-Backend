@@ -16,6 +16,7 @@ import com.springles.repository.PlayerRedisRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -156,5 +157,9 @@ public class GameSessionManager {
         GameSession gameSession = findGameByRoomId(roomId);
         gameSession.passADay();
         gameSessionRedisRepository.save(gameSession);
+    }
+
+    public void update(GameSession update) {
+        gameSessionRedisRepository.save(update);
     }
 }
