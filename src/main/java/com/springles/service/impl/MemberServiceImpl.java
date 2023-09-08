@@ -569,6 +569,7 @@ public class MemberServiceImpl implements MemberService {
                 .profileImgUrl(optionalMemberGameInfo.get().getProfileImg().getFileUrl())
                 .level(optionalMemberGameInfo.get().getLevel().getName())
                 .exp(optionalMemberGameInfo.get().getExp())
+                .goalExp(optionalMemberGameInfo.get().getLevel().getGoalExp())
                 // 최종레벨일 경우, nextLevel 비노출 필요
                 .nextLevel(nextLevel(optionalMemberGameInfo.get().getLevel()).getName())
                 .rank(rank(optionalMember.get().getId()))

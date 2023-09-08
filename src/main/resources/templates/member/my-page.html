@@ -26,10 +26,10 @@
 
                     <!-----------------------게임 관련 정보 ----------------------------------------------------------->
                     <div class="card_body_info container">
-                        <!--------------------- 경험치 -------->
+                        <!--------------------- 경험치(현재 경험치/목표 경험치) -------->
                         <div class="exp-box col mt-3">
                             <div>
-                                <p>경험치 : <span id="exp"></span></p>
+                                <p>경험치 : <span id="exp"></span>exp / <span id="goal-exp"></span>exp</p>
                             </div>
                         </div>
                         <!--------------------- 다음레벨 -------->
@@ -118,6 +118,7 @@
                         $('#profile-img-url').attr('src', profile.profileImgUrl)
                         $('#nickname').text(profile.nickname);
                         $('#exp').text(profile.exp);
+                        $('#goal-exp').text(profile.goalExp);
                         $('#next-level').text(profile.nextLevel);
                         $('#rank').text(profile.rank);
                     },
