@@ -15,7 +15,7 @@ spring:
 
   mail:
     host: smtp.gmail.com
-    port: ${NAVER_MAIL_PORT}
+    port: 587
     NAVER_MAIL_USERNAME: ${NAVER_MAIL_USERNAME}
     NAVER_MAIL_PASSWORD: ${NAVER_MAIL_PASSWORD}
 

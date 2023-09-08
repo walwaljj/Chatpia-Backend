@@ -1,6 +1,6 @@
-version: '4'
+version: '3.8'
 services:
-  developmebt:
+  development:
     build:
       context: .
       dockerfile: Dockerfile
