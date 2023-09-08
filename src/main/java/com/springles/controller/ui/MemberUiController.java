@@ -1,24 +1,11 @@
 package com.springles.controller.ui;
 
 import com.springles.domain.dto.member.*;
-import com.springles.exception.CustomException;
-import com.springles.exception.constants.ErrorCode;
-import com.springles.jwt.JwtTokenUtils;
-import com.springles.repository.MemberGameInfoJpaRepository;
-import com.springles.service.CookieService;
 import com.springles.service.MemberService;
-import com.springles.valid.ValidationSequence;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequestMapping("v1")
@@ -27,7 +14,6 @@ import org.springframework.web.servlet.view.RedirectView;
 public class MemberUiController {
 
     private final MemberService memberService;
-    private final CookieService cookieService;
 
     // 회원가입 페이지 조회
     @GetMapping("/signup")
@@ -38,8 +24,7 @@ public class MemberUiController {
 
     // 로그인 페이지 조회
     @GetMapping("/login-page")
-    public String loginPage(Model model, MemberLoginRequest memberDto) {
-        model.addAttribute("memberDto", memberDto);
+    public String loginPage() {
         return "member/login";
     }
 
@@ -60,22 +45,7 @@ public class MemberUiController {
 
     // 마이페이지 조회
     @GetMapping("/my-page")
-    public String memberProflie(
-//            Model model,
-//            HttpServletRequest request
-    ) {
-//        // accessToken 추출
-//        String accessToken = cookieService.atkFromCookie(request);
-//
-//        // 프로필 조회
-//        MemberProfileRead profileInfo = memberService.readProfile(accessToken);
-//
-//        // 멤버 게임기록 조회
-//        MemberRecordResponse memberRecord = memberService.readRecord(accessToken);
-//
-//        model.addAttribute("profileInfo", profileInfo);
-//        model.addAttribute("record", memberRecord);
-
+    public String memberProfile() {
         return "member/my-page";
     }
 
