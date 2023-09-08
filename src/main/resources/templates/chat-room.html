@@ -210,6 +210,12 @@
           updateVoteList(message)
         })
 
+        // 죽을 사람 후보
+        stompClient.subscribe(`/sub/chat/${roomId}/deadPlayer`, function (message) {
+          updateDeadPlayer(message)
+        })
+
+
         // 개인 채팅 URL 구독
         stompClient.subscribe(`/sub/chat/${roomId}/${nickname}`, (message) => {
           const body = JSON.parse(message.body)
@@ -264,6 +270,32 @@
       }
     }
 
+    function updateDeadPlayer(message) {
+      const deadPlayer = document.getElementById("vote-form");
+      deadPlayer.innerHTML = "";
+      const player = JSON.parse(message.body)
+      console.log(player.memberName);
+      // 찬성 버튼 생성
+      const approveButton = document.createElement("button");
+      approveButton.textContent = "찬성"; // 버튼 텍스트 설정
+      approveButton.addEventListener("click", () => {
+        // 찬성 버튼이 클릭되었을 때 실행될 코드 작성
+        alert("찬성했습니다!");
+      });
+
+      // 반대 버튼 생성
+      const opposeButton = document.createElement("button");
+      opposeButton.textContent = "반대"; // 버튼 텍스트 설정
+      opposeButton.addEventListener("click", () => {
+        // 반대 버튼이 클릭되었을 때 실행될 코드 작성
+        alert("반대했습니다!");
+      });
+
+      // 찬성과 반대 버튼을 vote-form 요소에 추가
+      deadPlayer.appendChild(approveButton);
+      deadPlayer.appendChild(opposeButton);
+    }
+
     function gameStart() {
       stompClient.send(`/pub/gameStart/${roomId}`)
     }
@@ -299,10 +331,12 @@
     // 투표 제출이 되는지
     document.getElementById("vote-form").addEventListener("submit", (event) => {
       event.preventDefault()
+
       const list = document.getElementById('vote-select');
       const selectedIndex = list.selectedIndex;
       const selectedOption = list.options[selectedIndex];
       const selectedValue = selectedOption.value;
+      alert(selectedOption + "님을 투표했습니다!");
       console.log(selectedValue);
       const message = JSON.stringify({
         'phase': 'DAY_VOTE',
@@ -314,6 +348,7 @@
               },
               message);
     })
+
     document.getElementById("message-form").addEventListener("submit", (event) => {
       event.preventDefault()
       const messageInput = document.getElementById('message');
