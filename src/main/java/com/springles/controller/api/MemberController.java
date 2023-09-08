@@ -57,6 +57,23 @@ public class MemberController {
                         .build());
     }
 
+    // 회원 정보 조회
+    @GetMapping("/info")
+    public ResponseEntity<ResResult> readInfo(
+            HttpServletRequest request
+    ) {
+        String accessToken = cookieService.atkFromCookie(request);
+        ResponseCode responseCode = ResponseCode.MEMBER_DETAIL;
+
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.readInfo(accessToken))
+                        .build());
+    }
+
 
     // 회원 탈퇴
     @DeleteMapping

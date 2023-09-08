@@ -153,6 +153,26 @@ public class MemberServiceImpl implements MemberService {
         return updateMember.toString();
     }
 
+    /**
+     * 회원 정보 조회
+     * */
+    public MemberInfoResponse readInfo(String accessToken) {
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
+
+        // 헤더의 회원정보가 존재하는 회원정보인지 체크
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if (optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        // 탈퇴한 회원인지 체크
+        if (optionalMember.get().getIsDeleted()) {
+            throw new CustomException(ErrorCode.DELETED_MEMBER);
+        }
+
+        return MemberInfoResponse.of(optionalMember.get());
+    }
+
 
     /**
      * 회원 탈퇴

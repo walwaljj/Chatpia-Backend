@@ -82,14 +82,7 @@ public class MemberUiController {
 
     // 회원 정보 변경 페이지 조회
     @GetMapping("/my-page/info")
-    public String memberInfo(
-            Model model,
-            HttpServletRequest request
-    ) {
-        String accessToken = cookieService.atkFromCookie(request);
-        MemberInfoResponse memberInfo = memberService.getUserInfo(accessToken);
-        model.addAttribute("rawMemberInfo", memberInfo);
-
+    public String memberInfo() {
         return "member/member-info";
     }
 
