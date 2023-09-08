@@ -13,7 +13,7 @@
                     <tbody>
                     <div>
                         <label for="nickname">닉네임</label>
-                        <input type="text" id="nickname" name="nickname" class="form-control" th:value="${rawProfile.getNickname()}" placeholder="닉네임을 입력하세요">
+                        <input type="text" id="nickname" name="nickname" class="form-control" placeholder="닉네임을 입력하세요">
                     </div>
                     <div>
                         <p class="mt-4">프로필 이미지</p>
@@ -71,6 +71,38 @@
     <!---------------------------------------------------------- script ---------------------------------------------------------->
     <th:block layout:fragment="script">
         <script th:inline="javascript">
+            /* ---------------------기존 프로필 정보 호출--------------------- */
+            $(function () {
+                const path = 'http://localhost:8080/member/info/profile'
+
+                $.ajax({
+                    url: path,
+                    type: 'GET',
+                    success: function (response) {
+                        console.log('기존 프로필 조회 완료')
+
+                        const rawProfile = response.data
+
+                        $('#nickname').attr('value', rawProfile.nickname)
+
+                        switch(rawProfile.profileImg) {
+                            case 'PROFILE01': $('#profileImg_1').attr('checked', true); break;
+                            case 'PROFILE02': $('#profileImg_2').attr('checked', true); break;
+                            case 'PROFILE03': $('#profileImg_3').attr('checked', true); break;
+                            case 'PROFILE04': $('#profileImg_4').attr('checked', true); break;
+                            case 'PROFILE05': $('#profileImg_5').attr('checked', true); break;
+                            case 'PROFILE06': $('#profileImg_6').attr('checked', true); break;
+                        }
+                    },
+                    error: function (response) {
+                        alert((response.responseJSON.message).split('##')[0])
+                    }
+                });
+
+                return false;
+            })
+
+            /* ---------------------프로필 변경--------------------- */
             $(function () {
                 $('.submit_btn').click((e) => {
 

@@ -102,15 +102,7 @@ public class MemberUiController {
 
     // 프로필 변경 페이지 조회
     @GetMapping("/profile-change")
-    public String profileSetting(
-            Model model,
-            @ModelAttribute("profile") MemberProfileUpdateRequest memberDto,
-            HttpServletRequest request
-    ) {
-        String accessToken = cookieService.atkFromCookie(request);
-        MemberProfileRead rawProfile = memberService.readProfile(accessToken);
-
-        model.addAttribute("rawProfile", rawProfile);
+    public String profileChange() {
         return "member/profile-change";
     }
 
