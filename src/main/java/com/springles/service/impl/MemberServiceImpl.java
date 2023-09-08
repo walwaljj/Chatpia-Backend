@@ -63,13 +63,28 @@ public class MemberServiceImpl implements MemberService {
 
         Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
         if(optionalMember.isEmpty()) {
-            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+            throw new CustomException(ErrorCode.NOT_FOUND_GAME_INFO);
         }
 
         Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(optionalMember.get().getId());
 
         return MemberProfileResponse.of(optionalMemberGameInfo.get(), optionalMember.get());
     }
+
+
+    /**
+     * 사용자 프로필 존재 여부 체크
+     */
+    public Long existsUserProfile(String accessToken) {
+        String memberName = jwtTokenUtils.parseClaims(accessToken).getSubject();
+        Optional<Member> optionalMember = memberRepository.findByMemberName(memberName);
+        if(optionalMember.isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
+        }
+
+        return memberGameInfoJpaRepository.existsByMemberId(optionalMember.get().getId());
+}
+
 
     /**
      * 회원가입
