@@ -9,6 +9,7 @@ permissions:
   contents: read
 
 jobs:
+  secrets: inherit
   build:
     runs-on: ubuntu-latest # (3).OS환경
 
