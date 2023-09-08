@@ -1,8 +1,10 @@
 package com.springles.jwt;
 
+import com.springles.domain.dto.cookie.CookieSetRequest;
 import com.springles.domain.dto.member.MemberCreateRequest;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
+import com.springles.service.CookieService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -28,6 +30,7 @@ import java.util.Date;
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtils jwtTokenUtils;
+    private final CookieService cookieService;
 
 
     @Override
@@ -102,7 +105,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                 log.info("atk 재발급 완료");
 
                                 // 쿠키에 저장
-                                jwtTokenUtils.setAtkCookie("accessToken", accessToken, response);
+                                cookieService.setAtkCookie(
+                                        CookieSetRequest.builder().key("accessToken").value(accessToken).build(), response);
                                 log.info("atk 쿠키에 저장 완료");
 
                             } else {
@@ -114,8 +118,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                 accessToken = "";
 
                                 // rtk 쿠키 삭제
-                                jwtTokenUtils.setInitTokenCookie("refreshTokenId", null, response);
-                                jwtTokenUtils.setInitTokenCookie("accessToken", null, response);
+                                cookieService.setInitCookie(
+                                        CookieSetRequest.builder().key("refreshTokenId").value(null).build(), response);
 
                                 // 예외 처리(로그인 화면으로 이동)
                                 throw new CustomException(ErrorCode.NO_JWT_TOKEN);
@@ -150,7 +154,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     log.info("atk : " + accessToken);
 
                     // atk 쿠키 삭제
-                    jwtTokenUtils.setInitTokenCookie("accessToken", null, response);
+                    cookieService.setInitCookie(
+                            CookieSetRequest.builder().key("accessToken").value(null).build(), response);
 
                     // atk의 유효기간이 만료된 거였다면 rtk 확인
                     if (jwtTokenUtils.validate(accessToken) == 2) {
@@ -169,7 +174,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                 log.info("atk 재발급 완료");
 
                                 // 쿠키에 저장
-                                jwtTokenUtils.setAtkCookie("accessToken", accessToken, response);
+                                cookieService.setAtkCookie(
+                                        CookieSetRequest.builder().key("accessToken").value(accessToken).build(), response);
 
                                 // attribute에 저장
                                 // atk 재발급 후 쿠키에 저장해도 request 속 쿠키값은 변하지 않아 유효하지 않은 토큰으로 필터를 지나치게됨
@@ -197,7 +203,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                 refreshTokenId = "";
 
                                 // rtk 쿠키 삭제
-                                jwtTokenUtils.setInitTokenCookie("refreshTokenId", null, response);
+                                cookieService.setInitCookie(
+                                        CookieSetRequest.builder().key("refreshTokenId").value(null).build(), response);
 
                                 // 예외 처리(로그인 화면으로 이동)
                                 throw new CustomException(ErrorCode.NO_JWT_TOKEN);
@@ -223,8 +230,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 refreshTokenId = "";
 
                 // atk, rtk 쿠키 삭제
-                jwtTokenUtils.setInitTokenCookie("accessToken", null, response);
-                jwtTokenUtils.setInitTokenCookie("refreshTokenId", null, response);
+                cookieService.setInitCookie(
+                        CookieSetRequest.builder().key("accessToken").value(null).build(), response);
+                cookieService.setInitCookie(
+                        CookieSetRequest.builder().key("refreshTokenId").value(null).build(), response);
 
                 // 예외 처리(로그인 화면으로 이동)
                 throw new CustomException(ErrorCode.LOGOUT_TOKEN);
@@ -243,7 +252,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 log.info("atk 재발급 완료");
 
                 // 쿠키에 저장
-                jwtTokenUtils.setAtkCookie("accessToken", accessToken, response);
+                cookieService.setInitCookie(
+                        CookieSetRequest.builder().key("accessToken").value(accessToken).build(), response);
 
                 // attribute에 저장
                 // atk 재발급 후 쿠키에 저장해도 request 속 쿠키값은 변하지 않아 유효하지 않은 토큰으로 필터를 지나치게됨
@@ -271,7 +281,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 refreshTokenId = "";
 
                 // rtk 쿠키 삭제
-                jwtTokenUtils.setInitTokenCookie("refreshTokenId", null, response);
+                cookieService.setInitCookie(
+                        CookieSetRequest.builder().key("refreshTokenId").value(null).build(), response);
 
                 // 예외 처리(로그인 화면으로 이동)
                 throw new CustomException(ErrorCode.NO_JWT_TOKEN);
