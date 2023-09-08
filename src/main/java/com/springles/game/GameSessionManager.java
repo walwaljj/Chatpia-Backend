@@ -148,7 +148,7 @@ public class GameSessionManager {
 
     public void changePhase(Long roomId, GamePhase phase) {
         GameSession gameSession = findGameByRoomId(roomId);
-        gameSession.setGamePhase(phase);
+        gameSession.changePhase(phase, 0);
         gameSessionRedisRepository.save(gameSession);
     }
 

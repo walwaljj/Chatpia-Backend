@@ -99,7 +99,7 @@ public class DayDiscussionManager {
 
             log.info("Room {} start Day {} {} ", roomId, gameSession.getDay(), gameSession.getGamePhase());
             gameSessionManager.changePhase(roomId, GamePhase.DAY_ELIMINATE);
-
+            gameSession.setGamePhase(GamePhase.DAY_ELIMINATE);
             messageManager.sendMessage(
                     "/sub/chat/" + roomId + "/" + "deadPlayer",
                     deadPlayer);
