@@ -55,7 +55,7 @@ public class ChatRoomController {
                 .build(), HttpStatus.OK);
     }
 
-    // 채팅방 1개 조회
+    // 채팅방 단일 조회
     @GetMapping(value="/chatroom/{roomId}")
     public ResponseEntity<ResResult> readChatRoom(
             @PathVariable Long roomId
@@ -72,7 +72,7 @@ public class ChatRoomController {
                         .build(), HttpStatus.OK);
     }
 
-    // 전체 채팅방 조회
+    // 채팅방 전체 조회
     @GetMapping(value = "/chatrooms")
     public ResponseEntity<ResResult> readChatRooms() {
 
@@ -92,54 +92,26 @@ public class ChatRoomController {
      /chatrooms?title={title}
      /chatrooms?nickname={nickname}
      */
-    @GetMapping(value = "/chatrooms/search")
-    public ResponseEntity<?> searchChatRooms(@RequestParam(value = "searchContent", required = false, defaultValue = "") String searchContent
+    // 채팅방 검색
+    @GetMapping(value = "/chatroom/search")
+    public ResponseEntity<?> searchChatRooms(
+            @RequestParam(value = "content", required = false, defaultValue = "") String content
     ) {
-//        try {
         ResponseCode responseCode = ResponseCode.CHATROOM_SEARCH;
         return new ResponseEntity<>(
             ResResult.builder()
                     .responseCode(responseCode)
                     .code(responseCode.getCode())
                     .message(responseCode.getMessage())
-                    .data(chatRoomService.findAllByTitleAndNickname(searchContent))
+                    .data(chatRoomService.findAllByTitleAndNickname(content))
                     .build(), HttpStatus.OK);
 
-//            List<ChatRoomResponseDto> allByTitleAndNickname = chatRoomService.findAllByTitleAndNickname(searchContent);
-//            model.addAttribute("allChatRooms", allByTitleAndNickname);
-
-            // 채팅방 검색이 잘 되지 않은 경우
-//        } catch (CustomException e) {
-//            // 검색어가 비어있을 때
-////                model.addAttribute("errorMessage", e.getMessage());
-//            }
 //            // 일치하는 방이 하나도 없을 때
 ////            model.addAttribute("errorMessage", String.format("'%s'에 해당하는 유저 또는 방을 찾지 못해 전체 목록을 불러옵니다.",searchContent));
 //            // 전체 채팅 목록 불러오기
 //            List<ChatRoomResponseDto> allChatRooms = chatRoomService.findAllChatRooms();
 ////            model.addAttribute("allChatRooms", allChatRooms);
 //        }
-
-//        Object chatRooms = null;
-//
-//        // title 로 검색
-//        if (title != null) { chatRooms = chatRoomService.findChatRoomByTitle(title);}
-//
-//        // 방장 이름으로 검색
-//        else if (nickname != null) { chatRooms = chatRoomService.findChatRoomByNickname(nickname); }
-//
-//        // 대기중인 모든 채팅방
-//        else { chatRooms = chatRoomService.findAllChatRooms(); }
-//
-//        ResponseCode responseCode = ResponseCode.CHATROOM_SEARCH;
-//
-//        return new ResponseEntity<>(
-//                ResResult.builder()
-//                        .responseCode(responseCode)
-//                        .code(responseCode.getCode())
-//                        .message(responseCode.getMessage())
-//                        .data(chatRooms)
-//                        .build(), HttpStatus.OK);
     }
 
     // 채팅방 수정
