@@ -145,4 +145,16 @@ public class GameSessionManager {
     public boolean existRoomByRoomId(Long roomId) {
         return gameSessionRedisRepository.existsById(roomId);
     }
+
+    public void changePhase(Long roomId, GamePhase phase) {
+        GameSession gameSession = findGameByRoomId(roomId);
+        gameSession.setGamePhase(phase);
+        gameSessionRedisRepository.save(gameSession);
+    }
+
+    public void passDay(Long roomId) {
+        GameSession gameSession = findGameByRoomId(roomId);
+        gameSession.passADay();
+        gameSessionRedisRepository.save(gameSession);
+    }
 }

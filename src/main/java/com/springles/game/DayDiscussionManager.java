@@ -22,21 +22,24 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class DayDiscussionManager {
-    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final MessageManager messageManager;
     private final GameSessionManager gameSessionManager;
     private final PlayerRedisRepository playerRedisRepository;
     private final GameSessionVoteService gameSessionVoteService;
-    private final ObjectMapper objectMapper;
-    public void sendMessage(String message) throws JsonProcessingException {
+    public void sendMessage(DayDiscussionMessage message) {
         DayDiscussionMessage dayDiscussionMessage
-                = objectMapper.readValue(message, DayDiscussionMessage.class);
-
+                = message;
+        log.info("dayDiscussionManager까지 전달 성공");
         Long roomId = dayDiscussionMessage.getRoomId();
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
 
@@ -44,40 +47,69 @@ public class DayDiscussionManager {
         List<Long> suspiciousList =
                 dayDiscussionMessage.getSuspiciousList();
 
-        // DAY_TO_NIGHT
-        if(suspiciousList.isEmpty()) {
+        log.info("Room {} suspicious List: {}", roomId, suspiciousList.toString());
+
+        Optional<Player> deadPlayerOptional = playerRedisRepository.findById(suspiciousList.get(0));
+        if (deadPlayerOptional.isEmpty()) {
+            log.info("Room {} suspicious List is Empty", roomId);
+
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    "동점 투표자가 발생하여 아무도 지목되지 않았습니다.",
+                    roomId, "admin"
+            );
+
             // 비어 있다면 그냥 밤으로 바꾸기
             setDayToNight(roomId);
             return;
         }
+        else {
+            Player deadPlayer = deadPlayerOptional.get();
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    deadPlayer.getMemberName() + "님이 마피아로 지목되셨습니다.",
+                    roomId, "admin"
+            );
+            ScheduledExecutorService notice = Executors.newSingleThreadScheduledExecutor();
+            // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
+            Runnable task = () -> {
+                // 실행하고자 하는 코드를 여기에 작성합니다.
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        "60초 동안 최후 변론을 시작합니다.",
+                        roomId, "admin"
+                );
+            };
+            // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
+            // 아래의 예제는 5초 후에 작업을 실행합니다.
+            notice.schedule(task, 2, TimeUnit.SECONDS);
 
-        // DAY ELIMINATION
-        // TODO 조금만 쉬고 사람 죽이기
+            List<Player> players = playerRedisRepository.findByRoomId(roomId);
 
-        List<Player> players = playerRedisRepository.findByRoomId(roomId);
+            // 종료된 게임인지 체크
+            if (!gameSessionManager.existRoomByRoomId(roomId)) {
+                throw new CustomException(ErrorCode.GAME_NOT_FOUND);
+            }
+            // 현재 게임의 상태 발송
+            //simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId, GameStatusRes.of(gameSession, players));
 
-        // 종료된 게임인지 체크
-        if (!gameSessionManager.existRoomByRoomId(roomId)) {
-            throw new CustomException(ErrorCode.GAME_NOT_FOUND);
+            Map<Long, GameRole> alivePlayerRoles = players.stream()
+                    .filter(Player::isAlive)
+                    .collect(Collectors.toMap(Player::getMemberId, Player::getRole));
+
+            log.info("Room {} start Day {} {} ", roomId, gameSession.getDay(), gameSession.getGamePhase());
+            gameSessionManager.changePhase(roomId, GamePhase.DAY_ELIMINATE);
+
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId + "/" + "deadPlayer",
+                    deadPlayer);
+            gameSessionVoteService.startVote(
+                    roomId,
+                    gameSession.getPhaseCount(),
+                    gameSession.getGamePhase(),
+                    gameSession.getTimer(),
+                    alivePlayerRoles);
         }
-
-
-        // 현재 게임의 상태 발송
-        simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId, GameStatusRes.of(gameSession, players));
-
-        Map<Long, GameRole> alivePlayerRoles = players.stream()
-                .filter(Player::isAlive)
-                .collect(Collectors.toMap(Player::getMemberId, Player::getRole));
-
-        log.info("Room {} start Day {} {} ", roomId, gameSession.getDay(), gameSession.getGamePhase());
-
-        gameSessionVoteService.startVote(
-                roomId,
-                gameSession.getPhaseCount(),
-                gameSession.getGamePhase(),
-                gameSession.getTimer(),
-                alivePlayerRoles);
-
     }
 
 

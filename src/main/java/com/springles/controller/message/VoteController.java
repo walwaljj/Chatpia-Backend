@@ -2,6 +2,9 @@ package com.springles.controller.message;
 
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
+import com.springles.domain.dto.message.DayDiscussionMessage;
+import com.springles.domain.dto.message.DayEliminationMessage;
+import com.springles.domain.dto.message.NightVoteMessage;
 import com.springles.domain.dto.vote.ConfirmResultResponseDto;
 import com.springles.domain.dto.vote.GameSessionVoteRequestDto;
 import com.springles.domain.dto.vote.VoteResultResponseDto;
@@ -9,9 +12,7 @@ import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
-import com.springles.game.ChatMessage;
-import com.springles.game.GameSessionManager;
-import com.springles.game.MessageManager;
+import com.springles.game.*;
 import com.springles.repository.PlayerRedisRepository;
 import com.springles.service.GameSessionVoteService;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +24,10 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,12 +39,14 @@ public class VoteController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final PlayerRedisRepository playerRedisRepository;
     private final MessageManager messageManager;
+    private final DayDiscussionManager dayDiscussionManager;
+    private final DayEliminationManager dayEliminationManager;
 
     @MessageMapping("/chat/{roomId}/dayStart")
     private void voteStart (SimpMessageHeaderAccessor accessor, @DestinationVariable Long roomId) {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         gameSession.changePhase(GamePhase.DAY_VOTE, 100);
-        gameSession.passADay();
+        gameSessionManager.passDay(roomId);
 
         // 종료된 게임인지 체크
         if (!gameSessionManager.existRoomByRoomId(roomId)) {
@@ -72,6 +76,20 @@ public class VoteController {
                  day + "번째 날 아침이 밝았습니다. 투표를 시작합니다.",
                 roomId, "admin"
         );
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
+        Runnable task = () -> {
+            // 실행하고자 하는 코드를 여기에 작성합니다.
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    "마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오.",
+                    roomId, "admin"
+            );
+        };
+        // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
+        // 아래의 예제는 5초 후에 작업을 실행합니다.
+        executor.schedule(task, 2, TimeUnit.SECONDS);
     }
 
     @MessageMapping("/chat/{roomId}/vote")
@@ -79,20 +97,40 @@ public class VoteController {
                          @DestinationVariable Long roomId,
                          @Payload GameSessionVoteRequestDto request) {
         String playerName = getMemberName(accessor);
-        log.info("Player {} 로그로그", playerName);
         Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
         log.info("Player {} vote {}", playerName, request.getVote());
+        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
 
         Map<Long, Long> voteResult = gameSessionVoteService.vote(roomId, playerId, request);
+        Map<Long, Boolean> confirmResult = gameSessionVoteService.confirmVote(roomId, playerId, request);
+
         if (voteResult == null) {
             throw new CustomException(ErrorCode.FAIL_VOTE);
         }
+        else if(confirmResult.size() <= 0) {
+            throw new CustomException(ErrorCode.FAIL_CONFIRM_VOTE);
+        }
         else {
+            Player voted = playerRedisRepository.findById(voteResult.get(playerId)).get();
+            String votedPlayerName = voted.getMemberName();
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
-                    VoteResultResponseDto.of(voteResult).toString(),
+                    votedPlayerName + "가 투표되었습니다.",
                     roomId, "admin"
             );
+            int confirmCnt = confirmResult.entrySet().stream()
+                    .filter(e -> e.getValue() == true) // confirm == true인 이용자
+                    .collect(Collectors.toList()).size();
+
+            int alivePlayerCnt = gameSession.getAliveCivilian()
+                    + gameSession.getAliveDoctor()
+                    + gameSession.getAlivePolice()
+                    + gameSession.getAliveMafia();
+            log.info("confirmCnt: {}, alivePlayerCnt: {}", confirmCnt, alivePlayerCnt);
+            if (confirmCnt == alivePlayerCnt) { // 살아 있는 모두가 투표를 끝내면 투표 종료
+                Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
+                publishMessage(roomId, vote);
+            }
         }
     }
 
@@ -195,5 +233,20 @@ public class VoteController {
     }
     public String getMemberName(SimpMessageHeaderAccessor accessor) {
         return accessor.getUser().getName().split(",")[1].split(":")[1].trim();
+    }
+
+    private void publishMessage(Long roomId, Map<Long, Long> vote) {
+        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+        log.info("Room {} start Phase {}", roomId, gameSession.getGamePhase());
+        if (gameSession.getGamePhase() == GamePhase.DAY_DISCUSSION) {
+            DayDiscussionMessage dayDiscussionMessage =
+                    new DayDiscussionMessage(roomId, gameSessionVoteService.getSuspiciousList(gameSession, vote));
+            dayDiscussionManager.sendMessage(dayDiscussionMessage);
+        }
+        else if (gameSession.getGamePhase() == GamePhase.DAY_ELIMINATE) {
+            DayEliminationMessage dayEliminationMessage =
+                    new DayEliminationMessage(roomId, gameSessionVoteService.getEliminationPlayer(gameSession, vote));
+            dayEliminationManager.sendMessage(dayEliminationMessage);
+        }
     }
 }
