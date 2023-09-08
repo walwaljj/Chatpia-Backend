@@ -252,3 +252,37 @@ body {
 .password-input {
 
 }
+
+
+.lv-box {
+    max-height: 50px;
+}
+
+.lv-content {
+    max-height: 50px;
+    line-height: 50px;
+}
+
+.lv-img {
+    width: 20%;
+    height: 20%;
+}
+
+.lv-title {
+    max-height: 50px;
+    font-weight: bold;
+}
+
+.lv-sub-title {
+    font-size: 12px;
+    color: #888888;
+}
+
+.lv-modal-close-btn {
+    text-align: center;
+}
+
+.level-info-btn-img {
+    width: 14px;
+    height: 14px;
+}

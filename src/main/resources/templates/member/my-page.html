@@ -35,7 +35,11 @@
                         <!--------------------- 다음레벨 -------->
                         <div class="next-level-box col">
                             <div>
-                                <p>다음 레벨 : <span id="next-level"></span></p>
+                                <p>다음 레벨
+                                    <a id="level-info-btn" class="level-info-btn ml-1" onclick="openLevelDetail()">
+                                        <img class="level-info-btn-img" src="../images/icon_lv_info_btn.png">
+                                    </a>
+                                    : <span id="next-level"></span></p>
                             </div>
                         </div>
                         <!--------------------- 랭킹 -------->
@@ -96,36 +100,101 @@
 
         </div>
     </div>
+    <!-- 레벨 안내 모달-->
+    <div class="modal fade" id="levelDetailModal" tabindex="-1"
+         aria-labelledby="levelDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="levelDetailModalLabel">레벨 안내</h1>
+                </div>
+                <div class="modal-body">
+                        <div class="lv-box row mb-4">
+                            <img class="lv-img col-2" src="../images/level/BOSS.png" alt="BOSS 이미지"/>
+                            <div class="lv-title-box col-4">
+                            <p class="lv-title mb-2">BOSS</p>
+                            <p class="lv-sub-title">보스</p>
+                            </div>
+                            <p class="lv-content col-5">마피아 최고 권력자</p>
+                        </div>
+                        <div class="lv-box row mb-4">
+                            <img class ="lv-img col-2" src="../images/level/UNDERBOSS.png" alt="UNDER BOSS 이미지"/>
+                            <div class="lv-title-box col-4">
+                            <p class="lv-title mb-2">UNDER BOSS</p>
+                            <p class="lv-sub-title">언더보스</p>
+                            </div>
+                            <p class="lv-content col-5">보스 아래의 조직 관리자</p>
+                        </div>
+                        <div class="lv-box row mb-4">
+                            <img class="lv-img col-2" src="../images/level/CAPTAIN.png" alt="CAPTAIN 이미지"/>
+                            <div class="lv-title-box col-4">
+                                <p class="lv-title mb-2">CAPTAIN</p>
+                                <p class="lv-sub-title">캡틴</p>
+                            </div>
+                            <p class="lv-content col-5">조직 내 대장</p>
+                        </div>
+                        <div class="lv-box row mb-4">
+                            <img class ="lv-img col-2" src="../images/level/SOLDIER.png" alt="SOLDIER 이미지"/>
+                            <div class="lv-title-box col-4">
+                            <p class="lv-title mb-2">SOLDIER</p>
+                            <p class="lv-sub-title">솔저</p>
+                            </div>
+                            <p class="lv-content col-5">정식 조직원</p>
+                        </div>
+                        <div class="lv-box row mb-4">
+                            <img class ="lv-img col-2" src="../images/level/ASSOCIATE.png" alt="ASSOCIATE 이미지"/>
+                            <div class="lv-title-box col-4">
+                            <p class="lv-title mb-2">ASSOCIATE</p>
+                            <p class="lv-sub-title">어소시에이트</p>
+                            </div>
+                            <p class="lv-content col-5">예비 조직원</p>
+                        </div>
+                        <div class="lv-box row">
+                            <img class ="lv-img col-2" src="../images/level/BEGINNER.png" alt="BEGINNER 이미지"/>
+                            <div class="lv-title-box col-4">
+                            <p class="lv-title mb-2">BEGINNER</p>
+                            <p class="lv-sub-title">비기너</p>
+                            </div>
+                            <p class="lv-content col-5">마피아 지망생</p>
+                        </div>
+                    <div class="lv-modal-close-btn mt-4">
+                        <button class="btn btn-primary" type="button" onclick="closeLevelDetail()">닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 레벨 안내 모달 끝 -->
 </div>
 
 <!---------------------------------------------------------- script ---------------------------------------------------------->
 <th:block layout:fragment="script">
     <script th:inline="javascript">
         $(function () {
-                const profilePath = 'http://localhost:8080/member/info/profile'
-                const recordPath = 'http://localhost:8080/member/record'
+            const profilePath = 'http://localhost:8080/member/info/profile'
+            const recordPath = 'http://localhost:8080/member/record'
 
-                $.ajax({
-                    url: profilePath,
-                    type: 'GET',
-                    success: function (response) {
-                        console.log('프로필 조회 완료')
-                        console.log(response)
+            $.ajax({
+                url: profilePath,
+                type: 'GET',
+                success: function (response) {
+                    console.log('프로필 조회 완료')
+                    console.log(response)
 
-                        const profile = response.data
+                    const profile = response.data
 
-                        $('#level').text(profile.level);
-                        $('#profile-img-url').attr('src', profile.profileImgUrl)
-                        $('#nickname').text(profile.nickname);
-                        $('#exp').text(profile.exp);
-                        $('#goal-exp').text(profile.goalExp);
-                        $('#next-level').text(profile.nextLevel);
-                        $('#rank').text(profile.rank);
-                    },
-                    error: function (response) {
-                        alert((response.responseJSON.message).split('##')[0])
-                    }
-                });
+                    $('#level').text(profile.level);
+                    $('#profile-img-url').attr('src', profile.profileImgUrl)
+                    $('#nickname').text(profile.nickname);
+                    $('#exp').text(profile.exp);
+                    $('#goal-exp').text(profile.goalExp);
+                    $('#next-level').text(profile.nextLevel);
+                    $('#rank').text(profile.rank);
+                },
+                error: function (response) {
+                    alert((response.responseJSON.message).split('##')[0])
+                }
+            });
 
             $.ajax({
                 url: recordPath,
@@ -153,6 +222,17 @@
             });
             return false;
         })
+
+        /* -------------------------- 레벨 안내 팝업 -------------------------- */
+        // 레벨 안내 모달 열기
+        function openLevelDetail() {
+            $('#levelDetailModal').modal('show');
+        }
+
+        // 레벨 안내 모달 닫기
+        function closeLevelDetail() {
+            $('#levelDetailModal').modal('hide');
+        }
     </script>
 </th:block>
 </div>
