@@ -8,32 +8,34 @@
         <div class="row">
             <div class="col-3 center p-1 m-5">
                 <!-----------------------프로필 ----------------------------------------------------------->
-                <div class="card profile">
+                <div class="profile-area">
                     <!---------레벨 ---------->
-                    <div class="card-header text-white row ml-0 mr-0" style="border-radius: 14px;">
-                        <img id="level-img" class="profile-lv-img mt-1 mr-2" src="" alt="레벨 이미지" /><div id="level"></div>
+                    <div class="my-card-header text-white row ml-0 mr-0 p-3">
+                        <img id="level-img" class="profile-lv-img mt-1 mr-2" src="" alt="레벨 이미지"/>
+                        <div id="level"></div>
                     </div>
-                    <div class="card-body2 container row">
-                        <!--------- 프로필 사진 -------->
-                        <div class="my_div my_bg col m-3 p-0">
-                            <img class="my_bg_img" id="profile-img-url" src="" alt="프로필이미지"/>
-                        </div>
-                        <!--------------------- 닉네임 -------->
-                        <div class="nick-name-box col p-3">
-                            <div id="nickname"></div>
+                    <div class="my-profile">
+                        <div class="card-body2 container row ml-0 mr-0 pl-2 pr-2">
+                            <!--------- 프로필 사진 -------->
+                            <div class="my_div my_bg col m-3 p-0">
+                                <img class="my_bg_img" id="profile-img-url" src="" alt="프로필이미지"/>
+                            </div>
+                            <!--------------------- 닉네임 -------->
+                            <div class="nick-name-box col p-3">
+                                <div id="nickname"></div>
+                            </div>
                         </div>
                     </div>
-
                     <!-----------------------게임 관련 정보 ----------------------------------------------------------->
-                    <div class="card_body_info container">
+                    <div class="card-body-info container  p-3">
                         <!--------------------- 경험치(현재 경험치/목표 경험치) -------->
-                        <div class="exp-box col mt-3">
+                        <div class="exp-box col pl-2 pr-2">
                             <div>
                                 <p>경험치 : <span id="exp"></span>exp / <span id="goal-exp"></span>exp</p>
                             </div>
                         </div>
                         <!--------------------- 다음레벨 -------->
-                        <div class="next-lv-box col">
+                        <div class="next-lv-box col pl-2 pr-2">
                             <div>
                                 <p>다음 레벨
                                     <a id="level-info-btn" class="lv-info-btn ml-1" onclick="openLevelDetail()">
@@ -43,57 +45,62 @@
                             </div>
                         </div>
                         <!--------------------- 랭킹 -------->
-                        <div class="rank-box col">
+                        <div class="rank-box col pl-2 pr-2">
                             <div class="rank">
-                                <p>랭킹 : <span id="rank"></span> 위</p>
+                                <p class="mb-0">랭킹 : <span id="rank"></span> 위</p>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!----------------------- 프로필 변경, 회원 정보 관리 버튼 ----------------------------------------->
-                <div>
-                    <button class="my_btn" style="margin-top: 150px;" type="button"
-                            onclick="location.href='/v1/profile-change'">
-                        <span class="text-white">프로필 변경</span>
-                    </button>
-                    <button class="my_btn mt-3" type="button" onclick="location.href='/v1/my-page/info'">
-                        <span class="text-white">회원 정보 관리</span>
-                    </button>
-                </div>
+                    <!----------------------- 프로필 변경, 회원 정보 관리 버튼 ----------------------------------------->
+                    <div>
+                        <button class="my_btn" type="button" onclick="location.href='/v1/profile-change'">
+                            <span class="text-white">프로필 변경</span>
+                        </button>
+                        <button class="my_btn mt-3" type="button" onclick="location.href='/v1/my-page/info'">
+                            <span class="text-white">회원 정보 관리</span>
+                        </button>
+                    </div>
 
+                </div>
             </div>
 
             <!-----------------------게임 기록(전적) ----------------------------------------------------------->
-            <div class="member-record col-6 r p-1 m-5" id="memberRecord">
-                <p>내 전적</p>
-                <div class="record_box pl-4 mb-3">
-                    <p class="record_text pt-3">총 게임 횟수: <span id="total-cnt"></span> 회</p>
+            <div class="member-record-box col-6 m-5" id="memberRecord" style="height: 550px;">
+                <p class="mb-4 fs-18"><strong>나의 게임기록</strong></p>
+                <div class="record-item mb-3 mt-3">
+                    <p class="record_text">▶ 총 게임 횟수: <span id="total-cnt"></span> 회</p>
                 </div>
-                <div class="record_box pl-4 mb-3">
-                    <p class="record_text pt-3">총 게임 시간: <span id="total-time"></span> 분</p>
+                <hr>
+                <div class="record-item mb-3">
+                    <p class="record_text">▶ 총 게임 시간: <span id="total-time"></span> 분</p>
                 </div>
+                <hr>
+                <div class="record-item mb-3">
+                    <p class="record_text">▶ 직업별 기록</p>
+                </div>
+                <div class="row mb-3" style="margin-left: 0.08rem">
+                    <div class="record-item col-5">
+                        <p class="record_title mt-1">마피아</p>
+                        <p class="record_text">· 횟수: <span id="mafia-cnt"></span> 회</p>
+                        <p class="record_text">· 승률: <span id="mafia-odds"></span> %</p>
+                    </div>
+                    <div class="record-item col-5 ml-5">
+                        <p class="record_title mt-1">시민</p>
+                        <p class="record_text">· 횟수: <span id="citizen-cnt"></span> 회</p>
+                        <p class="record_text">· 승률: <span id="citizen-odds"></span> %</p>
+                    </div>
+                </div>
+                <hr>
                 <div class="row mb-3 mb-3" style="margin-left: 0.08rem">
-                    <div class="record_box col-5 pl-4">
-                        <p class="record_title mt-3">마피아</p>
-                        <p class="record_text">횟수: <span id="mafia-cnt"></span> 회</p>
-                        <p class="record_text">승률: <span id="mafia-odds"></span> %</p>
+                    <div class="record-item col-5">
+                        <p class="record_title mt-1">경찰</p>
+                        <p class="record_text ml-2">· 횟수: <span id="police-cnt"></span> 회</p>
+                        <p class="record_text ml-2">· 승률: <span id="police-odds"></span> %</p>
                     </div>
-                    <div class="record_box col-5 ml-5 pl-4">
-                        <p class="record_title mt-3">시민</p>
-                        <p class="record_text">횟수: <span id="citizen-cnt"></span> 회</p>
-                        <p class="record_text">승률: <span id="citizen-odds"></span> %</p>
-                    </div>
-                </div>
-                <div class="row mb-3 mb-3" style="margin-left: 0.08rem">
-                    <div class="record_box col-5 pl-4">
-                        <p class="record_title mt-3">경찰</p>
-                        <p class="record_text ml-2">횟수: <span id="police-cnt"></span> 회</p>
-                        <p class="record_text ml-2">승률: <span id="police-odds"></span> %</p>
-                    </div>
-                    <div class="record_box col-5 ml-5 pl-4">
-                        <p class="record_title mt-3">의사</p>
-                        <p class="record_text">횟수: <span id="doctor-cnt"></span> 회</p>
-                        <p class="record_text">승률: <span id="doctor-odds"></span> %</p>
+                    <div class="record-item col-5 ml-5">
+                        <p class="record_title mt-1">의사</p>
+                        <p class="record_text">· 횟수: <span id="doctor-cnt"></span> 회</p>
+                        <p class="record_text">· 승률: <span id="doctor-odds"></span> %</p>
                     </div>
                 </div>
             </div>
@@ -109,54 +116,54 @@
                     <h1 class="modal-title fs-5" id="levelDetailModalLabel">레벨 안내</h1>
                 </div>
                 <div class="modal-body">
-                        <div class="lv-box row mb-4">
-                            <img class="lv-img col-2" src="../images/level/BOSS.png" alt="BOSS 이미지"/>
-                            <div class="lv-title-box col-4">
+                    <div class="lv-box row mb-4">
+                        <img class="lv-img col-2" src="../images/level/BOSS.png" alt="BOSS 이미지"/>
+                        <div class="lv-title-box col-4">
                             <p class="lv-title mb-2">BOSS</p>
                             <p class="lv-sub-title">보스</p>
-                            </div>
-                            <p class="lv-content col-5">마피아 최고 권력자</p>
                         </div>
-                        <div class="lv-box row mb-4">
-                            <img class ="lv-img col-2" src="../images/level/UNDERBOSS.png" alt="UNDER BOSS 이미지"/>
-                            <div class="lv-title-box col-4">
+                        <p class="lv-content col-5">마피아 최고 권력자</p>
+                    </div>
+                    <div class="lv-box row mb-4">
+                        <img class="lv-img col-2" src="../images/level/UNDERBOSS.png" alt="UNDER BOSS 이미지"/>
+                        <div class="lv-title-box col-4">
                             <p class="lv-title mb-2">UNDER BOSS</p>
                             <p class="lv-sub-title">언더보스</p>
-                            </div>
-                            <p class="lv-content col-5">보스 아래의 조직 관리자</p>
                         </div>
-                        <div class="lv-box row mb-4">
-                            <img class="lv-img col-2" src="../images/level/CAPTAIN.png" alt="CAPTAIN 이미지"/>
-                            <div class="lv-title-box col-4">
-                                <p class="lv-title mb-2">CAPTAIN</p>
-                                <p class="lv-sub-title">캡틴</p>
-                            </div>
-                            <p class="lv-content col-5">조직 내 대장</p>
+                        <p class="lv-content col-5">보스 아래의 조직 관리자</p>
+                    </div>
+                    <div class="lv-box row mb-4">
+                        <img class="lv-img col-2" src="../images/level/CAPTAIN.png" alt="CAPTAIN 이미지"/>
+                        <div class="lv-title-box col-4">
+                            <p class="lv-title mb-2">CAPTAIN</p>
+                            <p class="lv-sub-title">캡틴</p>
                         </div>
-                        <div class="lv-box row mb-4">
-                            <img class ="lv-img col-2" src="../images/level/SOLDIER.png" alt="SOLDIER 이미지"/>
-                            <div class="lv-title-box col-4">
+                        <p class="lv-content col-5">조직 내 대장</p>
+                    </div>
+                    <div class="lv-box row mb-4">
+                        <img class="lv-img col-2" src="../images/level/SOLDIER.png" alt="SOLDIER 이미지"/>
+                        <div class="lv-title-box col-4">
                             <p class="lv-title mb-2">SOLDIER</p>
                             <p class="lv-sub-title">솔저</p>
-                            </div>
-                            <p class="lv-content col-5">정식 조직원</p>
                         </div>
-                        <div class="lv-box row mb-4">
-                            <img class ="lv-img col-2" src="../images/level/ASSOCIATE.png" alt="ASSOCIATE 이미지"/>
-                            <div class="lv-title-box col-4">
+                        <p class="lv-content col-5">정식 조직원</p>
+                    </div>
+                    <div class="lv-box row mb-4">
+                        <img class="lv-img col-2" src="../images/level/ASSOCIATE.png" alt="ASSOCIATE 이미지"/>
+                        <div class="lv-title-box col-4">
                             <p class="lv-title mb-2">ASSOCIATE</p>
                             <p class="lv-sub-title">어소시에이트</p>
-                            </div>
-                            <p class="lv-content col-5">예비 조직원</p>
                         </div>
-                        <div class="lv-box row">
-                            <img class ="lv-img col-2" src="../images/level/BEGINNER.png" alt="BEGINNER 이미지"/>
-                            <div class="lv-title-box col-4">
+                        <p class="lv-content col-5">예비 조직원</p>
+                    </div>
+                    <div class="lv-box row">
+                        <img class="lv-img col-2" src="../images/level/BEGINNER.png" alt="BEGINNER 이미지"/>
+                        <div class="lv-title-box col-4">
                             <p class="lv-title mb-2">BEGINNER</p>
                             <p class="lv-sub-title">비기너</p>
-                            </div>
-                            <p class="lv-content col-5">마피아 지망생</p>
                         </div>
+                        <p class="lv-content col-5">마피아 지망생</p>
+                    </div>
                     <div class="lv-modal-close-btn mt-4">
                         <button class="btn btn-primary" type="button" onclick="closeLevelDetail()">닫기</button>
                     </div>

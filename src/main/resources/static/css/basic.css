@@ -37,7 +37,21 @@ body {
     height: 50vh;
 }
 
-.card-header{
+/*.card-header{*/
+/*    text-align: left;*/
+/*    background-color:#666666;*/
+/*    border-top-left-radius: 14px;*/
+/*    border-top-right-radius: 14px;*/
+/*}*/
+
+.idx-card-header{
+    text-align: left;
+    background-color:#666666;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+}
+
+.my-card-header{
     text-align: left;
     background-color:#666666;
     border-top-left-radius: 14px;
@@ -55,6 +69,10 @@ body {
     border-radius: 14px;
     border: #666666 solid 1px;
     height: 30vh;
+}
+
+.my-profile {
+    border: #666666 solid 1px;
 }
 
 .card-body2 {
@@ -182,10 +200,11 @@ body {
     overflow-y: scroll;
 }
 
-.card_body_info{
+.card-body-info{
     text-align: left;
     background-color:#666666;
-    border-radius: 14px;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
     font-size: 14px;
     color: #ffffff;
 }
@@ -198,10 +217,8 @@ body {
     width: 100%;
 }
 
-.record_box {
-    border-radius: 14px;
-    border: #666666 solid 1px;
-    background-color: #ffffff;
+.record-item {
+
 }
 
 .sign-out-btn {
@@ -310,4 +327,20 @@ body {
     height: 20px;
     position: relative;
     top: 3.5px;
+}
+
+.member-record-box {
+    border : #666666 solid 1px;
+    border-radius: 14px;
+    background-color: #F5F5F5;
+    min-width: 550px;
+    padding: 2rem;
+}
+
+.fs-18 {
+    font-size: 18px;
+}
+
+.profile-area {
+    min-width: 300px;
 }
