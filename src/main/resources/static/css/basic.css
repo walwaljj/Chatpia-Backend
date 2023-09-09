@@ -59,7 +59,7 @@ body {
 }
 
 .form-item {
-    width: 400px;
+    min-width: 400px;
     padding: 30px;
     border: 1px solid #ced4da;
     border-radius: 14px;
