@@ -337,7 +337,7 @@ body {
 }
 
 .member-record-box {
-    border : #666666 solid 1px;
+    /*border : #666666 solid 1px;*/
     border-radius: 14px;
     background-color: #F5F5F5;
     min-width: 550px;
@@ -363,4 +363,42 @@ body {
 .room-info-item-title {
     position: relative;
     top: 7px;
+}
+
+.game-info-title {
+    padding-top: 12px;
+}
+
+.game-info-data {
+    text-align: right;
+    padding-top: 12px;
+}
+
+.goal-exp-txt {
+    color: #BDBDBD;
+}
+
+.my-tb {
+    width: 100%;
+}
+
+.record_role {
+    width: 50%;
+    padding-top: 12px;
+}
+
+.record-title {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.record-data {
+    text-align: right;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    font-weight: bold;
+}
+
+.bb {
+    border-bottom: #666666 solid 1px
 }

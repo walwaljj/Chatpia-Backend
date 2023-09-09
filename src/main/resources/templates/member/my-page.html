@@ -29,26 +29,35 @@
                     <!-----------------------게임 관련 정보 ----------------------------------------------------------->
                     <div class="card-body-info container  p-3">
                         <!--------------------- 경험치(현재 경험치/목표 경험치) -------->
-                        <div class="exp-box col pl-2 pr-2">
-                            <div>
-                                <p>경험치 : <span id="exp"></span>exp / <span id="goal-exp"></span>exp</p>
-                            </div>
-                        </div>
-                        <!--------------------- 다음레벨 -------->
-                        <div class="next-lv-box col pl-2 pr-2">
-                            <div>
-                                <p>다음 레벨
-                                    <a id="level-info-btn" class="lv-info-btn ml-1" onclick="openLevelDetail()">
-                                        <img class="lv-info-btn-img" src="../images/icon_lv_info_btn.png">
-                                    </a>
-                                    : <span id="next-level"></span></p>
-                            </div>
-                        </div>
-                        <!--------------------- 랭킹 -------->
-                        <div class="rank-box col pl-2 pr-2">
-                            <div class="rank">
-                                <p class="mb-0">랭킹 : <span id="rank"></span> 위</p>
-                            </div>
+                        <div class="game-info-box col pl-2 pr-2">
+                            <table class="my-tb">
+                                <!--------------------- 경험치 -------->
+                                <tr>
+                                    <td class="game-info-title pt-0">경험치</td>
+                                    <td class="game-info-data pt-0">
+                                        <span id="exp"></span>exp
+                                        <span class="goal-exp-txt">/</span>
+                                        <span class="goal-exp-txt" id="goal-exp"></span>
+                                        <span class="goal-exp-txt">exp</span>
+                                    </td>
+                                </tr>
+                                <!--------------------- 다음레벨 -------->
+                                <tr>
+                                    <td class="game-info-title">
+                                        다음 레벨
+                                        <a id="level-info-btn" class="lv-info-btn ml-1" onclick="openLevelDetail()">
+                                            <img class="lv-info-btn-img" src="../images/icon_lv_info_btn.png">
+                                        </a>
+                                    </td>
+                                    <td class="game-info-data">
+                                        <span id="next-level"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="game-info-title">랭킹</td>
+                                    <td class="game-info-data"><span id="rank"></span> 위</td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                     <!----------------------- 프로필 변경, 회원 정보 관리 버튼 ----------------------------------------->
@@ -60,188 +69,194 @@
                             <span class="text-white">회원 정보 관리</span>
                         </button>
                     </div>
-
                 </div>
             </div>
-
             <!-----------------------게임 기록(전적) ----------------------------------------------------------->
-            <div class="member-record-box col-6 m-5" id="memberRecord" style="height: 550px;">
-                <p class="mb-4 fs-18"><strong>나의 게임기록</strong></p>
-                <div class="record-item mb-3 mt-3">
-                    <p class="record_text">▶ 총 게임 횟수: <span id="total-cnt"></span> 회</p>
-                </div>
-                <hr>
-                <div class="record-item mb-3">
-                    <p class="record_text">▶ 총 게임 시간: <span id="total-time"></span> 분</p>
-                </div>
-                <hr>
-                <div class="record-item mb-3">
-                    <p class="record_text">▶ 직업별 기록</p>
-                </div>
-                <div class="row mb-3" style="margin-left: 0.08rem">
-                    <div class="record-item col-5">
-                        <p class="record_title mt-1">마피아</p>
-                        <p class="record_text">· 횟수: <span id="mafia-cnt"></span> 회</p>
-                        <p class="record_text">· 승률: <span id="mafia-odds"></span> %</p>
+            <div class="member-record-box col-6 m-5" id="memberRecord" style="height: 500px;">
+                <p class="mb-3 fs-18"><strong>나의 게임기록</strong></p>
+
+                <table class="my-tb">
+                    <tr>
+                        <td colspan="2" class="record-title bb">🎮 총 게임 횟수</td>
+                        <td colspan="2" class="record-data bb"><span id="total-cnt"></span> 회</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="record-title bb">⏰ 총 게임 시간</td>
+                        <td colspan="2" class="record-data bb"><span id="total-time"></span> 분</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="record-title">📋 직업별 기록</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="record_role">📌 마피아</td>
+                        <td colspan="2" class="record_role pl-4">📌 시민</td>
+                    </tr>
+                    <tr>
+                        <td class="record-title">· 횟수</td>
+                        <td class="record-data pr-4"><span id="mafia-cnt"></span> 회</td>
+                        <td class="record-title pl-4">· 횟수</td>
+                        <td class="record-data"><span id="citizen-cnt"></span> 회</td>
+                    </tr>
+                    <tr>
+                        <td class="record-title pt-0">· 승률</td>
+                        <td class="record-data pr-4 pt-0"><span id="mafia-odds"></span> %</td>
+                        <td class="record-title pl-4 pt-0">· 승률</td>
+                        <td class="record-data pt-0"><span id="citizen-odds"></span> %</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="record_role pt-3">📌 경찰</td>
+                        <td colspan="2" class="record_role pl-4 pt-3">📌 의사</td>
+                    </tr>
+                    <tr>
+                        <td class="record-title">· 횟수</td>
+                        <td class="record-data pr-4"><span id="police-cnt"></span> 회</td>
+                        <td class="record-title pl-4">· 횟수</td>
+                        <td class="record-data"><span id="doctor-cnt"></span> 회</td>
+                    </tr>
+                    <tr>
+                        <td class="record-title pt-0">· 승률</td>
+                        <td class="record-data pr-4 pt-0"><span id="police-odds"></span> %</td>
+                        <td class="record-title pl-4 pt-0">· 승률</td>
+                        <td class="record-data pt-0"><span id="doctor-odds"></span> %</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- 레벨 안내 모달-->
+        <div class="modal fade" id="levelDetailModal" tabindex="-1"
+             aria-labelledby="levelDetailModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content pl-3 pr-3 pt-2 pb-2">
+                    <div class="modal-header">
+                        <h3 class="modal-title fs-5" id="levelDetailModalLabel">레벨 안내</h3>
                     </div>
-                    <div class="record-item col-5 ml-5">
-                        <p class="record_title mt-1">시민</p>
-                        <p class="record_text">· 횟수: <span id="citizen-cnt"></span> 회</p>
-                        <p class="record_text">· 승률: <span id="citizen-odds"></span> %</p>
-                    </div>
-                </div>
-                <hr>
-                <div class="row mb-3 mb-3" style="margin-left: 0.08rem">
-                    <div class="record-item col-5">
-                        <p class="record_title mt-1">경찰</p>
-                        <p class="record_text ml-2">· 횟수: <span id="police-cnt"></span> 회</p>
-                        <p class="record_text ml-2">· 승률: <span id="police-odds"></span> %</p>
-                    </div>
-                    <div class="record-item col-5 ml-5">
-                        <p class="record_title mt-1">의사</p>
-                        <p class="record_text">· 횟수: <span id="doctor-cnt"></span> 회</p>
-                        <p class="record_text">· 승률: <span id="doctor-odds"></span> %</p>
+                    <div class="modal-body">
+                        <div class="lv-box row mb-4 mt-3">
+                            <img class="lv-img col-2" src="../images/level/BOSS.png" alt="BOSS 이미지"/>
+                            <div class="lv-title-box col-4">
+                                <p class="lv-title mb-1">BOSS</p>
+                                <p class="lv-sub-title">보스</p>
+                            </div>
+                            <p class="lv-content col-5">마피아 최고 권력자</p>
+                        </div>
+                        <div class="lv-box row mb-4">
+                            <img class="lv-img col-2" src="../images/level/UNDERBOSS.png" alt="UNDER BOSS 이미지"/>
+                            <div class="lv-title-box col-4">
+                                <p class="lv-title mb-1">UNDER BOSS</p>
+                                <p class="lv-sub-title">언더보스</p>
+                            </div>
+                            <p class="lv-content col-5">조직 관리자</p>
+                        </div>
+                        <div class="lv-box row mb-4">
+                            <img class="lv-img col-2" src="../images/level/CAPTAIN.png" alt="CAPTAIN 이미지"/>
+                            <div class="lv-title-box col-4">
+                                <p class="lv-title mb-1">CAPTAIN</p>
+                                <p class="lv-sub-title">캡틴</p>
+                            </div>
+                            <p class="lv-content col-5">조직 내 대장</p>
+                        </div>
+                        <div class="lv-box row mb-4">
+                            <img class="lv-img col-2" src="../images/level/SOLDIER.png" alt="SOLDIER 이미지"/>
+                            <div class="lv-title-box col-4">
+                                <p class="lv-title mb-1">SOLDIER</p>
+                                <p class="lv-sub-title">솔저</p>
+                            </div>
+                            <p class="lv-content col-5">정식 조직원</p>
+                        </div>
+                        <div class="lv-box row mb-4">
+                            <img class="lv-img col-2" src="../images/level/ASSOCIATE.png" alt="ASSOCIATE 이미지"/>
+                            <div class="lv-title-box col-4">
+                                <p class="lv-title mb-1">ASSOCIATE</p>
+                                <p class="lv-sub-title">어소시에이트</p>
+                            </div>
+                            <p class="lv-content col-5">예비 조직원</p>
+                        </div>
+                        <div class="lv-box row">
+                            <img class="lv-img col-2" src="../images/level/BEGINNER.png" alt="BEGINNER 이미지"/>
+                            <div class="lv-title-box col-4">
+                                <p class="lv-title mb-1">BEGINNER</p>
+                                <p class="lv-sub-title">비기너</p>
+                            </div>
+                            <p class="lv-content col-5">마피아 지망생</p>
+                        </div>
+                        <div class="lv-modal-close-btn mt-4">
+                            <button class="btn btn-secondary" type="button" onclick="closeLevelDetail()">닫기</button>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
+        <!-- 레벨 안내 모달 끝 -->
     </div>
-    <!-- 레벨 안내 모달-->
-    <div class="modal fade" id="levelDetailModal" tabindex="-1"
-         aria-labelledby="levelDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content pl-3 pr-3 pt-2 pb-2">
-                <div class="modal-header">
-                    <h3 class="modal-title fs-5" id="levelDetailModalLabel">레벨 안내</h3>
-                </div>
-                <div class="modal-body">
-                    <div class="lv-box row mb-4 mt-3">
-                        <img class="lv-img col-2" src="../images/level/BOSS.png" alt="BOSS 이미지"/>
-                        <div class="lv-title-box col-4">
-                            <p class="lv-title mb-1">BOSS</p>
-                            <p class="lv-sub-title">보스</p>
-                        </div>
-                        <p class="lv-content col-5">마피아 최고 권력자</p>
-                    </div>
-                    <div class="lv-box row mb-4">
-                        <img class="lv-img col-2" src="../images/level/UNDERBOSS.png" alt="UNDER BOSS 이미지"/>
-                        <div class="lv-title-box col-4">
-                            <p class="lv-title mb-1">UNDER BOSS</p>
-                            <p class="lv-sub-title">언더보스</p>
-                        </div>
-                        <p class="lv-content col-5">조직 관리자</p>
-                    </div>
-                    <div class="lv-box row mb-4">
-                        <img class="lv-img col-2" src="../images/level/CAPTAIN.png" alt="CAPTAIN 이미지"/>
-                        <div class="lv-title-box col-4">
-                            <p class="lv-title mb-1">CAPTAIN</p>
-                            <p class="lv-sub-title">캡틴</p>
-                        </div>
-                        <p class="lv-content col-5">조직 내 대장</p>
-                    </div>
-                    <div class="lv-box row mb-4">
-                        <img class="lv-img col-2" src="../images/level/SOLDIER.png" alt="SOLDIER 이미지"/>
-                        <div class="lv-title-box col-4">
-                            <p class="lv-title mb-1">SOLDIER</p>
-                            <p class="lv-sub-title">솔저</p>
-                        </div>
-                        <p class="lv-content col-5">정식 조직원</p>
-                    </div>
-                    <div class="lv-box row mb-4">
-                        <img class="lv-img col-2" src="../images/level/ASSOCIATE.png" alt="ASSOCIATE 이미지"/>
-                        <div class="lv-title-box col-4">
-                            <p class="lv-title mb-1">ASSOCIATE</p>
-                            <p class="lv-sub-title">어소시에이트</p>
-                        </div>
-                        <p class="lv-content col-5">예비 조직원</p>
-                    </div>
-                    <div class="lv-box row">
-                        <img class="lv-img col-2" src="../images/level/BEGINNER.png" alt="BEGINNER 이미지"/>
-                        <div class="lv-title-box col-4">
-                            <p class="lv-title mb-1">BEGINNER</p>
-                            <p class="lv-sub-title">비기너</p>
-                        </div>
-                        <p class="lv-content col-5">마피아 지망생</p>
-                    </div>
-                    <div class="lv-modal-close-btn mt-4">
-                        <button class="btn btn-secondary" type="button" onclick="closeLevelDetail()">닫기</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- 레벨 안내 모달 끝 -->
-</div>
 
-<!---------------------------------------------------------- script ---------------------------------------------------------->
-<th:block layout:fragment="script">
-    <script th:inline="javascript">
-        $(function () {
-            const profilePath = 'http://localhost:8080/member/info/profile'
-            const recordPath = 'http://localhost:8080/member/record'
+    <!---------------------------------------------------------- script ---------------------------------------------------------->
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            $(function () {
+                const profilePath = 'http://localhost:8080/member/info/profile'
+                const recordPath = 'http://localhost:8080/member/record'
 
-            $.ajax({
-                url: profilePath,
-                type: 'GET',
-                success: function (response) {
-                    console.log('프로필 조회 완료')
-                    console.log(response)
+                $.ajax({
+                    url: profilePath,
+                    type: 'GET',
+                    success: function (response) {
+                        console.log('프로필 조회 완료')
+                        console.log(response)
 
-                    const profile = response.data
+                        const profile = response.data
 
-                    $('#level').text(profile.level);
-                    $('#level-img').attr('src', profile.levelImgUrl)
-                    $('#profile-img-url').attr('src', profile.profileImgUrl)
-                    $('#nickname').text(profile.nickname);
-                    $('#exp').text(profile.exp);
-                    $('#goal-exp').text(profile.goalExp);
-                    $('#next-level').text(profile.nextLevel);
-                    $('#rank').text(profile.rank);
-                },
-                error: function (response) {
-                    alert((response.responseJSON.message).split('##')[0])
-                }
-            });
+                        $('#level').text(profile.level);
+                        $('#level-img').attr('src', profile.levelImgUrl)
+                        $('#profile-img-url').attr('src', profile.profileImgUrl)
+                        $('#nickname').text(profile.nickname);
+                        $('#exp').text(profile.exp);
+                        $('#goal-exp').text(profile.goalExp);
+                        $('#next-level').text(profile.nextLevel);
+                        $('#rank').text(profile.rank);
+                    },
+                    error: function (response) {
+                        alert((response.responseJSON.message).split('##')[0])
+                    }
+                });
 
-            $.ajax({
-                url: recordPath,
-                type: 'GET',
-                success: function (response) {
-                    console.log('게임 기록 조회 완료')
-                    console.log(response)
+                $.ajax({
+                    url: recordPath,
+                    type: 'GET',
+                    success: function (response) {
+                        console.log('게임 기록 조회 완료')
+                        console.log(response)
 
-                    const record = response.data
+                        const record = response.data
 
-                    $('#total-cnt').text(record.totalCnt);
-                    $('#total-time').text(record.totalTime);
-                    $('#mafia-cnt').text(record.mafiaCnt);
-                    $('#mafia-odds').text(record.mafiaOdds);
-                    $('#citizen-cnt').text(record.citizenCnt);
-                    $('#citizen-odds').text(record.citizenOdds);
-                    $('#police-cnt').text(record.policeCnt);
-                    $('#police-odds').text(record.policeOdds);
-                    $('#doctor-cnt').text(record.doctorCnt);
-                    $('#doctor-odds').text(record.doctorOdds);
-                },
-                error: function (response) {
-                    alert((response.responseJSON.message).split('##')[0])
-                }
-            });
-            return false;
-        })
+                        $('#total-cnt').text(record.totalCnt);
+                        $('#total-time').text(record.totalTime);
+                        $('#mafia-cnt').text(record.mafiaCnt);
+                        $('#mafia-odds').text(record.mafiaOdds);
+                        $('#citizen-cnt').text(record.citizenCnt);
+                        $('#citizen-odds').text(record.citizenOdds);
+                        $('#police-cnt').text(record.policeCnt);
+                        $('#police-odds').text(record.policeOdds);
+                        $('#doctor-cnt').text(record.doctorCnt);
+                        $('#doctor-odds').text(record.doctorOdds);
+                    },
+                    error: function (response) {
+                        alert((response.responseJSON.message).split('##')[0])
+                    }
+                });
+                return false;
+            })
 
-        /* -------------------------- 레벨 안내 팝업 -------------------------- */
-        // 레벨 안내 모달 열기
-        function openLevelDetail() {
-            $('#levelDetailModal').modal('show');
-        }
+            /* -------------------------- 레벨 안내 팝업 -------------------------- */
+            // 레벨 안내 모달 열기
+            function openLevelDetail() {
+                $('#levelDetailModal').modal('show');
+            }
 
-        // 레벨 안내 모달 닫기
-        function closeLevelDetail() {
-            $('#levelDetailModal').modal('hide');
-        }
-    </script>
-</th:block>
+            // 레벨 안내 모달 닫기
+            function closeLevelDetail() {
+                $('#levelDetailModal').modal('hide');
+            }
+        </script>
+    </th:block>
 </div>
 </html>
