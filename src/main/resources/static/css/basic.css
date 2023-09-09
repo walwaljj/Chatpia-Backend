@@ -388,14 +388,14 @@ body {
 }
 
 .record-title {
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding-top: 16px;
+    padding-bottom: 16px;
 }
 
 .record-data {
     text-align: right;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding-top: 16px;
+    padding-bottom: 16px;
     font-weight: bold;
 }
 
