@@ -218,7 +218,7 @@
         stompClient.subscribe(`/sub/chat/${roomId}/gameRole/${nickname}`, (message => {
           const body = JSON.parse(message.body)
           console.log("역할 설명 메시지: " + body)
-          stompClient.subscribe(`/sub/chat/${roomId}/${body.gameRole}`)
+          stompClient.subscribe(`/sub/chat/${roomId}/${body.gameRole}`) // 직업 url
           stompClient.unsubscribe(`/sub/chat/${roomId}/playerRole/${nickname}`)
           receiveMessage(body)
         }))
@@ -272,6 +272,15 @@
       approveButton.addEventListener("click", () => {
         // 찬성 버튼이 클릭되었을 때 실행될 코드 작성
         alert("찬성했습니다!");
+        const message = JSON.stringify({
+          'phase': 'DAY_ELIMINATE',
+          'vote': player.memberId
+        });
+        console.log(message);
+        stompClient.send(`/pub/chat/${roomId}/vote`, {
+                  "Authorization": getCookie("accessToken")
+                },
+                message);
       });
 
       // 반대 버튼 생성
@@ -280,6 +289,15 @@
       opposeButton.addEventListener("click", () => {
         // 반대 버튼이 클릭되었을 때 실행될 코드 작성
         alert("반대했습니다!");
+        const message = JSON.stringify({
+          'phase': 'DAY_ELIMINATE'
+        });
+        console.log(message);
+        stompClient.send(`/pub/chat/${roomId}/vote`, {
+                  "Authorization": getCookie("accessToken")
+                },
+                message);
+
       });
 
       // 찬성과 반대 버튼을 vote-form 요소에 추가
@@ -327,7 +345,8 @@
       const selectedIndex = list.selectedIndex;
       const selectedOption = list.options[selectedIndex];
       const selectedValue = selectedOption.value;
-      alert(selectedOption + "님을 투표했습니다!");
+      const selectedText = selectedOption.text;
+      alert(selectedText + "님을 투표했습니다!");
       console.log(selectedValue);
       const message = JSON.stringify({
         'phase': 'DAY_VOTE',
