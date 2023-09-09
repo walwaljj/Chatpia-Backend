@@ -348,3 +348,7 @@ body {
 .profile-area {
     min-width: 300px;
 }
+
+.btn-size {
+    max-height: 50px;
+}
