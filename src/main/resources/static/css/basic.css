@@ -282,7 +282,12 @@ body {
     text-align: center;
 }
 
-.level-info-btn-img {
+.lv-info-btn-img {
     width: 14px;
     height: 14px;
+}
+
+.profile-lv-img {
+    width: 20px;
+    height: 20px;
 }

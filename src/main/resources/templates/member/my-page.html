@@ -10,8 +10,8 @@
                 <!-----------------------프로필 ----------------------------------------------------------->
                 <div class="card profile">
                     <!---------레벨 ---------->
-                    <div class="card-header text-white" style="border-radius: 14px;">
-                        <div id="level"></div>
+                    <div class="card-header text-white row ml-0 mr-0" style="border-radius: 14px;">
+                        <img id="level-img" class="profile-lv-img mt-1 mr-2" src="" alt="레벨 이미지" /><div id="level"></div>
                     </div>
                     <div class="card-body2 container row">
                         <!--------- 프로필 사진 -------->
@@ -33,11 +33,11 @@
                             </div>
                         </div>
                         <!--------------------- 다음레벨 -------->
-                        <div class="next-level-box col">
+                        <div class="next-lv-box col">
                             <div>
                                 <p>다음 레벨
-                                    <a id="level-info-btn" class="level-info-btn ml-1" onclick="openLevelDetail()">
-                                        <img class="level-info-btn-img" src="../images/icon_lv_info_btn.png">
+                                    <a id="level-info-btn" class="lv-info-btn ml-1" onclick="openLevelDetail()">
+                                        <img class="lv-info-btn-img" src="../images/icon_lv_info_btn.png">
                                     </a>
                                     : <span id="next-level"></span></p>
                             </div>
@@ -184,6 +184,7 @@
                     const profile = response.data
 
                     $('#level').text(profile.level);
+                    $('#level-img').attr('src', profile.levelImgUrl)
                     $('#profile-img-url').attr('src', profile.profileImgUrl)
                     $('#nickname').text(profile.nickname);
                     $('#exp').text(profile.exp);

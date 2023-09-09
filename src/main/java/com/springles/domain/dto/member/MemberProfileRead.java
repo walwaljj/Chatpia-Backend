@@ -21,6 +21,7 @@ public class MemberProfileRead {
     private ProfileImg profileImg;
     private String profileImgUrl;
     private String level;
+    private String levelImgUrl;
     private Long exp;
     private Long goalExp;
     private String nextLevel;
