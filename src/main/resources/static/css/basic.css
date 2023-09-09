@@ -352,3 +352,12 @@ body {
 .btn-size {
     max-height: 50px;
 }
+
+.modal-attr {
+    padding: 2rem;
+}
+
+.room-info-item-title {
+    position: relative;
+    top: 7px;
+}
