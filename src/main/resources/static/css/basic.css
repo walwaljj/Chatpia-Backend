@@ -37,7 +37,21 @@ body {
     height: 50vh;
 }
 
-.card-header{
+/*.card-header{*/
+/*    text-align: left;*/
+/*    background-color:#666666;*/
+/*    border-top-left-radius: 14px;*/
+/*    border-top-right-radius: 14px;*/
+/*}*/
+
+.idx-card-header{
+    text-align: left;
+    background-color:#666666;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+}
+
+.my-card-header{
     text-align: left;
     background-color:#666666;
     border-top-left-radius: 14px;
@@ -45,20 +59,31 @@ body {
 }
 
 .form-item {
-    width: 60%;
-    padding: 20px;
+    min-width: 400px;
+    max-width: 400px;
+    padding: 30px;
+    border: 1px solid #ced4da;
+    border-radius: 14px;
 }
 
-.profile {
-    border-radius: 14px;
+.idx-profile {
+    /*border-radius: 14px;*/
     border: #666666 solid 1px;
-    height: 30vh;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    /*height: 30vh;*/
+}
+
+.my-profile {
+    border: #666666 solid 1px;
 }
 
 .card-body2 {
     float: none;
     /*margin:10px auto;*/
     /*padding: 10px;*/
+    /*border-bottom-left-radius: 14px;*/
+    /*border-bottom-right-radius: 14px;*/
 }
 
 .my_div {
@@ -180,10 +205,11 @@ body {
     overflow-y: scroll;
 }
 
-.card_body_info{
+.card-body-info{
     text-align: left;
     background-color:#666666;
-    border-radius: 14px;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
     font-size: 14px;
     color: #ffffff;
 }
@@ -196,16 +222,15 @@ body {
     width: 100%;
 }
 
-.record_box {
-    border-radius: 14px;
-    border: #666666 solid 1px;
-    background-color: #ffffff;
+.record-item {
+
 }
 
 .sign-out-btn {
     border: #ced4da solid 1px;
     background-color: #ffffff;
-    color: #000000;
+    color: #666666;
+    font-size: 14px;
 }
 
 .sign-out-btn-box {
@@ -214,6 +239,7 @@ body {
 
 .vertif-txt {
     color: #666666;
+    font-size: 14px;
 }
 
 .vertif-id-box {
@@ -251,4 +277,128 @@ body {
 
 .password-input {
 
+}
+
+
+.lv-box {
+    max-height: 50px;
+}
+
+.lv-content {
+    max-height: 50px;
+    line-height: 50px;
+}
+
+.lv-img {
+    width: 20%;
+    height: 20%;
+}
+
+.lv-title {
+    max-height: 50px;
+    font-weight: bold;
+}
+
+.lv-sub-title {
+    font-size: 12px;
+    color: #888888;
+}
+
+.lv-modal-close-btn {
+    text-align: center;
+}
+
+.lv-info-btn-img {
+    width: 14px;
+    height: 14px;
+    position: relative;
+    top: -2px;
+}
+
+.profile-lv-img {
+    width: 20px;
+    height: 20px;
+}
+
+.form-item-line {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-title {
+    margin-bottom: 2.0rem;
+}
+
+.checkbox-icon {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    top: 3.5px;
+}
+
+.member-record-box {
+    /*border : #666666 solid 1px;*/
+    border-radius: 14px;
+    background-color: #F5F5F5;
+    min-width: 550px;
+    padding: 2rem;
+}
+
+.fs-18 {
+    font-size: 18px;
+}
+
+.profile-area {
+    min-width: 300px;
+}
+
+.btn-size {
+    max-height: 50px;
+}
+
+.modal-attr {
+    padding: 2rem;
+}
+
+.room-info-item-title {
+    position: relative;
+    top: 7px;
+}
+
+.game-info-title {
+    padding-top: 12px;
+}
+
+.game-info-data {
+    text-align: right;
+    padding-top: 12px;
+}
+
+.goal-exp-txt {
+    color: #BDBDBD;
+}
+
+.my-tb {
+    width: 100%;
+}
+
+.record_role {
+    width: 50%;
+    padding-top: 12px;
+}
+
+.record-title {
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.record-data {
+    text-align: right;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    font-weight: bold;
+}
+
+.bb {
+    border-bottom: #666666 solid 1px
 }

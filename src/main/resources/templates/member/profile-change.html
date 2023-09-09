@@ -6,16 +6,16 @@
 <div layout:fragment="content">
     <div th:insert="fragments/header::header"></div>
     <div class="form-container">
-        <div class="form-item">
-            <div class="mb-4"><h5>프로필 변경</h5></div>
+        <div class="form-item" style="height: 574px">
+            <div class="form-title"><h5>프로필 변경</h5></div>
             <form id="form">
                 <table class="table">
                     <tbody>
-                    <div>
+                    <div class="item-detail mt-3">
                         <label for="nickname">닉네임</label>
                         <input type="text" id="nickname" name="nickname" class="form-control" placeholder="닉네임을 입력하세요">
                     </div>
-                    <div>
+                    <div class="item-detail mt-3">
                         <p class="mt-4">프로필 이미지</p>
                         <div class="row">
                             <div class="col-4">
@@ -60,7 +60,7 @@
                         </div>
                     </div>
                     <div>
-                        <button class="submit_btn" type="button">프로필 변경</button>
+                        <button class="submit_btn mt-4" type="button">프로필 변경</button>
                     </div>
 
                 </table>

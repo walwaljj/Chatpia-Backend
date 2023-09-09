@@ -6,17 +6,17 @@
     <div th:insert="fragments/header::header"></div>
     <div class="form-container">
         <div class="form-item">
-            <div class="mb-4"><h5>아이디 찾기</h5></div>
+            <div class="form-title"><h5>아이디 찾기</h5></div>
             <!--                <form th:action="@{/member/vertification/id}" method="post" >-->
             <form id="form">
                 <table class="table">
                     <tbody>
-                    <div>
+                    <div class="item-detail mt-3">
                         <label for="email">이메일</label>
                         <input type="text" id="email" class="form-control" placeholder="이메일을 입력하세요">
                     </div>
                     <div>
-                        <button class="submit_btn" type="button">아이디 찾기</button>
+                        <button class="submit_btn mt-4" type="button">아이디 찾기</button>
                     </div>
                     </tbody>
                 </table>

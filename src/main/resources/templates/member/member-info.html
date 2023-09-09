@@ -7,34 +7,34 @@
     <div th:insert="fragments/header::header"></div>
     <div class="form-container">
         <div class="form-item">
-            <div class="mb-4"><h5>회원 정보 관리</h5></div>
+            <div class="form-title"><h5>회원 정보 관리</h5></div>
             <form id="form">
                 <table class="table">
                     <tbody>
-                    <div>
+                    <div class="item-detail mt-3">
                         <label for="memberName">아이디</label>
                         <input type="text" id="memberName" value="" th:disabled="${show != 'Y'} ? 'disabled'"
                                class="form-control">
                     </div>
-                    <div>
+                    <div class="item-detail mt-3">
                         <label for="email">이메일(선택)</label>
                         <input type="text" id="email" name="email" value="" class="form-control"
                                placeholder="이메일을 입력하세요">
                     </div>
-                    <div>
+                    <div class="item-detail mt-3">
                         <label for="password">비밀번호</label>
-                        <input type="text" id="password" class="form-control" placeholder="비밀번호를 입력하세요">
+                        <input type="password" id="password" class="form-control" placeholder="비밀번호를 입력하세요">
                     </div>
-                    <div>
+                    <div class="item-detail mt-3">
                         <label for="passwordConfirm">비밀번호 확인</label>
-                        <input type="text" id="passwordConfirm" class="form-control" placeholder="비밀번호 확인">
+                        <input type="password" id="passwordConfirm" class="form-control" placeholder="비밀번호 확인">
                     </div>
                     <div>
-                        <button class="submit_btn" type="button">회원정보 변경</button>
+                        <button class="submit_btn mt-4" type="button">회원정보 변경</button>
                     </div>
                 </table>
             </form>
-            <hr>
+            <hr class="form-item-line">
             <div class="sign-out-btn-box">
                 <button class="sign-out-btn" onclick="location.href='/v1/my-page/sign-out'">회원 탈퇴</button>
             </div>
