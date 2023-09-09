@@ -310,6 +310,8 @@ body {
 .lv-info-btn-img {
     width: 14px;
     height: 14px;
+    position: relative;
+    top: -2px;
 }
 
 .profile-lv-img {
