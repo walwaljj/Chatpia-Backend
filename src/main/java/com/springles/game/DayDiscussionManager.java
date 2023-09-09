@@ -36,6 +36,7 @@ public class DayDiscussionManager {
     private final GameSessionManager gameSessionManager;
     private final PlayerRedisRepository playerRedisRepository;
     private final GameSessionVoteService gameSessionVoteService;
+    private final DayToNightManager dayToNightManager;
     public void sendMessage(DayDiscussionMessage message) {
         DayDiscussionMessage dayDiscussionMessage
                 = message;
@@ -99,7 +100,7 @@ public class DayDiscussionManager {
 
             log.info("Room {} start Day {} {} ", roomId, gameSession.getDay(), gameSession.getGamePhase());
             gameSessionManager.changePhase(roomId, GamePhase.DAY_ELIMINATE);
-
+            gameSession.setGamePhase(GamePhase.DAY_ELIMINATE);
             messageManager.sendMessage(
                     "/sub/chat/" + roomId + "/" + "deadPlayer",
                     deadPlayer);
@@ -128,9 +129,7 @@ public class DayDiscussionManager {
 //    }
 
     private void setDayToNight(Long roomId) {
-        log.info("no suspiciousList at {}", roomId);
-        DayEliminationMessage dayEliminationMessage = new DayEliminationMessage();
-
+        dayToNightManager.sendMessage(roomId);
     }
 }
 

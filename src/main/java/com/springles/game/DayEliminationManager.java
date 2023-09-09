@@ -27,12 +27,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class DayEliminationManager {
-    private final SimpMessagingTemplate simpMessagingTemplate;
     private final GameSessionManager gameSessionManager;
     private final PlayerRedisRepository playerRedisRepository;
     private final MessageManager messageManager;
-    private final GameSessionVoteService gameSessionVoteService;
-    private final ObjectMapper objectMapper;
+    private final DayToNightManager dayToNightManager;
+
 
     public void sendMessage(DayEliminationMessage dayEliminationMessage) {
         log.info("Day Elimination 단계까지 왔다");
@@ -64,6 +63,8 @@ public class DayEliminationManager {
         // 현재 진행 상황 기록
         log.info("Room {} start Day {} {} ", roomId, gameSession.getDay(), gameSession.getGamePhase());
 
+        dayToNightManager.sendMessage(roomId);
+
         // 죽인 결과 전송
 //        messageManager.sendMessage(
 //                "/sub/chat/" + roomId,
@@ -78,7 +79,7 @@ public class DayEliminationManager {
     }
 
     private List<Long> setDayToNight(GameSession gameSession, Long deadPlayerId)    {
-        gameSession.changePhase(GamePhase.DAY_TO_NIGHT, 15);
+        gameSessionManager.changePhase(gameSession.getRoomId(), GamePhase.DAY_TO_NIGHT);
         // 죽어서 관찰만 하는 사람들
         List<Long> victims = new ArrayList<>();
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
@@ -89,8 +90,10 @@ public class DayEliminationManager {
                 continue;
             }
             // 죽었다면 게임에서 제거하고 관찰자에 추가
-            gameSessionManager.removePlayer(gameSession.getRoomId(), player.getMemberName());
+            player.setRole(GameRole.OBSERVER);
+            // gameSessionManager.removePlayer(gameSession.getRoomId(), player.getMemberName());
             victims.add(player.getMemberId());
+            playerRedisRepository.save(player);
         }
 
         // 죽을 인간
@@ -115,7 +118,7 @@ public class DayEliminationManager {
                 deadPlayer.setAlive(false);
                 deadPlayer.setRole(GameRole.OBSERVER);
                 playerRedisRepository.save(deadPlayer);
-                gameSessionManager.removePlayer(gameSession.getRoomId(), deadPlayer.getMemberName());
+                // gameSessionManager.removePlayer(gameSession.getRoomId(), deadPlayer.getMemberName());
                 // 관찰자에 추가
                 victims.add(deadPlayerId);
             }
