@@ -16,6 +16,10 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -89,8 +93,27 @@ public class DayToNightManager {
 
 
         messageManager.sendMessage(
-                "/sub/chat/" + roomId + "/gameRole/" + p.getMemberName(),
-                new RoleExplainMessage(p.getRole(), getTimeString())
+                "/sub/chat/" + gameSession.getRoomId(),
+                "밤이 되었습니다.",
+                gameSession.getRoomId(), "admin"
         );
+
+        ScheduledExecutorService notice = Executors.newSingleThreadScheduledExecutor();
+        // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
+        Runnable task = () -> {
+            // 실행하고자 하는 코드를 여기에 작성합니다.
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    "마피아는 죽일 사람을, 경찰은 조사할 사람을, 의사는 살릴 사람을 투표해 주세요.",
+                    roomId, "admin"
+            );
+
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId + "/nighVoteInfo",
+                     players);
+        };
+        // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
+        // 아래의 예제는 5초 후에 작업을 실행합니다.
+        notice.schedule(task, 2, TimeUnit.SECONDS);
     }
 }

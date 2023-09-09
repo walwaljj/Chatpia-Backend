@@ -30,6 +30,7 @@ public class DayEliminationManager {
     private final GameSessionManager gameSessionManager;
     private final PlayerRedisRepository playerRedisRepository;
     private final MessageManager messageManager;
+    private final DayToNightManager dayToNightManager;
 
 
     public void sendMessage(DayEliminationMessage dayEliminationMessage) {
@@ -61,6 +62,8 @@ public class DayEliminationManager {
 
         // 현재 진행 상황 기록
         log.info("Room {} start Day {} {} ", roomId, gameSession.getDay(), gameSession.getGamePhase());
+
+        dayToNightManager.sendMessage(roomId);
 
         // 죽인 결과 전송
 //        messageManager.sendMessage(

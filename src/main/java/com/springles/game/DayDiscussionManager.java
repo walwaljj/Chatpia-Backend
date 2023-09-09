@@ -36,6 +36,7 @@ public class DayDiscussionManager {
     private final GameSessionManager gameSessionManager;
     private final PlayerRedisRepository playerRedisRepository;
     private final GameSessionVoteService gameSessionVoteService;
+    private final DayToNightManager dayToNightManager;
     public void sendMessage(DayDiscussionMessage message) {
         DayDiscussionMessage dayDiscussionMessage
                 = message;
@@ -128,9 +129,7 @@ public class DayDiscussionManager {
 //    }
 
     private void setDayToNight(Long roomId) {
-        log.info("no suspiciousList at {}", roomId);
-        DayEliminationMessage dayEliminationMessage = new DayEliminationMessage();
-
+        dayToNightManager.sendMessage(roomId);
     }
 }
 

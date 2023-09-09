@@ -46,7 +46,8 @@ public class VoteController {
     private void voteStart (SimpMessageHeaderAccessor accessor, @DestinationVariable Long roomId) {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         gameSession.changePhase(GamePhase.DAY_VOTE, 100);
-        gameSessionManager.passDay(roomId);
+        gameSession.passADay();
+        gameSessionManager.update(gameSession);
 
         // 종료된 게임인지 체크
         if (!gameSessionManager.existRoomByRoomId(roomId)) {
@@ -122,14 +123,26 @@ public class VoteController {
                     .filter(e -> e.getValue() == true) // confirm == true인 이용자
                     .collect(Collectors.toList()).size();
 
+            int killCnt = voteResult.entrySet().stream()
+                    .filter(e -> e.getValue() != null)
+                    .collect(Collectors.toList()).size();
+
             int alivePlayerCnt = gameSession.getAliveCivilian()
                     + gameSession.getAliveDoctor()
                     + gameSession.getAlivePolice()
                     + gameSession.getAliveMafia();
             log.info("confirmCnt: {}, alivePlayerCnt: {}", confirmCnt, alivePlayerCnt);
-            if (confirmCnt == alivePlayerCnt) { // 살아 있는 모두가 투표를 끝내면 투표 종료
-                Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
-                publishMessage(roomId, vote);
+            if (gameSession.getGamePhase() == GamePhase.DAY_VOTE) {
+                if (confirmCnt == alivePlayerCnt) { // 살아 있는 모두가 투표를 끝내면 투표 종료
+                    Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
+                    publishMessage(roomId, vote);
+                }
+            }
+            if (gameSession.getGamePhase() == GamePhase.DAY_ELIMINATE) {
+                if (killCnt > alivePlayerCnt / 2) { // 과반수 이상이 찬성하면
+                    Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
+                    publishMessage(roomId, vote);
+                }
             }
         }
     }

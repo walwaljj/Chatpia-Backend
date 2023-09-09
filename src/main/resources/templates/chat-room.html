@@ -299,8 +299,7 @@
         // 반대 버튼이 클릭되었을 때 실행될 코드 작성
         alert("반대했습니다!");
         const message = JSON.stringify({
-          'phase': 'DAY_ELIMINATE',
-          'vote': player.memberId
+          'phase': 'DAY_ELIMINATE'
         });
         console.log(message);
         stompClient.send(`/pub/chat/${roomId}/vote`, {
