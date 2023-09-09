@@ -65,10 +65,12 @@ body {
     border-radius: 14px;
 }
 
-.profile {
-    border-radius: 14px;
+.idx-profile {
+    /*border-radius: 14px;*/
     border: #666666 solid 1px;
-    height: 30vh;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    /*height: 30vh;*/
 }
 
 .my-profile {
@@ -79,6 +81,8 @@ body {
     float: none;
     /*margin:10px auto;*/
     /*padding: 10px;*/
+    /*border-bottom-left-radius: 14px;*/
+    /*border-bottom-right-radius: 14px;*/
 }
 
 .my_div {

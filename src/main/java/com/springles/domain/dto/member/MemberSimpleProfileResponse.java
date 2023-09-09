@@ -17,6 +17,7 @@ public class MemberSimpleProfileResponse {
     private String nickname;    // 게임 닉네임
     private String profileImg;
     private Level level; // 유저 레벨
+    private String levelImg; // 유저 레벨 이미지
     private Long memberId;
 
     public static MemberSimpleProfileResponse of(MemberGameInfo memberGameInfo, Long memberId) {
@@ -25,6 +26,7 @@ public class MemberSimpleProfileResponse {
                 .nickname(memberGameInfo.getNickname())
                 .profileImg(memberGameInfo.getProfileImg().getFileUrl())
                 .level(memberGameInfo.getLevel())
+                .levelImg(memberGameInfo.getLevel().getImgUrl())
                 .build();
     }
 
