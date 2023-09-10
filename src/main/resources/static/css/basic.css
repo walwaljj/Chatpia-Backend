@@ -22,8 +22,8 @@ body {
 }
 
 .chatroomList {
-    height:75vh;
-    width:65vw;
+    height:68vh;
+    width:61vw;
     overflow-y:scroll;
     border: 1px solid #f1f3f5;
 }
@@ -163,7 +163,7 @@ body {
 .cover {
     display: flex;
     justify-content: flex-end;
-    padding-right: 2vw;
+    padding-right: 6vw;
 }
 
 .center {
