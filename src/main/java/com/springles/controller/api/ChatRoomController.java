@@ -8,8 +8,10 @@ import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 import com.springles.domain.dto.member.MemberCreateRequest;
 import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.domain.dto.response.ResResult;
+import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
+import com.springles.game.GameSessionManager;
 import com.springles.jwt.JwtTokenUtils;
 import com.springles.service.ChatRoomService;
 import com.springles.service.CookieService;
@@ -20,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
@@ -34,11 +37,12 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final MemberUiController memberUiController;
     private final CookieService cookieService;
+    private final GameSessionManager gameSessionManager;
 
     // 채팅방 생성
     @Operation(summary = "채팅방 생성", description = "채팅방 생성")
     @PostMapping(value = "/chatrooms")
-    public ResponseEntity<ResResult> createChatRoom(@Valid @RequestBody ChatRoomReqDTO chatRoomReqDTO, HttpServletRequest request, Authentication auth){
+    public ResponseEntity<ResResult> createChatRoom(@Valid @RequestBody ChatRoomReqDTO chatRoomReqDTO, HttpServletRequest request, Authentication auth) {
 
         String accessToken = cookieService.atkFromCookie(request);
         MemberInfoResponse info = memberUiController.info(accessToken);
@@ -59,10 +63,10 @@ public class ChatRoomController {
     }
 
     // 채팅방 단일 조회
-    @GetMapping(value="/chatroom/{roomId}")
+    @GetMapping(value = "/chatroom/{roomId}")
     public ResponseEntity<ResResult> readChatRoom(
             @PathVariable Long roomId
-    ){
+    ) {
 
         ResponseCode responseCode = ResponseCode.CHATROOM_READ;
 
@@ -92,8 +96,8 @@ public class ChatRoomController {
     }
 
     /**
-     /chatrooms?title={title}
-     /chatrooms?nickname={nickname}
+     * /chatrooms?title={title}
+     * /chatrooms?nickname={nickname}
      */
     // 채팅방 검색
     @GetMapping(value = "/chatroom/search")
@@ -102,12 +106,12 @@ public class ChatRoomController {
     ) {
         ResponseCode responseCode = ResponseCode.CHATROOM_SEARCH;
         return new ResponseEntity<>(
-            ResResult.builder()
-                    .responseCode(responseCode)
-                    .code(responseCode.getCode())
-                    .message(responseCode.getMessage())
-                    .data(chatRoomService.findAllByTitleAndNickname(content))
-                    .build(), HttpStatus.OK);
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(chatRoomService.findAllByTitleAndNickname(content))
+                        .build(), HttpStatus.OK);
 
 //            // 일치하는 방이 하나도 없을 때
 ////            model.addAttribute("errorMessage", String.format("'%s'에 해당하는 유저 또는 방을 찾지 못해 전체 목록을 불러옵니다.",searchContent));
@@ -122,7 +126,7 @@ public class ChatRoomController {
     @PatchMapping(value = "/chatrooms/{chatroomid}")
     public ResponseEntity<ResResult> updateChatRoom(
             @Valid @RequestBody ChatRoomUpdateReqDto dto,
-            @PathVariable Long chatroomid){
+            @PathVariable Long chatroomid) {
 
         // 응답 메시지 return
         log.info(String.valueOf(dto.getMemberId()));
@@ -140,7 +144,7 @@ public class ChatRoomController {
     @DeleteMapping(value = "/chatrooms/{chatroomid}")
     public String deleteChatRoom(
             @RequestBody Long memberId,
-            @PathVariable Long chatroomid){
+            @PathVariable Long chatroomid) {
 
         chatRoomService.deleteChatRoom(memberId, chatroomid);
         return "redirect:/v1/chatrooms";
@@ -148,9 +152,39 @@ public class ChatRoomController {
 
     @GetMapping("/chatRooms/{roomId}")
     public ChatRoomResponseDto findRoomInfo(
-        @PathVariable Long roomId
+            @PathVariable Long roomId
     ) {
         return chatRoomService.findChatRoomByChatRoomId(roomId);
+    }
+
+    // Player list 조회
+    @GetMapping("chatrooms/{room-id}/player-list")
+    public ResponseEntity<ResResult> playerList(@PathVariable("room-id") Long roomId) {
+
+        ResponseCode responseCode = ResponseCode.PLAYER_READ;
+
+        return new ResponseEntity<>(ResResult.builder()
+                .responseCode(responseCode)
+                .code(responseCode.getCode())
+                .message(responseCode.getMessage())
+                .data(gameSessionManager.findPlayersByRoomId(roomId))
+                .build(), HttpStatus.OK);
+    }
+
+    // 채팅방 입장
+    @GetMapping("chatrooms/{room-id}/{nick-name}")
+    public ResponseEntity<ResResult> enterRoom(@PathVariable("room-id") Long roomId,
+                                               @PathVariable("nick-name") String nickName) {
+
+        // 채팅 방 정보
+        ResponseCode responseCode = ResponseCode.CHATROOM_ENTER;
+
+        return new ResponseEntity<>(ResResult.builder()
+                .responseCode(responseCode)
+                .code(responseCode.getCode())
+                .message(responseCode.getMessage())
+                .data(chatRoomService.enterChatRoom(roomId, nickName))
+                .build(), HttpStatus.OK);
     }
 
 }
