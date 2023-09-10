@@ -48,9 +48,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         }
         // 비밀방 선택 - 비밀번호 입력하지 않은 경우 오류 발생
 
-        if (chatRoomReqDTO.getClose() && chatRoomReqDTO.getPassword().isEmpty()) throw new CustomException(ErrorCode.PASSWORD_EMPTY);
+        if (chatRoomReqDTO.getClose() && chatRoomReqDTO.getPassword().isEmpty())
+            throw new CustomException(ErrorCode.PASSWORD_EMPTY);
         // 공개방 선택 - 비밀번호 입력한 경우라면
-        if (!chatRoomReqDTO.getClose() && !chatRoomReqDTO.getPassword().isEmpty()) throw new CustomException(ErrorCode.OPEN_PASSWORD);
+        if (!chatRoomReqDTO.getClose() && !chatRoomReqDTO.getPassword().isEmpty())
+            throw new CustomException(ErrorCode.OPEN_PASSWORD);
 
         // 채팅방 생성하기
         ChatRoom savedRoom = chatRoomJpaRepository.save(createToEntity(chatRoomReqDTO, id));
@@ -82,21 +84,23 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public ChatRoomResponseDto chatRoomCondition(Long roomId) {
 
-        ChatRoomResponseDto chatRoomResponseDto = findChatRoomByChatRoomId(roomId);
+        ChatRoom findChatRoom = chatRoomJpaRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+
         // 입장 시도 시 정원이 다 찼을 때
-        if (chatRoomResponseDto.getHead() >= chatRoomResponseDto.getCapacity()) {
+        if (findChatRoom.getHead() >= findChatRoom.getCapacity()) {
             throw new CustomException(ErrorCode.GAME_HEAD_FULL);
         }
         // 비밀 방 일 때
-        if (chatRoomResponseDto.getClose()) {
+        if (findChatRoom.getClose()) {
             throw new CustomException(ErrorCode.CLOSE_ROOM_ERROR);
         }
         // 이미 진행 중 일 때
-        if (chatRoomResponseDto.getState().getValue().equals("PLAYING")) {
+        if (findChatRoom.getState().getValue().equals("PLAYING")) {
             throw new CustomException(ErrorCode.PLAYER_STILL_INGAME);
         }
 
-        return chatRoomResponseDto;
+        return ChatRoomResponseDto.of(findChatRoom);
     }
 
     /**
@@ -105,7 +109,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public ChatRoomResponseDto quickEnter() {
         List<ChatRoomResponseDto> chatRoomResponseDtoList = chatRoomJpaRepository.findAllByCloseFalseAndState(
-            ChatRoomCode.WAITING); // 오픈된 방이고 , 대기중인 리스트
+                ChatRoomCode.WAITING); // 오픈된 방이고 , 대기중인 리스트
         try {
             return chatRoomResponseDtoList.get(0);// 정원수 - 입장 인원 수 중 가장 상단에 있는 방
         } catch (IndexOutOfBoundsException e) {
@@ -121,12 +125,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public List<ChatRoomResponseDto> findChatRoomByTitle(String title) {
         List<ChatRoom> chatRooms = chatRoomJpaRepository.findAll().stream()
-            .filter(chatRoom -> chatRoom.getTitle().contains(title))
-            .toList();
+                .filter(chatRoom -> chatRoom.getTitle().contains(title))
+                .toList();
 
         return chatRooms.stream()
-            .map(ChatRoomResponseDto::of)
-            .collect(Collectors.toList());
+                .map(ChatRoomResponseDto::of)
+                .collect(Collectors.toList());
 
     }
 
@@ -137,13 +141,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     public List<ChatRoomResponseDto> findChatRoomByNickname(String nickname) {
         // 닉네임이 포함된 멤버 모두 찾기 (대 소문자 구분하지 않음)
         List<Member> members = memberJpaRepository.findAllByMemberNameContainingIgnoreCase(
-            nickname);
+                nickname);
 
         List<ChatRoomResponseDto> chatRoomResponseDtoList = new ArrayList<>();
 
         for (Member member : members) {
             chatRoomResponseDtoList.addAll(chatRoomJpaRepository.findAllByOwnerId(
-                member.getId()));
+                    member.getId()));
         }
 
         return chatRoomResponseDtoList;
@@ -155,7 +159,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     public ChatRoomResponseDto updateChatRoom(ChatRoomUpdateReqDto dto, Long id) {
         // 기존 채팅방 데이터 받기
         ChatRoom findChatRoom = chatRoomJpaRepository.findById(id)
-            .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
         // 수정을 요청한 사용자와 방장이 일치하는지 확인
         if (findChatRoom.getOwnerId() != dto.getMemberId()) {
             throw new CustomException(ErrorCode.USER_NOT_OWNER);
@@ -180,7 +184,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     public void deleteChatRoom(Long memberId, Long chatRoomId) {
         // 기존 채팅방 데이터 받기
         ChatRoom findChatRoom = chatRoomJpaRepository.findById(chatRoomId)
-            .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
         // 삭제를 요청한 사용자와 방장이 일치하는지 확인
         if (findChatRoom.getOwnerId() != memberId) {
             throw new CustomException(ErrorCode.USER_NOT_OWNER);
@@ -196,7 +200,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      */
     public ChatRoomResponseDto findChatRoomByChatRoomId(Long id) {
         return ChatRoomResponseDto.of(chatRoomJpaRepository.findById(id)
-            .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM)));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM)));
     }
 
     // 타이틀 + 이름으로 검색
@@ -225,9 +229,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     // 채팅방 입장 시 채팅 정보 받아오기
-    public ChatRoomResponseDto enterChatRoom(Long roomId) {
+    public ChatRoomResponseDto enterChatRoom(Long roomId, String nickname) {
         ChatRoom findChatRoom = chatRoomJpaRepository.findById(roomId)
-            .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
         return ChatRoomResponseDto.of(findChatRoom);
     }
 }
