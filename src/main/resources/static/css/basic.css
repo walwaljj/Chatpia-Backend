@@ -9,11 +9,16 @@ body {
     /*background-size : cover;*/
 }
 
+.nav-link {
+    font-size : 20px;
+    color: #4b2200;
+}
+
 .navbar {
     padding-left: 40px;
     padding-right: 40px;
-    height: 8vh;
-    background-color:#F5F5F5
+    height: 12vh;
+    background-color:#f3efe1;
 }
 
 .index-container{
@@ -46,14 +51,14 @@ body {
 
 .idx-card-header{
     text-align: left;
-    background-color:#666666;
+    background-color:#4b2200;
     border-top-left-radius: 14px;
     border-top-right-radius: 14px;
 }
 
 .my-card-header{
     text-align: left;
-    background-color:#666666;
+    background-color:#4b2200;
     border-top-left-radius: 14px;
     border-top-right-radius: 14px;
 }
@@ -68,14 +73,14 @@ body {
 
 .idx-profile {
     /*border-radius: 14px;*/
-    border: #666666 solid 1px;
+    border: #4b2200 solid 1px;
     border-bottom-left-radius: 14px;
     border-bottom-right-radius: 14px;
     /*height: 30vh;*/
 }
 
 .my-profile {
-    border: #666666 solid 1px;
+    border: #4b2200 solid 1px;
 }
 
 .card-body2 {
@@ -147,7 +152,7 @@ body {
     height: 7vh;
     margin-top: 30px;
     border: none;
-    background-color: #666666;
+    background-color: #4b2200;
     border-radius: 14px;
 
 }
