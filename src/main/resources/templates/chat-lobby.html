@@ -27,7 +27,7 @@
     chatRooms.forEach((chatRoom) => {
       console.log(chatRoom)
       const newRoom = document.createElement("div")
-      newRoom.innerHTML = `<a href="/chat/${chatRoom.id}/${nickname}">${chatRoom.roomName}</a>`;
+      newRoom.innerHTML = `<a href="v1chatRoom.id}/${nickname}">${chatRoom.roomName}</a>`;
       roomDiv.appendChild(newRoom)
     });
   }
@@ -45,7 +45,7 @@
       })
     })).json();
     const roomId = response.id;
-    window.location.href = `/chat/${roomId}/${nickname}`;
+    window.location.href = `v1/roomId}/${nickname}`;
   }
 </script>
 </body>

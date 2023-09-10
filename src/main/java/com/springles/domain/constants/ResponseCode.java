@@ -16,6 +16,7 @@ public enum ResponseCode {
     CHATROOM_DELETE(HttpStatus.NO_CONTENT, "201", "채팅방 삭제 성공"),
     CHATROOM_SEARCH(HttpStatus.OK,"200", "채팅방 검색 완료"),
     CHATROOM_READ(HttpStatus.OK,"200", "채팅방 조회 완료"),
+    CHATROOM_ENTER(HttpStatus.OK,"200", "채팅방 입장 완료"),
 
     /* AUTH */
     MEMBER_SAVE(HttpStatus.CREATED, "201", "회원가입 성공"),
@@ -39,6 +40,7 @@ public enum ResponseCode {
     /* PLAYER */
     PLAYER_LEAVE(HttpStatus.OK,"200","게임 퇴장 완료"),
     PLAYER_JOIN(HttpStatus.OK, "200", "게임 참여 완료"),
+    PLAYER_READ(HttpStatus.OK, "200", "참여자 조회 성공"),
 
     /* JWT */
     ACCESS_TOKEN_REISSUE(HttpStatus.OK, "200", "Access Token 재발급 성공"),
