@@ -38,15 +38,13 @@ public class DayDiscussionManager {
     private final GameSessionVoteService gameSessionVoteService;
     private final DayToNightManager dayToNightManager;
     public void sendMessage(DayDiscussionMessage message) {
-        DayDiscussionMessage dayDiscussionMessage
-                = message;
         log.info("dayDiscussionManager까지 전달 성공");
-        Long roomId = dayDiscussionMessage.getRoomId();
+        Long roomId = message.getRoomId();
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
 
         // 죽여야 할 애 하나가 담긴 명단
         List<Long> suspiciousList =
-                dayDiscussionMessage.getSuspiciousList();
+                message.getSuspiciousList();
 
         log.info("Room {} suspicious List: {}", roomId, suspiciousList.toString());
 

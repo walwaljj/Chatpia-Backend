@@ -64,7 +64,7 @@ public class DayToNightManager {
                 .filter(e -> e.getRole() != GameRole.POLICE)
                 .filter(Player::isAlive).count());
 
-        gameSessionManager.update(gameSession);
+        gameSessionManager.saveSession(gameSession);
         log.info("Room {} CIVILIAN: {}, POLICE: {}, MAFIA: {}, DOCTOR: {}",
                 roomId,
                 gameSession.getAliveCivilian(),
