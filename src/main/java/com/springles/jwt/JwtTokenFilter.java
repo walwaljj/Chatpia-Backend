@@ -109,6 +109,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                         CookieSetRequest.builder().key("accessToken").value(accessToken).build(), response);
                                 log.info("atk 쿠키에 저장 완료");
 
+                                // attribute에 저장
+                                // atk 재발급 후 쿠키에 저장해도 request 속 쿠키값은 변하지 않아 유효하지 않은 토큰으로 필터를 지나치게됨
+                                // 이를 해결하기 위해 재발급 시에만 request.setAttibute에도 atk 저장
+                                request.setAttribute("accessToken", accessToken);
+
                             } else {
                                 // atk 값이 비어있을 경우
                                 log.info("rtk 비정상, 재발급 불가");
@@ -252,7 +257,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 log.info("atk 재발급 완료");
 
                 // 쿠키에 저장
-                cookieService.setInitCookie(
+                cookieService.setAtkCookie(
                         CookieSetRequest.builder().key("accessToken").value(accessToken).build(), response);
 
                 // attribute에 저장
