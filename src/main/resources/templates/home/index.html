@@ -6,14 +6,41 @@
 <div layout:fragment="content">
     <div th:insert="fragments/header::header"></div>
     <div class="index-container">
+        <div class="row cover m-2">
+            <!-- 검색창 -->
+            <!------------------ 체크 박스 ------------------------>
+            <!--                    <div class="custom-control custom-checkbox my-1 mr-sm-2 check-box">-->
+            <!--                        <input type="checkbox"-->
+            <!--                               id="checkbox"-->
+            <!--                               name="checkbox"-->
+            <!--                               class="custom-control-input form-check-input"-->
+            <!--                               onclick="chatRoomCheckboxFilter()">-->
+            <!--                        <label class="custom-control-label" for="checkbox">오픈&대기중</label>-->
+            <!--                    </div>-->
+            <!------------------- 검색창 ------------------------->
+            <form class="form-inline">
+                <!------------------ 리셋 ---------------------------->
+                <button type="button" class="btn btn-light my-1" onclick="clearButton()">리셋</button>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <input class="form-control mr-sm-2" type="text" id="search-content" name="search-content"
+                               placeholder="nickname or title"/>
+
+                    </div>
+                    <button class="input-group-text" type="button" onclick="search()">
+                        <img class="search_thumbnail" src="/images/search.png"/>
+                    </button>
+                </div>
+            </form>
+        </div>
         <div class="row">
-            <div class="col-3 center p-1 m-5">
+            <div class="col-3 center p-1">
                 <!-----------------------사용자 정보 ----------------------------------------------------------->
                 <div class="profile-area">
                 <!---------레벨 ---------->
-                <div class="idx-card-header text-white row ml-0 mr-0 p-3">
+                <div class="idx-card-header row ml-0 mr-0 p-3">
                     <img id="level-img" class="profile-lv-img mt-1 mr-2" src="" alt="레벨 이미지"/>
-                    <p id="level" class="mb-0"></p>
+                    <p id="level" class="mb-0" style="color: #4b2200;"></p>
                 </div>
                 <div class="idx-profile">
                     <div class="card-body2 container row ml-0 mr-0 pl-2 pr-2">
@@ -42,40 +69,14 @@
                 </div>
             </div>
             </div>
-            <div class="col-7 center px-2 m-5">
-                <div class="container row cover">
-                    <!------------------ 체크 박스 ------------------------>
-<!--                    <div class="custom-control custom-checkbox my-1 mr-sm-2 check-box">-->
-<!--                        <input type="checkbox"-->
-<!--                               id="checkbox"-->
-<!--                               name="checkbox"-->
-<!--                               class="custom-control-input form-check-input"-->
-<!--                               onclick="chatRoomCheckboxFilter()">-->
-<!--                        <label class="custom-control-label" for="checkbox">오픈&대기중</label>-->
-<!--                    </div>-->
-                    <!------------------- 검색창 ------------------------->
-                    <form class="form-inline">
-                        <!------------------ 리셋 ---------------------------->
-                        <button type="button" class="btn btn-light my-1" onclick="clearButton()">리셋</button>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <input class="form-control mr-sm-2" type="text" id="search-content" name="search-content"
-                                       placeholder="nickname or title"/>
-
-                            </div>
-                            <button class="input-group-text" type="button" onclick="search()">
-                                <img class="search_thumbnail" src="/images/search.png"/>
-                            </button>
-                        </div>
-                    </form>
-                </div>
+            <div class="col-8 pl-5">
+                <!----------------------- 채팅방 목록 ------------------------------------------------------->
                 <!------------------ 메시지 --------------------------->
 <!--                <div id="errorMessage" class="alert alert-danger">-->
 <!--                    <p></p>-->
 <!--                </div>-->
-                <!----------------------- 채팅방 목록 ------------------------------------------------------->
-                <div id="display"></div>
 
+                <div id="display"></div>
                 <!-- 비밀방 입장 시 비밀번호 입력 Modal  -->
                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
@@ -156,7 +157,7 @@
 
                 // 채팅방 목록 생성
                     function chatRoomList(data){
-                    var html = `<div id="chatroomList" style=" padding: 3vh; height:50vh; width:100%; overflow-y:scroll;">`
+                    var html = `<div id="chatroomList" class="chatroomList">`
                     $.each(data.data, function (index, item) {
                         // 채팅방 선택 시 입장 enterRoom 함수 실행
                         html += `<a onclick="enterRoom(${item.id}, ${item.close});"
