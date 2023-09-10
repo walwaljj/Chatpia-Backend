@@ -66,7 +66,7 @@ jobs:
           utcOffset: "+09:00" # (11).test 시점의 시간 확보
 
       - name: Show Current Time test
-        run: echo "CurrentTime=$"{{ steps.current-time.outputs.time }}"
+        run: echo "CurrentTime=${{ steps.current-time.outputs.time }}"
         shell: bash # (12).확보한 시간 보여 주기
 
       - name: Run string replace
