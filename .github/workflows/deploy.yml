@@ -6,8 +6,10 @@ name: Chatfia Dev CI/CD
 #    types: [ closed ]
 #  workflow_dispatch: # (2).수동 실행도 가능하도록
 on:
-  pull_request:
-    types: [ closed ]
+  push:
+    branches: [ "*" ]
+#  pull_request:
+#    branches: [ "main" ]
 
 permissions:
   contents: read
