@@ -1,13 +1,13 @@
 spring:
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+      host: ${env.REDIS_HOST}
+      port: ${env.REDIS_PORT}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DATASOURCE_URL_HOST}/springles
-    username: ${MYSQL_ROOT_USER}
-    password: ${MYSQL_ROOT_PASSWORD}
+    url: jdbc:mysql://${env.DATASOURCE_URL_HOST}/springles
+    username: ${env.MYSQL_ROOT_USER}
+    password: ${env.MYSQL_ROOT_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -21,9 +21,9 @@ spring:
 
   mail:
     host: smtp.gmail.com
-    port: ${NAVER_MAIL_PORT}
-    NAVER_MAIL_USERNAME: ${NAVER_MAIL_USERNAME}
-    NAVER_MAIL_PASSWORD: ${NAVER_MAIL_PASSWORD}
+    port: ${env.NAVER_MAIL_PORT}
+    NAVER_MAIL_USERNAME: ${env.NAVER_MAIL_USERNAME}
+    NAVER_MAIL_PASSWORD: ${env.NAVER_MAIL_PASSWORD}
 
 jwt:
   secret: dhwhokdfnpwkempfnwiofnpwkempfnwiofnpwkempfnwiofnpwkempfnwio
