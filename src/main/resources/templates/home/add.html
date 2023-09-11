@@ -7,18 +7,18 @@
     <div th:insert="fragments/header :: header"></div>
 
     <div class="form-container">
-        <div class="form-item" style="height: 474px;">
+        <div class="form-item" style="height: 490px;">
             <div class="form-title"><h5>게임 만들기</h5></div>
             <form id="form">
                 <table class="table">
                     <tbody>
                     <div class="item-detail mt-3">
                         <label for="title">방 제목</label>
-                        <input type="text" id="title" class="title form-control" placeholder="이름을 입력하세요">
+                        <input type="text" id="title" class="title form-control form-input" placeholder="이름을 입력하세요">
                     </div>
                     <div class="item-detail mt-3">
                         <label for="capacity">인원</label>
-                        <input type="text" id="capacity" class="capacity form-control" placeholder="인원을 입력하세요">
+                        <input type="text" id="capacity" class="capacity form-control form-input" placeholder="인원을 입력하세요">
                     </div>
                     <div class="checkbox mt-3">
                         <input type="checkbox"
@@ -29,7 +29,7 @@
                     </div>
                     <div class="item-detail mt-3">
                         <label for="password">비밀번호</label>
-                        <input type="text" id="password" class="form-control" placeholder="비밀번호를 입력하세요">
+                        <input type="text" id="password" class="form-control form-input" placeholder="비밀번호를 입력하세요">
                     </div>
                     <div>
                         <button id = "Send_Request" class="submit_btn mt-4" type="button">등록</button>
@@ -89,7 +89,7 @@
                             // response data에서 roomId 가져오기
                             const roomId = data.data.id;
                             // 성공할 경우 해당 채팅방으로 바로 이동
-                            location.replace('http://localhost:8080/chat/'+roomId+'/'+nickName);
+                            location.replace('http://localhost:8080/v1/chat/'+ roomId + '/' + nickName);
                         },
                         error: function(response) {
                             alert(JSON.stringify(response.responseJSON.message))

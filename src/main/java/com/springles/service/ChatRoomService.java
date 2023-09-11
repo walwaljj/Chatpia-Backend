@@ -19,7 +19,7 @@ public interface ChatRoomService {
     ChatRoomResponseDto findChatRoomByChatRoomId(Long id);
     List<ChatRoomResponseDto> findAllByTitleAndNickname(String searchContent);
     List<ChatRoomResponseDto> findAllChatRooms();
-    ChatRoomResponseDto enterChatRoom(Long roomId);
+    ChatRoomResponseDto enterChatRoom(Long roomId, String nickName);
     ChatRoomResponseDto chatRoomCondition(Long roomId);
     ChatRoomResponseDto quickEnter();
 }

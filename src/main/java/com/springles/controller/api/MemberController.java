@@ -26,7 +26,7 @@ public class MemberController {
     @GetMapping("/info/profile/simple")
     public ResponseEntity<ResResult> profileInfo(HttpServletRequest request) {
         // 멤버 정보 가져오기
-        String accessToken = (String)request.getAttribute("accessToken");
+        String accessToken = cookieService.atkFromCookie(request);
         ResponseCode responseCode = ResponseCode.MEMBER_DETAIL;
         return ResponseEntity.ok(
                 ResResult.builder()
