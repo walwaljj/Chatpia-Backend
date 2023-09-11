@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link th:href="@{/css/basic.css}" rel="stylesheet">
 
+
 <body onload="connect()">
 <div layout:fragment="header">
     <nav class="navbar navbar-expand-sm navbar-dark">
@@ -55,10 +56,10 @@
                                         <input type="text" class="form-control" id="room-capacity"
                                                name="room-capacity">
                                     </div>
-<!--                                    <div class="row mt-3">-->
-<!--                                        <p class="room-info-item-title col-3 mb-0">초대 코드</p>-->
-<!--                                        <p class="form-control" id="room-invite" name="room-invite"></p>-->
-<!--                                    </div>-->
+                                    <!--                                    <div class="row mt-3">-->
+                                    <!--                                        <p class="room-info-item-title col-3 mb-0">초대 코드</p>-->
+                                    <!--                                        <p class="form-control" id="room-invite" name="room-invite"></p>-->
+                                    <!--                                    </div>-->
 
                                     <!-- 공유하기-->
                                     <div class="row mb-3 mt-3">
@@ -107,6 +108,7 @@
 </div>
 
 <div layout:fragment="content">
+
     <div style="display: flex; justify-content: center; align-items: center; height:110%">
         <div class="row chatroom_div">
             <div class="col-3 players">
@@ -120,36 +122,39 @@
                     <div id="playerList" class="playerList">
                     </div>
                 </div>
-                <!-- 투표 -->
+                <!-- 투표  -->
                 <div class="vote" style="height: 50%">
-                    <!--            투표 테스트를 위한 임시 버튼-->
-            <div>
-                <form class="container row" id="vote-form">
-                    <select id="vote-select" class="form-select" aria-label="Default select example">
-                        <option selected>Open this select menu</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                    </select>
-                    <button id="submit-vote" class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px"
-                            type="submit">낮 투표하기
-                    </button>
-                </form>
-                <form class="container row" id="vote-form-night">
-                    <select id="vote-select-night" class="form-select" aria-label="Default select example">
-                        <option selected>Open this select menu</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                    </select>
-                    <button id="submit-vote-night" class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px"
-                            type="submit">밤 투표하기
-                    </button>
-                </form>
+                    <!-- 투표 테스트를 위한 임시 버튼-->
+                    <form id="vote-form">
+                        <select id="vote-select" class="form-select" aria-label="Default select example">
+                            <option selected>Open this select menu</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                        <button id="submit-vote" class="btn btn-primary" style="margin: 0 0 4px;"
+                                type="submit">낮 투표하기
+                        </button>
+                    </form>
+                    <form id="vote-form-night">
+                        <select id="vote-select-night" class="form-select" aria-label="Default select example">
+                            <option selected>Open this select menu</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                        <button id="submit-vote-night" class="btn btn-primary" style="margin: 0 0 4px;"
+                                type="submit">밤 투표하기
+                        </button>
+                    </form>
+                    <form id="vote-test">
+                        <input class="chat_input_ui" style="margin:0;" type="text" id="vote" placeholder="vote"/>
+                        <button class="btn btn-primary" style="margin: 0 0 4px;" type="submit">투표 시작
+                        </button>
+                    </form>
                 </div>
             </div>
-
-
+            <!------------------- 채팅----------------------------------------------------------------------------------->
             <!-- 채팅 -->
             <div class="col-9 chatting">
                 <!----------채팅 화면 스크롤 ----------------->
@@ -161,9 +166,6 @@
                 <form id="message-form" style="text-align:center;">
                     <input class="chat_input_ui" style="margin:0;" type="text" id="message"
                            placeholder="메시지 보내기"/>
-<!--                    <button class="col-1 btn btn-primary" styl="margin: 0 0 4px; width:75px" type="submit">-->
-<!--                        보내기-->
-<!--                    </button>-->
                 </form>
             </div>
         </div>
@@ -173,12 +175,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
     <script type="text/javascript">
-
-        // 채팅 스크롤은 항상 최하단에 위치
-        $(function () {
-            $('#chatContent').scrollTop($('#chatContent')[0].scrollHeight);
-        });
-
         let stompClient = null;
         let pathname = window.location.pathname;
         let roomId = parseInt(pathname.split("/")[3]);
@@ -534,8 +530,6 @@
                 }
             });
         };
-
-
     </script>
     <script src="/js/stomp.js"></script>
 </div>
