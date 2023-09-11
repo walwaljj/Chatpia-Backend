@@ -140,7 +140,7 @@ public class MessageController {
         }
         while (true) {
             try {
-                check_Game_Ending(roomId); // 게임 종료 조건 검사
+                /*check_Game_Ending(roomId); // 게임 종료 조건 검사
                 day_Discussion(roomId); // 낮 토의 시간 시작
                 day_First_Vote(roomId); // 낮 토의 60초 뒤에 투표 시작
                 vote_End(roomId); // 낮 투표 10초 뒤에 투표 마감 -> 투표 확정, 프론트 투표 못하게 막기
@@ -155,7 +155,7 @@ public class MessageController {
 
                 night_Vote(roomId); // 밤 투표 진행
                 vote_End(roomId); // // 밤 투표 20초 뒤에 투표 마감 -> 투표 확정, 프론트 투표 못하게 막기
-                log.info("투표 결과 집계 및 처리");  // 결과 집계 및 발표
+                log.info("투표 결과 집계 및 처리");  // 결과 집계 및 발표*/
 
             } catch (GameEndException e) { // 정상적인 게임 종료 -> 결과 출력
                 endGame(roomId);
