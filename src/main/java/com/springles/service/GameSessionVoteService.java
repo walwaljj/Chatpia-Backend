@@ -4,6 +4,7 @@ import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.dto.vote.GameSessionVoteRequestDto;
 import com.springles.domain.entity.GameSession;
+import com.springles.domain.entity.Player;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,10 +15,10 @@ public interface GameSessionVoteService {
     Map<Long, Long> endVote (Long roomId, int phaseCount, GamePhase phase);
     Map<Long, Long> vote (Long roomId, Long playerId, GameSessionVoteRequestDto request);
     Map<Long, Long> nightVote (Long roomId, Long playerId, GameSessionVoteRequestDto request, GameRole role);
-    Map<Long, Boolean> confirmVote (Long roomId, Long playerId, GameSessionVoteRequestDto request);
-    Map<Long, Boolean> getConfirm(Long roomId, Long playerId, GameSessionVoteRequestDto request);
-    Map<Long, Boolean> getNightConfirm(Long roomId, Long playerId, GameSessionVoteRequestDto request, GameRole role);
     Map<Long, Long> getVoteResult(Long roomId, GameSessionVoteRequestDto request);
+
+    Map<Long, Player> getSuspectResult(GameSession gameSession, Map<Long, Long> vote);
+
     List<Long> getSuspiciousList(GameSession gameSession, Map<Long, Long> voteResult);
 
     Long getEliminationPlayer(GameSession gameSession, Map<Long, Long> voteResult);

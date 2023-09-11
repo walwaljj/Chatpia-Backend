@@ -159,54 +159,13 @@ public class VoteController {
         Map<Long, Long> voteResult = gameSessionVoteService.nightVote(roomId, playerID, request, role);
         // 관찰자들을 위한 투표 결과 반환
         Map<Long, Long> forObserver = gameSessionVoteService.getVoteResult(roomId, request);
-        if (voteResult != null) {
-            // 해당 role에게 전송
-            simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId + "/" + role, VoteResultResponseDto.of(voteResult));
-            // 관찰자에게 전송
-            simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId + "/" + GameRole.OBSERVER, VoteResultResponseDto.of(voteResult));
-
-
-        }
-    }
-
-    @MessageMapping("/pub/chat/{roomId}/{roleName}/confirm")
-    public void confirmNightVote(SimpMessageHeaderAccessor accessor,
-                                 @DestinationVariable Long roomId,
-                                 @DestinationVariable GameRole role) {
-        String playerName = accessor.getUser().getName();
-        Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
 
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
-        GameSessionVoteRequestDto request = new GameSessionVoteRequestDto();
-        request.setPhase(GamePhase.NIGHT_VOTE);
+        Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), gameSession.getGamePhase());
+        publishMessage(roomId, vote);
 
-        Map<Long, Boolean> forObserver = gameSessionVoteService.confirmVote(roomId, playerId, request);
-        Map<Long, Boolean> confirmResult = gameSessionVoteService.getNightConfirm(roomId, playerId, request, role);
-
-        if(confirmResult.size() <= 0) {
-            throw new CustomException(ErrorCode.FAIL_CONFIRM_VOTE);
-        }
-        else {
-            // 해당 role에게 전송
-            simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId + "/" + role, ConfirmResultResponseDto.of(confirmResult));
-            // 관찰자에게 전송
-            simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId + "/" + GameRole.OBSERVER, ConfirmResultResponseDto.of(forObserver));
-
-            int confirmCnt = forObserver.entrySet().stream()
-                    .filter(e -> e.getValue() == true)
-                    .collect(Collectors.toList()).size();
-            int notCivilainCnt = gameSession.getAlivePolice()
-                    + gameSession.getAliveMafia()
-                    + gameSession.getAliveDoctor();
-
-            log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, request.getPhase(), confirmCnt, notCivilainCnt);
-
-            // 필요한 인원의 투표가 다 끝나면
-            if(confirmCnt == notCivilainCnt) {
-                gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
-            }
-        }
     }
+
     public String getMemberName(SimpMessageHeaderAccessor accessor) {
         return accessor.getUser().getName().split(",")[1].split(":")[1].trim();
     }

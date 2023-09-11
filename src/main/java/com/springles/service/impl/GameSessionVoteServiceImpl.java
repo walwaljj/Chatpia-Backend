@@ -13,7 +13,6 @@ import com.springles.repository.VoteRepository;
 import com.springles.service.GameSessionVoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -82,68 +81,12 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     @Override
-    public Map<Long, Boolean> confirmVote(Long roomId, Long playerId, GameSessionVoteRequestDto request) {
-        // 유효한 투표가 아니라면 예외 발생
-        if(!voteRepository.isValid(playerId, request.getPhase())) {
-            throw new CustomException(ErrorCode.VOTE_NOT_VALID);
-        }
-        log.info("Room {} Player {} Confirmed At {}", roomId, playerId, request.getPhase());
-        return voteRepository.confirmVote(roomId, playerId);
-    }
-
-    @Override
-    public Map<Long, Boolean> getConfirm(Long roomId, Long playerId, GameSessionVoteRequestDto request) {
-        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
-        Player player = playerRedisRepository.findById(playerId).get();
-
-        // 이미 종료된 투표라면 에러 발생
-        if (voteRepository.isEnd(roomId, gameSession.getPhaseCount()))
-            throw new CustomException(ErrorCode.ENDED_VOTE);
-
-        // 밤이 아니거나 사용자가 살아 있지 않다면
-        if (gameSession.getGamePhase() != GamePhase.NIGHT_VOTE || !player.isAlive()) {
-            return voteRepository.getConfirm(roomId, playerId);
-        }
-        else {
-            return voteRepository.getNightConfirm(roomId, player.getRole());
-        }
-    }
-
-    @Override
-    public Map<Long, Boolean> getNightConfirm(Long roomId, Long playerId, GameSessionVoteRequestDto request, GameRole role) {
-        // 유효한 투표가 아니라면 예외 발생
-        if(!voteRepository.isValid(playerId, request.getPhase())) {
-            throw new CustomException(ErrorCode.VOTE_NOT_VALID);
-        }
-        return voteRepository.getNightConfirm(roomId, role);
-
-    }
-
-    @Override
     public Map<Long, Long> getVoteResult(Long roomId, GameSessionVoteRequestDto request) {
         return voteRepository.getVoteResult(roomId);
     }
 
-
-//    private void publishMessage(Long roomId, Map<Long, Long> vote) {
-//        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
-//        log.info("Room {} start Phase {}", roomId, gameSession.getGamePhase());
-//        if (gameSession.getGamePhase() == GamePhase.DAY_DISCUSSION) {
-//            DayDiscussionMessage dayDiscussionMessage =
-//                    new DayDiscussionMessage(roomId, getSuspiciousList(gameSession, vote));
-//            dayDiscussionManager.sendMessage(dayDiscussionMessage);
-//        } else if (gameSession.getGamePhase() == GamePhase.DAY_ELIMINATE) {
-//            DayEliminationMessage dayEliminationMessage =
-//                    new DayEliminationMessage(roomId, getEliminationPlayer(gameSession, vote));
-//            simpMessagingTemplate.convertAndSend(dayEliminationMessage);
-//        }
-//        else if (gameSession.getGamePhase() == GamePhase.NIGHT_VOTE) {
-//            NightVoteMessage nightVoteMessage
-//                    = new NightVoteMessage(roomId, getNightVoteResult(gameSession, vote), getSuspectResult(gameSession, vote));
-//        }
-//    }
-
-    private Map<Long, Player> getSuspectResult(GameSession gameSession, Map<Long, Long> vote) {
+    @Override
+    public Map<Long, Player> getSuspectResult(GameSession gameSession, Map<Long, Long> vote) {
         Map<Long, Player> suspectResult = new HashMap<>();
 
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
