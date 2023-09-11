@@ -35,18 +35,21 @@ public class DayToNightManager {
         log.info("Day To Night Session까지 진행");
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         gameSessionManager.changePhase(roomId, GamePhase.NIGHT_VOTE);
-        List<Long> victims = new ArrayList<>();
+
         List<Player> players = playerRedisRepository.findByRoomId(roomId);
+        List<Player> voteList = new ArrayList<>();
 
         for (Player player : players) {
             // 살아 있으면 패스
             if (player.isAlive()) {
+                if(player.getRole() != GameRole.OBSERVER && player.getRole() != GameRole.NONE) {
+                    voteList.add(player);
+                }
                 continue;
             }
             // 죽었다면 게임에서 제거하고 관찰자에 추가
             player.setRole(GameRole.OBSERVER);
             // gameSessionManager.removePlayer(gameSession.getRoomId(), player.getMemberName());
-            victims.add(player.getMemberId());
             playerRedisRepository.save(player);
         }
 
@@ -64,7 +67,7 @@ public class DayToNightManager {
                 .filter(e -> e.getRole() != GameRole.POLICE)
                 .filter(Player::isAlive).count());
 
-        gameSessionManager.update(gameSession);
+        gameSessionManager.saveSession(gameSession);
         log.info("Room {} CIVILIAN: {}, POLICE: {}, MAFIA: {}, DOCTOR: {}",
                 roomId,
                 gameSession.getAliveCivilian(),
@@ -97,20 +100,19 @@ public class DayToNightManager {
                 "밤이 되었습니다.",
                 gameSession.getRoomId(), "admin"
         );
+        messageManager.sendMessage(
+                "/sub/chat/" + roomId + "/gameRole/" + GameRole.MAFIA,
+                "마피아는 죽일 사람을, 의사는 살릴 사람을, 경찰은 조사할 사람을 선택해 주세요."
+        );
 
         ScheduledExecutorService notice = Executors.newSingleThreadScheduledExecutor();
         // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
         Runnable task = () -> {
-            // 실행하고자 하는 코드를 여기에 작성합니다.
-            messageManager.sendMessage(
-                    "/sub/chat/" + roomId,
-                    "마피아는 죽일 사람을, 경찰은 조사할 사람을, 의사는 살릴 사람을 투표해 주세요.",
-                    roomId, "admin"
-            );
+
 
             messageManager.sendMessage(
-                    "/sub/chat/" + roomId + "/nighVoteInfo",
-                     players);
+                    "/sub/chat/" + roomId + "/voteInfo",
+                     voteList);
         };
         // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
         // 아래의 예제는 5초 후에 작업을 실행합니다.

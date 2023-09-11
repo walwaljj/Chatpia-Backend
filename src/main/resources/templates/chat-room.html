@@ -4,24 +4,31 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       lang="en" layout:decorate="~{layouts/basic}">
 
+<!-- CSS only -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link th:href="@{/css/basic.css}" rel="stylesheet">
+
+
 <body onload="connect()">
 <div layout:fragment="header">
-    <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #666666; height: 10vh;">
+    <nav class="navbar navbar-expand-sm navbar-dark">
         <!--        <div sec:authorize="isAuthenticated()">-->
-        <a class="navbar-brand" href="#" id="chatroomTitle"></a>
+        <a class="navbar-brand" href="#" id="chatroomTitle" style="color:#4b2200"></a>
 
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
             <!------------------------------------------- 방 정보 ------------------------------------------->
             <div class="form-inline my-2 my-lg-0">
-                <a class="nav-link text-white" onclick="openRoomDetail()">방 정보</a>
-                <!-- 방 정보 모달-->
+                <a class="nav-link" onclick="openRoomDetail()">설정</a>
+
+
+                <!-- 방 정보 모달 -->
                 <div class="modal fade" id="roomDetailModal" tabindex="-1"
                      aria-labelledby="roomDetailModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                         <div class="modal-content pl-3 pr-3 pt-2 pb-2">
                             <div class="modal-header">
-                                <h3 class="modal-title fs-5" id="room-info">방 정보</h3>
+                                <h3 class="modal-title fs-5" id="room-info">설정</h3>
                                 <!--  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
                             </div>
                             <div class="modal-body">
@@ -55,7 +62,7 @@
                                     <!--                                        <p class="form-control" id="room-invite" name="room-invite"></p>-->
                                     <!--                                    </div>-->
 
-                                    <!-- 공유하기-->
+                                    <!-- 공유하기 -->
                                     <div class="row mb-3 mt-3">
                                         <div class="col mx-auto">
                                             <div class="sns">
@@ -90,6 +97,7 @@
                 <!------------------------------------------- 방 정보 끝------------------------------------------->
 
                 <div class="nav-item">
+<<<<<<< HEAD
                     <!------------------------------------------- 게임시작 시작------------------------------------------->
                     <a class="nav-link text-white" onclick=gameStart()>게임시작</a>
                     <!------------------------------------------- 게임시작 끝------------------------------------------->
@@ -166,6 +174,14 @@
                             </div>
                         </div>
                     </div>
+=======
+                    <a class="nav-link" onclick=gameStart()>게임시작</a>
+                    <a class="nav-link" href="#">내 직업 설명</a>
+                    <!--                    th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).PLAYING.getValue()}"-->
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="#">게임룰</a>
+>>>>>>> develop
                 </div>
                 <!-- 내 직업 설명 모달 끝 -->
                 <!------------------------------------------- 내 직업 설명 끝------------------------------------------->
@@ -245,7 +261,7 @@
 
                 <!------------------------------------------- 나가기 시작------------------------------------------->
                 <div class="nav-item" id="leave-btn">
-                    <a class="nav-link text-white" onclick="leave()">나가기</a>
+                    <a class="nav-link" onclick="leave()">나가기</a>
                 </div>
                 <!------------------------------------------- 나가기 끝------------------------------------------->
             </div>
@@ -255,59 +271,63 @@
 
 <div layout:fragment="content">
 
-    <div class="row" style="border-radius: 10px;
-    border: solid 1px silver;
-    margin: 4vw;
-    padding: 0;
-    height: 80vh">
-        <div class="col-3" style="height:100%; background-color: gray; padding:20px">
-            <!---------------참여인원 / 정원 -------------------->
-            <h3>참여자</h3>
-            <span id="gamePlayer"></span>/
-            <span id="gameCapacity"></span>
-            <div id="playerList">
-                <!--------------참여자 목록 ------------------------>
-                <!--<div th:each="player : ${players}">
-                  <div th:text="${player.getMemberId()}"></div>
-                  <div th:text="${player.getRole()}"></div>
-                </div>-->
+    <div style="display: flex; justify-content: center; align-items: center; height:110%">
+        <div class="row chatroom_div">
+            <div class="col-3 players">
+                <!-- 참여자 목록 -->
+                <div style="height: 50%">
+                    <div class="row">
+                        <div style="margin-right: auto;">참여자</div>
+                        <div id="gamePlayer"></div>/<div id="gameCapacity"></div>
+                    </div>
+                    <hr style="width: 100%"/>
+                    <div id="playerList" class="playerList">
+                    </div>
+                </div>
+                <!-- 투표  -->
+                <div class="vote" style="height: 50%">
+                    <!-- 투표 테스트를 위한 임시 버튼-->
+                    <form id="vote-form">
+                        <select id="vote-select" class="form-select" aria-label="Default select example">
+                            <option selected>Open this select menu</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                        <button id="submit-vote" class="btn btn-primary" style="margin: 0 0 4px;"
+                                type="submit">낮 투표하기
+                        </button>
+                    </form>
+                    <form id="vote-form-night">
+                        <select id="vote-select-night" class="form-select" aria-label="Default select example">
+                            <option selected>Open this select menu</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                        <button id="submit-vote-night" class="btn btn-primary" style="margin: 0 0 4px;"
+                                type="submit">밤 투표하기
+                        </button>
+                    </form>
+                    <form id="vote-test">
+                        <input class="chat_input_ui" style="margin:0;" type="text" id="vote" placeholder="vote"/>
+                        <button class="btn btn-primary" style="margin: 0 0 4px;" type="submit">투표 시작
+                        </button>
+                    </form>
+                </div>
             </div>
-            <!--            투표 테스트를 위한 임시 버튼-->
-            <div>
-                <form class="container row" id="vote-form">
-                    <select id="vote-select" class="form-select" aria-label="Default select example">
-                        <option selected>Open this select menu</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                    </select>
-                    <button id="submit-vote" class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px"
-                            type="submit">투표하기
-                    </button>
-                </form>
-            </div>
-
-            <form class="container row" id="vote-test">
-                <input class="chat_input_ui col-11" style="margin:0;" type="text" id="vote" placeholder="vote"/>
-                <button class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px" type="submit">투표 시작
-                </button>
-            </form>
-        </div>
-        <!------------------- 채팅----------------------------------------------------------------------------------->
-        <div class="col-9" style="padding:0; height:80%">
-            <!----------채팅 화면 스크롤 ----------------->
-            <div id="conversationDiv">
-                <div class="chat_ui">
+            <!------------------- 채팅----------------------------------------------------------------------------------->
+            <!-- 채팅 -->
+            <div class="col-9 chatting">
+                <!----------채팅 화면 스크롤 ----------------->
+                <div class="chat_ui scroll" id="chatContent">
                     <a href="/chat"></a>
                     <p id="response"></p>
                 </div>
                 <!---------채팅 입력 input ----------------->
-                <form class="container row" id="message-form">
-                    <input class="chat_input_ui col-11" style="margin:0;" type="text" id="message"
-                           placeholder="Write a message..."/>
-                    <button class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px" type="submit">
-                        보내기
-                    </button>
+                <form id="message-form" style="text-align:center;">
+                    <input class="chat_input_ui" style="margin:0;" type="text" id="message"
+                           placeholder="메시지 보내기"/>
                 </form>
             </div>
         </div>
@@ -361,6 +381,12 @@
                     updateDeadPlayer(message)
                 })
 
+                // 밤 투표 때 투표할 수 있는 사람 리스트 구독
+                stompClient.subscribe(`/sub/chat/${roomId}/voteInfo`, function (message) {
+                    console.log(message);
+                    updateNightVoteList(message)
+                })
+
 
                 // 개인 채팅 URL 구독
                 stompClient.subscribe(`/sub/chat/${roomId}/${nickname}`, (message) => {
@@ -405,6 +431,19 @@
 
         function updateVoteList(message) {
             const list = document.getElementById('vote-select');
+            list.innerHTML = "";
+            let i = 0
+            for (const player of JSON.parse(message.body)) {
+                const option = document.createElement('option');
+                option.value = player.memberId;
+                option.text = player.memberName;
+                list.appendChild(option);
+                i++;
+            }
+        }
+
+        function updateNightVoteList(message) {
+            const list = document.getElementById('vote-select-night');
             list.innerHTML = "";
             let i = 0
             for (const player of JSON.parse(message.body)) {
@@ -510,6 +549,27 @@
             });
             console.log(message);
             stompClient.send(`/pub/chat/${roomId}/vote`, {
+                    "Authorization": getCookie("accessToken")
+                },
+                message);
+        })
+
+        document.getElementById("vote-form-night").addEventListener("submit", (event) => {
+            event.preventDefault()
+
+            const list = document.getElementById('vote-select-night');
+            const selectedIndex = list.selectedIndex;
+            const selectedOption = list.options[selectedIndex];
+            const selectedValue = selectedOption.value;
+            const selectedText = selectedOption.text;
+            alert(selectedText + "님을 투표했습니다!");
+            console.log(selectedValue);
+            const message = JSON.stringify({
+                'phase': 'NIGHT_VOTE',
+                'vote': selectedValue
+            });
+            console.log(message);
+            stompClient.send(`/pub/chat/${roomId}/nightVote`, {
                     "Authorization": getCookie("accessToken")
                 },
                 message);
@@ -633,6 +693,7 @@
                 }
             });
         };
+<<<<<<< HEAD
 
         /* 게임룰 모달 열기 */
         function gameRuleOpen() {
@@ -666,6 +727,7 @@
         function myRoleClose() {
             $('#myRoleDetailModal').modal('hide');
         }
+
     </script>
     <script src="/js/stomp.js"></script>
 </div>
