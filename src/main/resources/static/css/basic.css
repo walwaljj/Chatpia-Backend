@@ -5,8 +5,7 @@ html {
 }
 
 body {
-    /*background-image : url("../images/mafia.jpg");*/
-    /*background-size : cover;*/
+    background-color: #FBF9F6;
 }
 
 .nav-link {
@@ -23,7 +22,7 @@ body {
 
 .chatroomList {
     height:68vh;
-    width:61vw;
+    width:53vw;
     overflow-y:scroll;
     border: 1px solid #f1f3f5;
 }
@@ -50,7 +49,7 @@ body {
 
 .idx-card-header{
     text-align: left;
-    background-color:#f3efe1;
+    background-color:#4B2200;
     border-top-left-radius: 14px;
     border-top-right-radius: 14px;
 }
@@ -64,6 +63,7 @@ body {
 
 .form-item {
     min-width: 400px;
+    background-color: #ffffff;
     max-width: 400px;
     padding: 30px;
     border: 1px solid #ced4da;
@@ -71,11 +71,9 @@ body {
 }
 
 .idx-profile {
-    /*border-radius: 14px;*/
-    /*border: #4b2200 solid 1px;*/
     border-bottom-left-radius: 14px;
     border-bottom-right-radius: 14px;
-    /*height: 30vh;*/
+    background-color: white;
 }
 
 .my-profile {
@@ -163,7 +161,7 @@ body {
 .cover {
     display: flex;
     justify-content: flex-end;
-    padding-right: 6vw;
+    padding-right: 10vw;
 }
 
 .center {
@@ -182,12 +180,7 @@ body {
     height: 80vh;
 }
 
-.chat_ui {
-    padding: 3vh;
-    height:75vh;
-    width:100%;
-    overflow-y: scroll;
-}
+
 
 .chat_input_ui {
     height:5vh;
@@ -402,4 +395,31 @@ body {
 
 .bb {
     border-bottom: #666666 solid 1px
+}
+
+/** chat-room **/
+
+.chatroom_div{
+    border-radius: 10px;
+    border: solid 1px #f1f3f5;
+    margin: 4vw 10vw;
+    padding: 0;
+    height: 90%;
+}
+.players {
+    padding:20px;
+    background-color:#f3efe1;
+}
+
+.chatting {
+
+}
+
+.chat_ui {
+    height:90%;
+    overflow-y: scroll;
+}
+
+.vote {
+
 }

@@ -4,9 +4,13 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       lang="en" layout:decorate="~{layouts/basic}">
 
+<!-- CSS only -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link th:href="@{/css/basic.css}" rel="stylesheet">
+
 <body onload="connect()">
 <div layout:fragment="header">
-    <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #666666; height: 10vh;">
+    <nav class="navbar navbar-expand-sm navbar-dark">
         <!--        <div sec:authorize="isAuthenticated()">-->
         <a class="navbar-brand" href="#" id="chatroomTitle"></a>
 
@@ -14,13 +18,15 @@
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
             <div class="form-inline my-2 my-lg-0">
                 <a class="nav-link text-white" onclick="openRoomDetail()">방 정보</a>
+
+
                 <!-- 방 정보 모달-->
                 <div class="modal fade" id="roomDetailModal" tabindex="-1"
                      aria-labelledby="roomDetailModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                         <div class="modal-content pl-3 pr-3 pt-2 pb-2">
                             <div class="modal-header">
-                                <h3 class="modal-title fs-5" id="room-info">방 정보</h3>
+                                <h3 class="modal-title fs-5" id="room-info">설정</h3>
                                 <!--  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
                             </div>
                             <div class="modal-body">
@@ -102,23 +108,34 @@
 
 <div layout:fragment="content">
 
-    <div class="row" style="border-radius: 10px;
-    border: solid 1px silver;
-    margin: 4vw;
-    padding: 0;
-    height: 80vh">
-        <div class="col-3" style="height:100%; background-color: gray; padding:20px">
-            <!---------------참여인원 / 정원 -------------------->
+    <div class="row chatroom_div">
+        <!-- 참여자 목록 -->
+        <div class="col-3 players">
             <h3>참여자</h3>
             <span id="gamePlayer"></span>/
             <span id="gameCapacity"></span>
             <div id="playerList">
-                <!--------------참여자 목록 ------------------------>
-                <!--<div th:each="player : ${players}">
-                  <div th:text="${player.getMemberId()}"></div>
-                  <div th:text="${player.getRole()}"></div>
-                </div>-->
             </div>
+        </div>
+        <!-- 채팅 -->
+        <div class="col-6 chatting">
+            <!----------채팅 화면 스크롤 ----------------->
+            <div class="chat_ui" id="chatContent">
+                <a href="/chat"></a>
+                <p id="response"></p>
+            </div>
+            <!---------채팅 입력 input ----------------->
+            <form class="container row" id="message-form">
+                <input class="chat_input_ui col-11" style="margin:0;" type="text" id="message"
+                       placeholder="Write a message..."/>
+                <button class="col-1 btn btn-primary" styl="margin: 0 0 4px; width:75px" type="submit">
+                    보내기
+                </button>
+            </form>
+        </div>
+
+        <!-- 투표 -->
+        <div class="col-3 vote">
             <!--            투표 테스트를 위한 임시 버튼-->
             <div>
                 <form class="container row" id="vote-form">
@@ -140,30 +157,18 @@
                 </button>
             </form>
         </div>
-        <!------------------- 채팅----------------------------------------------------------------------------------->
-        <div class="col-9" style="padding:0; height:80%">
-            <!----------채팅 화면 스크롤 ----------------->
-            <div id="conversationDiv">
-                <div class="chat_ui">
-                    <a href="/chat"></a>
-                    <p id="response"></p>
-                </div>
-                <!---------채팅 입력 input ----------------->
-                <form class="container row" id="message-form">
-                    <input class="chat_input_ui col-11" style="margin:0;" type="text" id="message"
-                           placeholder="Write a message..."/>
-                    <button class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px" type="submit">
-                        보내기
-                    </button>
-                </form>
-            </div>
-        </div>
     </div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
     <script type="text/javascript">
+
+        // 채팅 스크롤은 항상 최하단에 위치
+        $(function () {
+            $('#chatContent').scrollTop($('#chatContent')[0].scrollHeight);
+        });
+
         let stompClient = null;
         let pathname = window.location.pathname;
         let roomId = parseInt(pathname.split("/")[3]);
