@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - '*'
+  workflow_dispatch: # (2).수동 실행도 가능하도록
 #  pull_request:
 #    branches: [ "main" ]
 
