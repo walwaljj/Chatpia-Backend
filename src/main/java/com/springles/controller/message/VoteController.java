@@ -43,7 +43,8 @@ public class VoteController {
     private final DayEliminationManager dayEliminationManager;
 
     @MessageMapping("/chat/{roomId}/dayStart")
-    private void voteStart (SimpMessageHeaderAccessor accessor, @DestinationVariable Long roomId) {
+    private void voteStart (SimpMessageHeaderAccessor accessor,
+                            @DestinationVariable Long roomId) {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         gameSession.changePhase(GamePhase.DAY_VOTE, 100);
         gameSession.passADay();
@@ -71,6 +72,7 @@ public class VoteController {
                 gameSession.getGamePhase(), gameSession.getTimer(), alivePlayerMap);
         int day = gameSession.getDay();
 
+        log.info("{} 번째 날 아침이 밝았습니다. 투표를 시작합니다.", day);
         // 투표 시작 메시지 전송
         messageManager.sendMessage(
                 "/sub/chat/" + roomId,
@@ -79,30 +81,24 @@ public class VoteController {
         );
 
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
+
         Runnable task = () -> {
-            // 실행하고자 하는 코드를 여기에 작성합니다.
+            log.info("마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오.");
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
                     "마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오.",
                     roomId, "admin"
             );
         };
-        // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
-        // 아래의 예제는 5초 후에 작업을 실행합니다.
         executor.schedule(task, 2, TimeUnit.SECONDS);
 
 
-        ScheduledExecutorService endVote = Executors.newSingleThreadScheduledExecutor();
-        // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
         Runnable endVoteTask = () -> {
-            // 실행하고자 하는 코드를 여기에 작성합니다.
             Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), gameSession.getGamePhase());
             publishMessage(roomId, vote);
         };
-        // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
-        // 아래의 예제는 15초 후에 작업을 실행합니다.
-        endVote.schedule(endVoteTask, 15, TimeUnit.SECONDS);
+
+        executor.schedule(endVoteTask, 30, TimeUnit.SECONDS);
     }
 
     @MessageMapping("/chat/{roomId}/vote")
@@ -115,25 +111,19 @@ public class VoteController {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
 
         Map<Long, Long> voteResult = gameSessionVoteService.vote(roomId, playerId, request);
-        Map<Long, Boolean> confirmResult = gameSessionVoteService.confirmVote(roomId, playerId, request);
 
         if (voteResult == null) {
             throw new CustomException(ErrorCode.FAIL_VOTE);
         }
-        else if(confirmResult.size() <= 0) {
-            throw new CustomException(ErrorCode.FAIL_CONFIRM_VOTE);
-        }
         else {
             Player voted = playerRedisRepository.findById(voteResult.get(playerId)).get();
             String votedPlayerName = voted.getMemberName();
+            log.info("{}가 투표되었습니다.", votedPlayerName);
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
                     votedPlayerName + "가 투표되었습니다.",
                     roomId, "admin"
             );
-            int confirmCnt = confirmResult.entrySet().stream()
-                    .filter(e -> e.getValue() == true) // confirm == true인 이용자
-                    .collect(Collectors.toList()).size();
 
             int killCnt = voteResult.entrySet().stream()
                     .filter(e -> e.getValue() != null)
@@ -143,13 +133,8 @@ public class VoteController {
                     + gameSession.getAliveDoctor()
                     + gameSession.getAlivePolice()
                     + gameSession.getAliveMafia();
-            log.info("confirmCnt: {}, killCnt: {}, alivePlayerCnt: {}", confirmCnt, alivePlayerCnt);
-//            if (gameSession.getGamePhase() == GamePhase.DAY_VOTE) {
-//                if (confirmCnt == alivePlayerCnt) { // 살아 있는 모두가 투표를 끝내면 투표 종료
-//                    Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
-//                    publishMessage(roomId, vote);
-//                }
-//            }
+            log.info("killCnt: {}, alivePlayerCnt: {}", killCnt, alivePlayerCnt);
+
             if (gameSession.getGamePhase() == GamePhase.DAY_ELIMINATE) {
                 if (killCnt > alivePlayerCnt / 2) { // 과반수 이상이 찬성하면
                     Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
@@ -159,46 +144,16 @@ public class VoteController {
         }
     }
 
-    @MessageMapping("/pub/chat/{roomId}/confirm")
-    private void confirmVote(SimpMessageHeaderAccessor accessor,
-                         @DestinationVariable Long roomId,
-                         @Payload GameSessionVoteRequestDto request) {
-        String playerName = accessor.getUser().getName();
-        Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
 
-        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
-
-        Map<Long, Boolean> confirmResult = gameSessionVoteService.confirmVote(roomId, playerId, request);
-
-        if(confirmResult.size() <= 0) {
-            throw new CustomException(ErrorCode.FAIL_CONFIRM_VOTE);
-        }
-        else {
-            simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId,
-                    ConfirmResultResponseDto.of(confirmResult));
-
-            int confirmCnt = confirmResult.entrySet().stream()
-                    .filter(e -> e.getValue() == true) // confirm == true인 이용자
-                    .collect(Collectors.toList()).size();
-
-            int alivePlayerCnt = gameSession.getAliveCivilian()
-                    + gameSession.getAliveDoctor()
-                    + gameSession.getAlivePolice()
-                    + gameSession.getAliveMafia();
-
-            if (confirmCnt == alivePlayerCnt) { // 살아 있는 모두가 투표를 끝내면 투표 종료
-                gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
-            }
-        }
-    }
-
-    @MessageMapping("/pub/chat/{roomId}/{roleName}/vote")
+    @MessageMapping("/pub/chat/{roomId}/nightVote")
     public void nightVote(SimpMessageHeaderAccessor accessor,
                           @DestinationVariable Long roomId,
-                          @DestinationVariable GameRole role,
                           @Payload GameSessionVoteRequestDto request) {
-        String playerName = accessor.getUser().getName();
+        String playerName = getMemberName(accessor);
         Long playerID = gameSessionManager.findMemberByMemberName(playerName).getId();
+        GameRole role = gameSessionManager.findMemberByMemberName(playerName).getMemberGameInfo().getInGameRole();
+
+        log.info("Player {} GameRole: {}", playerName, role);
 
         if (request.getPhase() != GamePhase.NIGHT_VOTE) {
             throw new CustomException(ErrorCode.GAME_PHASE_NOT_NIGHT_VOTE);
@@ -208,54 +163,13 @@ public class VoteController {
         Map<Long, Long> voteResult = gameSessionVoteService.nightVote(roomId, playerID, request, role);
         // 관찰자들을 위한 투표 결과 반환
         Map<Long, Long> forObserver = gameSessionVoteService.getVoteResult(roomId, request);
-        if (voteResult != null) {
-            // 해당 role에게 전송
-            simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId + "/" + role, VoteResultResponseDto.of(voteResult));
-            // 관찰자에게 전송
-            simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId + "/" + GameRole.OBSERVER, VoteResultResponseDto.of(voteResult));
-
-
-        }
-    }
-
-    @MessageMapping("/pub/chat/{roomId}/{roleName}/confirm")
-    public void confirmNightVote(SimpMessageHeaderAccessor accessor,
-                                 @DestinationVariable Long roomId,
-                                 @DestinationVariable GameRole role) {
-        String playerName = accessor.getUser().getName();
-        Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
 
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
-        GameSessionVoteRequestDto request = new GameSessionVoteRequestDto();
-        request.setPhase(GamePhase.NIGHT_VOTE);
+        Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), gameSession.getGamePhase());
+        publishMessage(roomId, vote);
 
-        Map<Long, Boolean> forObserver = gameSessionVoteService.confirmVote(roomId, playerId, request);
-        Map<Long, Boolean> confirmResult = gameSessionVoteService.getNightConfirm(roomId, playerId, request, role);
-
-        if(confirmResult.size() <= 0) {
-            throw new CustomException(ErrorCode.FAIL_CONFIRM_VOTE);
-        }
-        else {
-            // 해당 role에게 전송
-            simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId + "/" + role, ConfirmResultResponseDto.of(confirmResult));
-            // 관찰자에게 전송
-            simpMessagingTemplate.convertAndSend("/sub/chat/" + roomId + "/" + GameRole.OBSERVER, ConfirmResultResponseDto.of(forObserver));
-
-            int confirmCnt = forObserver.entrySet().stream()
-                    .filter(e -> e.getValue() == true)
-                    .collect(Collectors.toList()).size();
-            int notCivilainCnt = gameSession.getAlivePolice()
-                    + gameSession.getAliveMafia()
-                    + gameSession.getAliveDoctor();
-
-            log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, request.getPhase(), confirmCnt, notCivilainCnt);
-
-            // 필요한 인원의 투표가 다 끝나면
-            if(confirmCnt == notCivilainCnt) {
-                gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
-            }
-        }
     }
+
     public String getMemberName(SimpMessageHeaderAccessor accessor) {
         return accessor.getUser().getName().split(",")[1].split(":")[1].trim();
     }

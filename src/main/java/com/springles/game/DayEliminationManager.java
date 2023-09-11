@@ -65,17 +65,6 @@ public class DayEliminationManager {
 
         dayToNightManager.sendMessage(roomId);
 
-        // 죽인 결과 전송
-//        messageManager.sendMessage(
-//                "/sub/chat/" + roomId,
-//                deadPlayer.getMemberName() + "님이 마피아로 지목되어 사망하셨습니다.",
-//                roomId, "admin"
-//        );
-//        messageManager.sendMessage(
-//                "/sub/chat/" + roomId,
-//                deadPlayer.getMemberName() + "님은 " + deadPlayer.getRole() + "입니다.",
-//                roomId, "admin"
-//        );
     }
 
     private List<Long> setDayToNight(GameSession gameSession, Long deadPlayerId)    {
@@ -103,6 +92,7 @@ public class DayEliminationManager {
             Player deadPlayer = deadPlayerOptional.get();
             // 아직 살아 있다면
             if (deadPlayer.isAlive()) {
+                log.info("{} 님이 마피아로 지목되어 사망하셨습니다.", deadPlayer.getMemberName());
                 // 죽인 결과 전송
                 messageManager.sendMessage(
                         "/sub/chat/" + gameSession.getRoomId(),
