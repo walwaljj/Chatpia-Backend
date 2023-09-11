@@ -96,6 +96,7 @@ public class VoteController {
         executor.schedule(endVoteTask, 30, TimeUnit.SECONDS);
     }
 
+
     @MessageMapping("/chat/{roomId}/vote")
     private void dayVote(SimpMessageHeaderAccessor accessor,
                          @DestinationVariable Long roomId,
@@ -120,15 +121,22 @@ public class VoteController {
                     roomId, "admin"
             );
 
+            int killCnt = voteResult.entrySet().stream()
+                    .filter(e -> e.getValue() != null)
+                    .collect(Collectors.toList())
+                    .size();
+
             int alivePlayerCnt = gameSession.getAliveCivilian()
                     + gameSession.getAliveDoctor()
                     + gameSession.getAlivePolice()
                     + gameSession.getAliveMafia();
-          
-            log.info("confirmCnt: {}, alivePlayerCnt: {}", confirmCnt, alivePlayerCnt);
-            if (confirmCnt == alivePlayerCnt) { // 살아 있는 모두가 투표를 끝내면 투표 종료
-                Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
-                publishMessage(roomId, vote);
+
+            log.info("killCnt: {}, alivePlayerCnt: {}", killCnt, alivePlayerCnt);
+            if (gameSession.getGamePhase() == GamePhase.DAY_ELIMINATE) {
+                if (killCnt > alivePlayerCnt / 2) { // 과반수 이상이 찬성하면
+                    Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
+                    publishMessage(roomId, vote);
+                }
             }
         }
     }
@@ -178,3 +186,5 @@ public class VoteController {
         }
     }
 }
+
+
