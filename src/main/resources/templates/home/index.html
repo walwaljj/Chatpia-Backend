@@ -183,7 +183,7 @@
                 }
                 // 채팅방 목록 생성
                     function chatRoomList(data){
-                    var html = `<div id="chatroomList" class="chatroomList scroll">`
+                    var html = `<div id="chatroomList" class="chatroomList">`
                     $.each(data.data, function (index, item) {
                         // 채팅방 선택 시 입장 enterRoom 함수 실행
                         html += `<div onclick="enterRoom(${item.id}, ${item.close});"

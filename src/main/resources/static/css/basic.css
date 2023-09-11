@@ -24,6 +24,7 @@ body {
     height:68vh;
     width:53vw;
     border: 1px solid #f1f3f5;
+    overflow-y:scroll;
 }
 
 .index-container{
