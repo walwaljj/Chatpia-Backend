@@ -149,7 +149,7 @@ public class GameSessionManager {
 
     public void changePhase(Long roomId, GamePhase phase) {
         GameSession gameSession = findGameByRoomId(roomId);
-        gameSession.changePhase(phase, 0);
+        gameSession.setGamePhase(phase);
         gameSessionRedisRepository.save(gameSession);
     }
 
@@ -159,7 +159,7 @@ public class GameSessionManager {
         gameSessionRedisRepository.save(gameSession);
     }
 
-    public void update(GameSession update) {
-        gameSessionRedisRepository.save(update);
+    public void saveSession(GameSession gameSession) {
+        gameSessionRedisRepository.save(gameSession);
     }
 }

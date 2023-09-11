@@ -48,21 +48,16 @@ public class VoteController {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         gameSession.changePhase(GamePhase.DAY_VOTE, 100);
         gameSession.passADay();
-        gameSessionManager.update(gameSession);
-
+        gameSessionManager.saveSession(gameSession);
         // 종료된 게임인지 체크
-        if (!gameSessionManager.existRoomByRoomId(roomId)) {
+        /*if (!gameSessionManager.existRoomByRoomId(roomId)) {
             throw new CustomException(ErrorCode.GAME_NOT_FOUND);
-        }
-
-        log.info("Room {} start Day {} {} ", gameSession.getRoomId(), gameSession.getDay(),
-                gameSession.getGamePhase());
-
+        }*/
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
 
         Map<Long, GameRole> alivePlayerMap = new HashMap<>();
         for (Player player : players) {
-            log.info("Room {} has Player {} ", gameSession.getRoomId(), player.getMemberName());
+            //log.info("Room {} has Player {} ", gameSession.getRoomId(), player.getMemberName());
             if (player.isAlive()) {
                 alivePlayerMap.put(player.getMemberId(), player.getRole());
             }
@@ -125,21 +120,15 @@ public class VoteController {
                     roomId, "admin"
             );
 
-            int killCnt = voteResult.entrySet().stream()
-                    .filter(e -> e.getValue() != null)
-                    .collect(Collectors.toList()).size();
-
             int alivePlayerCnt = gameSession.getAliveCivilian()
                     + gameSession.getAliveDoctor()
                     + gameSession.getAlivePolice()
                     + gameSession.getAliveMafia();
-            log.info("killCnt: {}, alivePlayerCnt: {}", killCnt, alivePlayerCnt);
-
-            if (gameSession.getGamePhase() == GamePhase.DAY_ELIMINATE) {
-                if (killCnt > alivePlayerCnt / 2) { // 과반수 이상이 찬성하면
-                    Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
-                    publishMessage(roomId, vote);
-                }
+          
+            log.info("confirmCnt: {}, alivePlayerCnt: {}", confirmCnt, alivePlayerCnt);
+            if (confirmCnt == alivePlayerCnt) { // 살아 있는 모두가 투표를 끝내면 투표 종료
+                Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
+                publishMessage(roomId, vote);
             }
         }
     }
