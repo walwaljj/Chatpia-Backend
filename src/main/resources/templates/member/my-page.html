@@ -5,6 +5,7 @@
 <div layout:fragment="content">
     <div th:insert="fragments/header::header"></div>
     <div class="index-container">
+        <p class="my-title ml-5 mt-5">마이페이지</p>
         <div class="row">
             <div class="col-3 center p-1 m-5">
                 <!-----------------------프로필 ----------------------------------------------------------->
@@ -35,7 +36,7 @@
                                 <tr>
                                     <td class="game-info-title pt-0">경험치</td>
                                     <td class="game-info-data pt-0">
-                                        <span id="exp"></span>exp
+                                        <span id="exp"></span> exp
                                         <span class="goal-exp-txt">/</span>
                                         <span class="goal-exp-txt" id="goal-exp"></span>
                                         <span class="goal-exp-txt">exp</span>
@@ -62,11 +63,11 @@
                     </div>
                     <!----------------------- 프로필 변경, 회원 정보 관리 버튼 ----------------------------------------->
                     <div>
-                        <button class="my_btn btn-size" type="button" onclick="location.href='/v1/profile-change'">
-                            <span class="text-white">프로필 변경</span>
+                        <button class="my_btn_sub btn-size" type="button" onclick="location.href='/v1/profile-change'">
+                            <span>프로필 변경</span>
                         </button>
-                        <button class="my_btn btn-size mt-4" type="button" onclick="location.href='/v1/my-page/info'">
-                            <span class="text-white">회원 정보 관리</span>
+                        <button class="my_btn_sub btn-size mt-4" type="button" onclick="location.href='/v1/my-page/info'">
+                            <span>회원 정보 관리</span>
                         </button>
                     </div>
                 </div>
