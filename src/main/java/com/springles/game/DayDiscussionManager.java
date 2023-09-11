@@ -51,7 +51,7 @@ public class DayDiscussionManager {
         log.info("Room {} suspicious List: {}", roomId, suspiciousList.toString());
 
         Optional<Player> deadPlayerOptional = playerRedisRepository.findById(suspiciousList.get(0));
-        if (deadPlayerOptional.isEmpty()) {
+        if (suspiciousList.isEmpty()) {
             log.info("Room {} suspicious List is Empty", roomId);
 
             messageManager.sendMessage(

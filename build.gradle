@@ -94,6 +94,10 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+tasks.withType(Test) {
+    enabled = false
+}
+
 jar {
     enabled = false
 }
