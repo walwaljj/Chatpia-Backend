@@ -49,10 +49,10 @@
                                         <input type="text" class="form-control" id="room-capacity"
                                                name="room-capacity">
                                     </div>
-<!--                                    <div class="row mt-3">-->
-<!--                                        <p class="room-info-item-title col-3 mb-0">초대 코드</p>-->
-<!--                                        <p class="form-control" id="room-invite" name="room-invite"></p>-->
-<!--                                    </div>-->
+                                    <!--                                    <div class="row mt-3">-->
+                                    <!--                                        <p class="room-info-item-title col-3 mb-0">초대 코드</p>-->
+                                    <!--                                        <p class="form-control" id="room-invite" name="room-invite"></p>-->
+                                    <!--                                    </div>-->
 
                                     <!-- 공유하기-->
                                     <div class="row mb-3 mt-3">
@@ -72,10 +72,12 @@
 
                                     <div class="row mt-4" style="margin-left: 150px;">
                                         <div>
-                                            <button class="btn modal-btn-secondary" id="close_btn" type="submit">닫기</button>
+                                            <button class="btn modal-btn-secondary" id="close_btn" type="submit">닫기
+                                            </button>
                                         </div>
                                         <div class="ml-2">
-                                            <button class="btn modal-btn-primary" id="submit_btn" type="submit">저장</button>
+                                            <button class="btn modal-btn-primary" id="submit_btn" type="submit">저장
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -89,9 +91,78 @@
                     <a class="nav-link text-white" href="#">내 직업 설명</a>
                     <!--                    th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).PLAYING.getValue()}"-->
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link text-white" href="#">게임룰</a>
+                    <a class="nav-link text-white" onclick="gameRuleOpen()">게임룰</a>
                 </div>
+
+                <!-- 게임룰 모달-->
+                <div class="modal fade" id="gameRuleDetailModal" tabindex="-1"
+                     aria-labelledby="gameRuleDetailModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content pl-3 pr-3 pt-2 pb-2">
+                            <div class="modal-header">
+                                <h3 class="modal-title fs-5" id="gameRuleDetailModalLabel">게임 룰</h3>
+                            </div>
+                            <div class="modal-body center">
+                                <div class="game-rule-box mb-4 mt-3">
+                                    <div>
+                                        <p class="rule-top-txt mb-2">
+                                            <u class="txt-u">
+                                                대화와 추리를 통해<br>
+                                                자신이 속한 팀이 승리할 수 있도록 해야한다.
+                                            </u>
+                                        </p>
+                                    </div>
+                                    <p class="mb-0">-</p>
+                                    <p class="rule-tit mt-2">
+                                        <mark>팀 구성</mark>
+                                    </p>
+                                    <table class="rule-cnt-tb center mt-3 ml-5">
+                                        <tbody>
+                                        <tr class="rule-cnt-tb-tr">
+                                            <td class="rule-cnt-tb-td-tit">시민 팀</td>
+                                            <td class="rule-cnt-tb-td-tit">마피아 팀</td>
+                                        </tr>
+                                        <tr class="rule-cnt-tb-tr">
+                                            <td class="rule-cnt-tb-td">시민, 경찰, 의사</td>
+                                            <td class="rule-cnt-tb-td">마피아</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <p class="rule-tit">
+                                        <mark>진행 순서</mark>
+                                    </p>
+                                    <ul class="rule-cnt-list">
+                                        <li class="seq-tit mt-3">1. 게임 시작</li>
+                                        <li class="seq-cnt">게임이 시작되면 플레이어마다 직업이 부여된다.</li>
+                                        <li class="seq-tit">2. 낮</li>
+                                        <li class="seq-cnt">투표를 통해 처형할 대상을 선정한다.<br>
+                                            선정된 대상은 최후의 변론 기회가 주어지며, <br>이후 최종 투표를 통해 살해 여부가 결정된다.
+                                        </li>
+                                        <li class="seq-tit">3. 밤</li>
+                                        <li class="seq-cnt">자신의 직업에 따라 능력을 사용한다.</li>
+                                        <li class="seq-tit">4. 게임 종료</li>
+                                        <li class="seq-cnt">승리 조건에 해당될 때까지 낮 · 밤 라운드를 반복한다.</li>
+                                    </ul>
+                                    <p class="rule-tit">
+                                        <mark>승리조건</mark>
+                                    </p>
+                                    <p class="rule-cnt mt-3">
+                                        마피아가 모두 처형 당했다면 <u class="txt-u"><strong>시민 팀 승리</strong></u><br>
+                                        마피아의 수가 시민의 수보다 많아지면 <u class="txt-u"><strong>마피아 팀 승리</strong></u>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="lv-modal-close-btn mt-4">
+                                <button class="btn modal-btn-secondary" type="button" onclick="closeGameRuleModal()">
+                                    닫기
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 게임룰 모달 끝 -->
                 <div class="nav-item" id="leave-btn">
                     <a class="nav-link text-white" onclick="leave()">나가기</a>
                 </div>
@@ -168,6 +239,7 @@
         let pathname = window.location.pathname;
         let roomId = parseInt(pathname.split("/")[3]);
         let nickname = decodeURI(pathname.split("/")[4]);
+
         function getRoomName() {
             fetch(`/v1/chatRooms/${roomId}`).then((response) => {
                 response.json().then((responseBody) => {
@@ -480,7 +552,15 @@
             });
         };
 
+        /* 게임룰 모달 열기 */
+        function gameRuleOpen() {
+            $('#gameRuleDetailModal').modal('show');
+        }
 
+        /* 게임룰 모달 닫기 */
+        function closeGameRuleModal() {
+            $('#gameRuleDetailModal').modal('hide');
+        }
     </script>
     <script src="/js/stomp.js"></script>
 </div>

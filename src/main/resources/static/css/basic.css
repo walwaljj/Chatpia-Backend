@@ -449,3 +449,52 @@ body {
 .text-link {
     color: #4b2200;
 }
+
+.rule-tit {
+    font-weight: bold;
+    margin-bottom: 0px;
+    margin-top: 40px;
+}
+
+.seq-tit {
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.rule-cnt-tb {
+    width: 80%;
+    border: 1px solid #dee2e6;
+}
+
+.rule-cnt-tb-tr {
+    border: 1px solid #dee2e6;
+    padding: 6px;
+}
+
+.rule-cnt-tb-td-tit {
+    width: 40%;
+    border: 1px solid #dee2e6;
+    padding: 6px;
+    background-color: #f2f2f2;
+}
+
+.rule-cnt-tb-td {
+    width: 40%;
+    border: 1px solid #dee2e6;
+    padding: 6px;
+}
+
+.rule-cnt-list {
+    list-style-type: none;
+    padding-left: 0px;
+}
+
+.rule-top-txt {
+    font-weight: bold
+}
+
+.txt-u {
+    text-decoration-line: underline;
+    text-decoration-thickness: 3px;
+    text-decoration-color: #92ACB1;
+}
