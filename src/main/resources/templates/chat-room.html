@@ -129,7 +129,18 @@
                         <option value="3">Three</option>
                     </select>
                     <button id="submit-vote" class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px"
-                            type="submit">투표하기
+                            type="submit">낮 투표하기
+                    </button>
+                </form>
+                <form class="container row" id="vote-form-night">
+                    <select id="vote-select-night" class="form-select" aria-label="Default select example">
+                        <option selected>Open this select menu</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
+                    <button id="submit-vote-night" class="col-1 btn btn-primary" style="margin: 0 0 4px; width:75px"
+                            type="submit">밤 투표하기
                     </button>
                 </form>
             </div>
@@ -207,6 +218,12 @@
                     updateDeadPlayer(message)
                 })
 
+                // 밤 투표 때 투표할 수 있는 사람 리스트 구독
+                stompClient.subscribe(`/sub/chat/${roomId}/voteInfo`, function (message) {
+                    console.log(message);
+                    updateNightVoteList(message)
+                })
+
 
                 // 개인 채팅 URL 구독
                 stompClient.subscribe(`/sub/chat/${roomId}/${nickname}`, (message) => {
@@ -251,6 +268,19 @@
 
         function updateVoteList(message) {
             const list = document.getElementById('vote-select');
+            list.innerHTML = "";
+            let i = 0
+            for (const player of JSON.parse(message.body)) {
+                const option = document.createElement('option');
+                option.value = player.memberId;
+                option.text = player.memberName;
+                list.appendChild(option);
+                i++;
+            }
+        }
+
+        function updateNightVoteList(message) {
+            const list = document.getElementById('vote-select-night');
             list.innerHTML = "";
             let i = 0
             for (const player of JSON.parse(message.body)) {
@@ -356,6 +386,27 @@
             });
             console.log(message);
             stompClient.send(`/pub/chat/${roomId}/vote`, {
+                    "Authorization": getCookie("accessToken")
+                },
+                message);
+        })
+
+        document.getElementById("vote-form-night").addEventListener("submit", (event) => {
+            event.preventDefault()
+
+            const list = document.getElementById('vote-select-night');
+            const selectedIndex = list.selectedIndex;
+            const selectedOption = list.options[selectedIndex];
+            const selectedValue = selectedOption.value;
+            const selectedText = selectedOption.text;
+            alert(selectedText + "님을 투표했습니다!");
+            console.log(selectedValue);
+            const message = JSON.stringify({
+                'phase': 'NIGHT_VOTE',
+                'vote': selectedValue
+            });
+            console.log(message);
+            stompClient.send(`/pub/chat/${roomId}/nightVote`, {
                     "Authorization": getCookie("accessToken")
                 },
                 message);

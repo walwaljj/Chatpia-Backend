@@ -76,6 +76,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
         if(!voteRepository.isValid(playerId, request.getPhase())) {
             throw new CustomException(ErrorCode.VOTE_NOT_VALID);
         }
+        log.info("Room {} Player {} Voted At {}", roomId, playerId, request.getPhase());
         return voteRepository.nightVote(roomId, playerId, request.getVote(), role);
 
     }

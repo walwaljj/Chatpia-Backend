@@ -49,7 +49,7 @@ public class DayDiscussionManager {
                 dayDiscussionMessage.getSuspiciousList();
 
         log.info("Room {} suspicious List: {}", roomId, suspiciousList.toString());
-
+        log.info(String.valueOf(suspiciousList.isEmpty()));
         Optional<Player> deadPlayerOptional = playerRedisRepository.findById(suspiciousList.get(0));
         if (suspiciousList.isEmpty()) {
             log.info("Room {} suspicious List is Empty", roomId);
@@ -71,7 +71,7 @@ public class DayDiscussionManager {
                     deadPlayer.getMemberName() + "님이 마피아로 지목되셨습니다.",
                     roomId, "admin"
             );
-            ScheduledExecutorService notice = Executors.newSingleThreadScheduledExecutor();
+            ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
             // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
             Runnable task = () -> {
                 // 실행하고자 하는 코드를 여기에 작성합니다.
@@ -83,7 +83,7 @@ public class DayDiscussionManager {
             };
             // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
             // 아래의 예제는 5초 후에 작업을 실행합니다.
-            notice.schedule(task, 2, TimeUnit.SECONDS);
+            executor.schedule(task, 2, TimeUnit.SECONDS);
 
             List<Player> players = playerRedisRepository.findByRoomId(roomId);
 
@@ -104,31 +104,30 @@ public class DayDiscussionManager {
             messageManager.sendMessage(
                     "/sub/chat/" + roomId + "/" + "deadPlayer",
                     deadPlayer);
-            gameSessionVoteService.startVote(
-                    roomId,
-                    gameSession.getPhaseCount(),
-                    gameSession.getGamePhase(),
-                    gameSession.getTimer(),
-                    alivePlayerRoles);
+
+            // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
+            Runnable eliminationTask = () -> {
+                gameSessionVoteService.startVote(
+                        roomId,
+                        gameSession.getPhaseCount(),
+                        gameSession.getGamePhase(),
+                        gameSession.getTimer(),
+                        alivePlayerRoles);
+                // 실행하고자 하는 코드를 여기에 작성합니다.
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        "변론 후 최종 투표를 시작합니다.",
+                        roomId, "admin"
+                );
+            };
+            // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
+            // 아래의 예제는 5초 후에 작업을 실행합니다.
+            executor.schedule(eliminationTask, 60, TimeUnit.SECONDS);
         }
     }
 
-
-//    private List<Long> setDayElimination(GameSession gameSession, List<Long> suspiciousList) {
-//        log.info("suspiciousList: {} in Room {}", suspiciousList.toString(), gameSession.getRoomId());
-//
-//        List<Long> victims = new ArrayList<>();
-//        // 게임 세션 상태 바꾸고 타이머 설정
-//        gameSession.changePhase(GamePhase.DAY_ELIMINATE, 30 * suspiciousList.size());
-//        // 게임에 참여 중인 플레이어들
-//        List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
-//        for (Player player : players) {
-//            if (!player.)
-//        }
-//        return victims;
-//    }
-
     private void setDayToNight(Long roomId) {
+
         dayToNightManager.sendMessage(roomId);
     }
 }
