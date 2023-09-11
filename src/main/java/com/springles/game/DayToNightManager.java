@@ -100,14 +100,15 @@ public class DayToNightManager {
                 "밤이 되었습니다.",
                 gameSession.getRoomId(), "admin"
         );
+        messageManager.sendMessage(
+                "/sub/chat/" + roomId + "/gameRole/" + GameRole.MAFIA,
+                "마피아는 죽일 사람을, 의사는 살릴 사람을, 경찰은 조사할 사람을 선택해 주세요."
+        );
 
         ScheduledExecutorService notice = Executors.newSingleThreadScheduledExecutor();
         // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
         Runnable task = () -> {
-            messageManager.sendMessage(
-                    "/sub/chat/" + roomId + "/gameRole/" + GameRole.MAFIA,
-                    "마피아는 죽일 사람을, 의사는 살릴 사람을, 경찰은 조사할 사람을 선택해 주세요."
-            );
+
 
             messageManager.sendMessage(
                     "/sub/chat/" + roomId + "/voteInfo",

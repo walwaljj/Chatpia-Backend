@@ -43,7 +43,8 @@ public class VoteController {
     private final DayEliminationManager dayEliminationManager;
 
     @MessageMapping("/chat/{roomId}/dayStart")
-    private void voteStart (SimpMessageHeaderAccessor accessor, @DestinationVariable Long roomId) {
+    private void voteStart (SimpMessageHeaderAccessor accessor,
+                            @DestinationVariable Long roomId) {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         gameSession.changePhase(GamePhase.DAY_VOTE, 100);
         gameSession.passADay();
@@ -71,6 +72,7 @@ public class VoteController {
                 gameSession.getGamePhase(), gameSession.getTimer(), alivePlayerMap);
         int day = gameSession.getDay();
 
+        log.info("{} 번째 날 아침이 밝았습니다. 투표를 시작합니다.", day);
         // 투표 시작 메시지 전송
         messageManager.sendMessage(
                 "/sub/chat/" + roomId,
@@ -81,6 +83,7 @@ public class VoteController {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
         Runnable task = () -> {
+            log.info("마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오.");
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
                     "마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오.",
@@ -95,7 +98,7 @@ public class VoteController {
             publishMessage(roomId, vote);
         };
 
-        executor.schedule(endVoteTask, 15, TimeUnit.SECONDS);
+        executor.schedule(endVoteTask, 30, TimeUnit.SECONDS);
     }
 
     @MessageMapping("/chat/{roomId}/vote")
@@ -115,6 +118,7 @@ public class VoteController {
         else {
             Player voted = playerRedisRepository.findById(voteResult.get(playerId)).get();
             String votedPlayerName = voted.getMemberName();
+            log.info("{}가 투표되었습니다.", votedPlayerName);
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
                     votedPlayerName + "가 투표되었습니다.",
@@ -145,7 +149,7 @@ public class VoteController {
     public void nightVote(SimpMessageHeaderAccessor accessor,
                           @DestinationVariable Long roomId,
                           @Payload GameSessionVoteRequestDto request) {
-        String playerName = accessor.getUser().getName();
+        String playerName = getMemberName(accessor);
         Long playerID = gameSessionManager.findMemberByMemberName(playerName).getId();
         GameRole role = gameSessionManager.findMemberByMemberName(playerName).getMemberGameInfo().getInGameRole();
 

@@ -53,7 +53,6 @@ public class DayDiscussionManager {
         Optional<Player> deadPlayerOptional = playerRedisRepository.findById(suspiciousList.get(0));
         if (suspiciousList.isEmpty()) {
             log.info("Room {} suspicious List is Empty", roomId);
-
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
                     "동점 투표자가 발생하여 아무도 지목되지 않았습니다.",
@@ -66,6 +65,7 @@ public class DayDiscussionManager {
         }
         else {
             Player deadPlayer = deadPlayerOptional.get();
+            log.info("{}가 마피아로 지목되었습니다.", deadPlayer.getMemberName());
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
                     deadPlayer.getMemberName() + "님이 마피아로 지목되셨습니다.",
@@ -74,6 +74,7 @@ public class DayDiscussionManager {
             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
             // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
             Runnable task = () -> {
+                log.info("최후 변론을 시작합니다.");
                 // 실행하고자 하는 코드를 여기에 작성합니다.
                 messageManager.sendMessage(
                         "/sub/chat/" + roomId,
@@ -105,15 +106,17 @@ public class DayDiscussionManager {
                     "/sub/chat/" + roomId + "/" + "deadPlayer",
                     deadPlayer);
 
+            gameSessionVoteService.startVote(
+                    roomId,
+                    gameSession.getPhaseCount(),
+                    gameSession.getGamePhase(),
+                    gameSession.getTimer(),
+                    alivePlayerRoles);
             // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
             Runnable eliminationTask = () -> {
-                gameSessionVoteService.startVote(
-                        roomId,
-                        gameSession.getPhaseCount(),
-                        gameSession.getGamePhase(),
-                        gameSession.getTimer(),
-                        alivePlayerRoles);
+
                 // 실행하고자 하는 코드를 여기에 작성합니다.
+                log.info("변론 후 최종 투표를 시작합니다.");
                 messageManager.sendMessage(
                         "/sub/chat/" + roomId,
                         "변론 후 최종 투표를 시작합니다.",
