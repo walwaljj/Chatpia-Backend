@@ -23,7 +23,6 @@ body {
 .chatroomList {
     height:68vh;
     width:53vw;
-    overflow-y:scroll;
     border: 1px solid #f1f3f5;
 }
 
@@ -183,14 +182,27 @@ body {
 
 
 .chat_input_ui {
-    height:5vh;
+    height:7vh;
     width: 100%;
+    border-radius: 7px;
+    background-color: #E7E7E7;
+    border: none;
+    padding: 10px;
 }
 
 .chatroom_list_ui {
     height:30vh;
     overflow-y: scroll;
+
+
+
+
 }
+
+
+
+
+
 
 .chat_list_ui {
     padding: 3vh;
@@ -401,24 +413,55 @@ body {
 
 .chatroom_div{
     border-radius: 10px;
-    border: solid 1px #f1f3f5;
-    margin: 4vw 10vw;
+    border: solid 1px silver;
     padding: 0;
-    height: 90%;
+    width: 90%;
+    background-color: white;
+    display: flex;
+    justify-content: flex-start;
 }
 .players {
-    padding:20px;
-    background-color:#f3efe1;
+    padding:20px 30px;
+    background-color:#A6907A;
+}
+
+/* 채팅방 내에 참여자 목록 */
+.playerList {
+    height:30vh;
+}
+
+.scroll::-webkit-scrollbar {
+    display: none;
 }
 
 .chatting {
 
 }
 
+/* 채팅 */
 .chat_ui {
-    height:90%;
-    overflow-y: scroll;
+    height: 70vh;
+    margin-top: 2vh;
 }
+
+.scroll {
+    display:flex;
+    flex-direction: column-reverse;
+    overflow-y:auto;
+}
+
+/* ( 크롬, 사파리, 오페라, 엣지 ) 동작 */
+.scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll {
+    -ms-overflow-style: none; /* 인터넷 익스플로러 */
+    scrollbar-width: none; /* 파이어폭스 */
+}
+
+
+
 
 .vote {
 
