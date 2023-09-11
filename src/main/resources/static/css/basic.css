@@ -436,3 +436,16 @@ body {
     padding-left: 20px;
 }
 
+.modal-btn-primary {
+    color: #ffffff;
+    background-color: #4b2200;
+}
+
+.modal-btn-secondary {
+    color: #ffffff;
+    background-color: #A6907A;
+}
+
+.text-link {
+    color: #4b2200;
+}
