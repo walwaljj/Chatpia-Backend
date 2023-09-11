@@ -5,8 +5,7 @@ html {
 }
 
 body {
-    /*background-image : url("../images/mafia.jpg");*/
-    /*background-size : cover;*/
+    background-color: #FBF9F6;
 }
 
 .nav-link {
@@ -23,9 +22,9 @@ body {
 
 .chatroomList {
     height:68vh;
-    width:61vw;
-    overflow-y:scroll;
+    width:53vw;
     border: 1px solid #f1f3f5;
+    overflow-y:scroll;
 }
 
 .index-container{
@@ -50,7 +49,7 @@ body {
 
 .idx-card-header{
     text-align: left;
-    background-color:#f3efe1;
+    background-color:#4B2200;
     border-top-left-radius: 14px;
     border-top-right-radius: 14px;
 }
@@ -64,27 +63,28 @@ body {
 
 .form-item {
     min-width: 400px;
+    background-color: #ffffff;
     max-width: 400px;
     padding: 30px;
-    border: 1px solid #ced4da;
+    /*border: 1px solid #ced4da;*/
     border-radius: 14px;
+    background-color: #ffffff;
 }
 
 .idx-profile {
-    /*border-radius: 14px;*/
-    /*border: #4b2200 solid 1px;*/
     border-bottom-left-radius: 14px;
     border-bottom-right-radius: 14px;
-    /*height: 30vh;*/
+    background-color: white;
 }
 
 .my-profile {
-    border: #4b2200 solid 1px;
+    /*border: #4b2200 solid 1px;*/
+    background-color: #ffffff;
 }
 
 .card-body2 {
     float: none;
-    border: 1px solid #f1f3f5;
+    /*border: 1px solid #f1f3f5;*/
 }
 
 
@@ -145,7 +145,7 @@ body {
 
 .my_btn {
     width: 80%;
-    height: 7vh;
+    height: 48px;
     margin-top: 30px;
     border: none;
     background-color: #4b2200;
@@ -153,17 +153,30 @@ body {
 
 }
 
+.my_btn_sub {
+    width: 80%;
+    height: 48px;
+    margin-top: 30px;
+    border: none;
+    background-color: #A6907A;
+    border-radius: 14px;
+    color: #ffffff;
+}
+
 .submit_btn {
     width: 100%;
-    height: 7vh;
+    height: 48px;
     margin-top: 15px;
     border: none;
+    background-color: #4b2200;
+    color: #ffffff;
+    border-radius: 30px;
 }
 
 .cover {
     display: flex;
     justify-content: flex-end;
-    padding-right: 6vw;
+    padding-right: 10vw;
 }
 
 .center {
@@ -182,22 +195,30 @@ body {
     height: 80vh;
 }
 
-.chat_ui {
-    padding: 3vh;
-    height:75vh;
-    width:100%;
-    overflow-y: scroll;
-}
+
 
 .chat_input_ui {
-    height:5vh;
+    height:7vh;
     width: 100%;
+    border-radius: 7px;
+    background-color: #E7E7E7;
+    border: none;
+    padding: 10px;
 }
 
 .chatroom_list_ui {
     height:30vh;
     overflow-y: scroll;
+
+
+
+
 }
+
+
+
+
+
 
 .chat_list_ui {
     padding: 3vh;
@@ -208,7 +229,7 @@ body {
 
 .card-body-info{
     text-align: left;
-    background-color:#666666;
+    background-color:#4b2200;
     border-bottom-left-radius: 14px;
     border-bottom-right-radius: 14px;
     font-size: 14px;
@@ -232,6 +253,8 @@ body {
     background-color: #ffffff;
     color: #666666;
     font-size: 14px;
+    border-radius: 30px;
+    width: 84px;
 }
 
 .sign-out-btn-box {
@@ -340,7 +363,7 @@ body {
 .member-record-box {
     /*border : #666666 solid 1px;*/
     border-radius: 14px;
-    background-color: #F5F5F5;
+    background-color: #ffffff;
     min-width: 550px;
     padding: 2rem;
 }
@@ -373,10 +396,11 @@ body {
 .game-info-data {
     text-align: right;
     padding-top: 12px;
+    color: #ffffff;
 }
 
 .goal-exp-txt {
-    color: #BDBDBD;
+    color: #A6907A;
 }
 
 .my-tb {
@@ -386,6 +410,7 @@ body {
 .record_role {
     width: 50%;
     padding-top: 12px;
+    font-weight: bold;
 }
 
 .record-title {
@@ -398,8 +423,93 @@ body {
     padding-top: 16px;
     padding-bottom: 16px;
     font-weight: bold;
+    color: #4b2200;
 }
 
 .bb {
-    border-bottom: #666666 solid 1px
+    border-bottom: #A6907A solid 1px
+}
+
+.my-title {
+    font-size: 22px;
+    margin-bottom: 0px;
+}
+
+.form-input {
+    border-radius: 30px;
+    height: 44px;
+    padding-left: 20px;
+}
+
+.modal-btn-primary {
+    color: #ffffff;
+    background-color: #4b2200;
+}
+
+.modal-btn-secondary {
+    color: #ffffff;
+    background-color: #A6907A;
+}
+
+.text-link {
+    color: #4b2200;
+}
+
+/** chat-room **/
+
+.chatroom_div{
+    border-radius: 10px;
+    border: solid 1px silver;
+    padding: 0;
+    width: 90%;
+    background-color: white;
+    display: flex;
+    justify-content: flex-start;
+}
+.players {
+    padding:20px 30px;
+    background-color:#A6907A;
+}
+
+/* 채팅방 내에 참여자 목록 */
+.playerList {
+    height:30vh;
+    overflow-y:scroll;
+}
+
+.scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.chatting {
+
+}
+
+/* 채팅 */
+.chat_ui {
+    height: 70vh;
+    margin-top: 2vh;
+}
+
+.scroll {
+    display:flex;
+    flex-direction: column-reverse;
+    overflow-y:auto;
+}
+
+/* ( 크롬, 사파리, 오페라, 엣지 ) 동작 */
+.scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll {
+    -ms-overflow-style: none; /* 인터넷 익스플로러 */
+    scrollbar-width: none; /* 파이어폭스 */
+}
+
+
+
+
+.vote {
+
 }
