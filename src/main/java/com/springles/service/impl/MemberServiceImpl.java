@@ -282,19 +282,11 @@ public class MemberServiceImpl implements MemberService {
         // refreshToken 저장
         memberRedisRepository.save(refreshToken);
 
-        // toString()으로 반환할 경우 접근하기 어려워서 수정했습니다.
         return MemberLoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .memberName(memberDto.getMemberName())
                 .build();
-
-//        return MemberLoginResponse.builder()
-//                .accessToken(accessToken)
-//                .refreshToken(refreshToken)
-//                .memberName(memberDto.getMemberName())
-//                .build()
-//                .toString();
     }
 
 
