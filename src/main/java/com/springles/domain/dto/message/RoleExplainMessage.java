@@ -1,7 +1,6 @@
 package com.springles.domain.dto.message;
 
 import com.springles.domain.constants.GameRole;
-import com.springles.domain.constants.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
