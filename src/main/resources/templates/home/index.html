@@ -87,6 +87,7 @@
             <th:block layout:fragment="script">
                 <script th:inline="javascript">  // 자바스크립트 인라인
 
+                let memberName;
                 // 페이지 로딩 시 동작
                 $(function () {
                     // 프로필 정보 조회
@@ -96,6 +97,7 @@
                             $('#level-img').attr('src', data.data.levelImg)
                             $("#profileImg").attr("src", data.data.profileImg);
                             $("#nickName").text(data.data.nickname);
+                            memberName = data.data.memberName;
                         })
                     });
 
@@ -135,7 +137,7 @@
                                     } else {
                                         // window.location.href = 'v1/chat/' + chatRoomId + '/' + nickName; // 맞다면 이동
                                         // window.location.href = '/v1/enter'
-                                        location.replace('http://localhost:8080/v1/chat/'+ chatRoomId + '/' + nickName);
+                                        location.replace('http://localhost:8080/v1/chat/'+ chatRoomId + '/' + memberName);
 
                                         }
                                 },
@@ -153,7 +155,7 @@
 
                         // window.location.href = '/v1/chat/' + chatRoomId + '/' + nickName;
                         // window.location.href = '/v1/enter'
-                        location.replace('http://localhost:8080/v1/chat/'+ chatRoomId + '/' + nickName);
+                        location.replace('http://localhost:8080/v1/chat/'+ chatRoomId + '/' + memberName);
                     }
                 }
 
