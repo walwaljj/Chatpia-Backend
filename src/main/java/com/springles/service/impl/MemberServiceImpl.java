@@ -44,16 +44,16 @@ public class MemberServiceImpl implements MemberService {
      * 채팅 player 정보 반환
      **/
     @Override
-    public PlayerInfoResponse getPlayerInfo(PlayerInfoRequest playerInfoRequest){
+    public PlayerInfoResponse getPlayerInfo(Long roomId, Long memberId){
         // 방장 id 조회
-        ChatRoom findChatRoom = chatRoomJpaRepository.findById(playerInfoRequest.getRoomId())
+        ChatRoom findChatRoom = chatRoomJpaRepository.findById(roomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
-        Long ownerId =findChatRoom.getOwnerId();
+        Long ownerId = findChatRoom.getOwnerId();
 
         // 게임 이름, 프로필 이미지, 레벨 이미지 조회
-        Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(playerInfoRequest.getMemberId());
-
-        return PlayerInfoResponse.of(playerInfoRequest.getMemberId(), ownerId, optionalMemberGameInfo.get());
+        Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(memberId);
+        log.info("memberId" + memberId, ownerId, optionalMemberGameInfo.get());
+        return PlayerInfoResponse.of(memberId, ownerId, optionalMemberGameInfo.get());
 
     }
 

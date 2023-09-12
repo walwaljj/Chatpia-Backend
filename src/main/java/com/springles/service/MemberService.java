@@ -80,7 +80,7 @@ public interface MemberService {
     MemberRecord newMemberRecord(String memberName);
 
     // 채팅방 내에 참여자 목록 (player) 정보 API
-    PlayerInfoResponse getPlayerInfo(PlayerInfoRequest playerInfoRequest);
+    PlayerInfoResponse getPlayerInfo(Long roomId, Long memberId);
 
 
 }

@@ -23,8 +23,11 @@ public class MemberController {
     private final CookieService cookieService;
 
     // 채팅 참여자 목록 정보 조회
-    @GetMapping("/info/player")
-    public ResponseEntity<ResResult> playerInfo(@RequestBody PlayerInfoRequest playerInfoRequest) {
+
+    @GetMapping(value = "/info/player/{roomId}/{memberId}")
+    public ResponseEntity<ResResult> playerInfo(
+            @PathVariable(value = "roomId") Long roomId,
+            @PathVariable(value = "memberId") Long memberId) {
         // 멤버 정보 가져오기
         ResponseCode responseCode = ResponseCode.MEMBER_DETAIL;
         return ResponseEntity.ok(
@@ -32,7 +35,7 @@ public class MemberController {
                         .responseCode(responseCode)
                         .code(responseCode.getCode())
                         .message(responseCode.getMessage())
-                        .data(memberService.getPlayerInfo(playerInfoRequest))
+                        .data(memberService.getPlayerInfo(roomId, memberId))
                         .build());
     }
 
