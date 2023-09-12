@@ -38,19 +38,5 @@ public class ChatRoomUiController {
         return "chat-room";
     }
 
-    /**
-     * 빠른방 입장
-     */
-    @GetMapping("quick-enter")
-    public String quickEnterRoom(Authentication auth){
-        ChatRoomResponseDto chatRoomResponseDto = chatRoomService.quickEnter();
-
-        String memberName = ((MemberCreateRequest) auth.getPrincipal()).getMemberName();
-        Long roomId = chatRoomResponseDto.getId();
-
-        String quickEnterUrl = String.format("v1/chat/%s/%s", roomId, memberName);
-        log.info("quickEnterUrl = {}", quickEnterUrl);
-        return "redirect:/"+quickEnterUrl;
-    }
 }
 
