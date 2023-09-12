@@ -262,6 +262,38 @@
             list.innerHTML = ""
             let i = 0
             for (const player of JSON.parse(message.body)) {
+                console.log(player);
+                // player 정보 조회
+                const path = 'http://localhost:8080/member/info/player';
+                const json = JSON.stringify({
+                    'roomId': player.roomId,
+                    'memberId': player.memberId,
+                });
+                console.log("보내는 json" + json)
+                $.ajax({
+                    url: path,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    data: json,
+                    success: function(data) {
+                        console.log("성공")
+                        console.log(data);
+                        console.log(data.data);
+
+                        // const profileImg = document.createElement('img');
+                        // profileImg.src(data.data.profileImg);
+                        // const span = document.createElement('span');
+                        // span.innerText(data.data.isOwner)
+                        // $('#level-img').attr('src', data.data.levelImg)
+                        // $("#profileImg").attr("src", );
+                        // $("#nickName").text(data.data.nickname);
+                        // $("#isOwner").text(data.data.nickname);
+                    },
+                    error: function(response) {
+                        console.log(response)
+                    },
+                });
+
                 const li = document.createElement('li');
                 li.appendChild(document.createTextNode(
                     "[" + player.memberName + "]"
