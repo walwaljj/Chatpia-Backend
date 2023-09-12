@@ -4,9 +4,7 @@ import com.springles.domain.constants.Level;
 import com.springles.domain.dto.member.*;
 import com.springles.domain.entity.GameRecord;
 import com.springles.domain.entity.MemberRecord;
-import jakarta.servlet.http.HttpServletRequest;
 
-import java.io.IOException;
 import java.util.Map;
 
 public interface MemberService {
@@ -80,4 +78,9 @@ public interface MemberService {
 
     /** 멤버 기록 생성(초기화) */
     MemberRecord newMemberRecord(String memberName);
+
+    // 채팅방 내에 참여자 목록 (player) 정보 API
+    PlayerInfoResponse getPlayerInfo(PlayerInfoRequest playerInfoRequest);
+
+
 }
