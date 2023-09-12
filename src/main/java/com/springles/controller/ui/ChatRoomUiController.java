@@ -1,11 +1,8 @@
 package com.springles.controller.ui;
 
-import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
-import com.springles.domain.dto.member.MemberCreateRequest;
 import com.springles.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 public class ChatRoomUiController {
-
-    private final ChatRoomService chatRoomService;
 
     // 채팅방 만들기 페이지 (GET)
     @GetMapping("add")
