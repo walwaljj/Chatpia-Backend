@@ -35,13 +35,6 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         gameSessionManager.changePhase(roomId, phase);
         voteRepository.startVote(roomId, phaseCount, phase, players);
-        Timer timer = new Timer();
-//        VoteFinTimerTask task = new VoteFinTimerTask(this);
-//        task.setRoomId(roomId);
-//        task.setPhaseCount(phaseCount);
-//        task.setPhase(phase);
-//        // 플레이어 하나당 20초의 회의 시간을 줌
-//        timer.schedule(task, players.size() * 20000L);
     }
 
     @Override

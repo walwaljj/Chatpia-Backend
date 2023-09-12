@@ -81,7 +81,7 @@ public class VoteController {
             log.info("마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오.");
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
-                    "마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오.",
+                    "마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오. 투표 시간은 30 초입니다.",
                     roomId, "admin"
             );
         };
@@ -141,16 +141,38 @@ public class VoteController {
         }
     }
 
+    @MessageMapping("/chat/{roomId}/nightStart")
+    private void nightVoteStart (SimpMessageHeaderAccessor accessor,
+                            @DestinationVariable Long roomId) {
+        log.info("nightVote 잘 받음");
+        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        log.info("Game Phase: {}", gameSession.getGamePhase());
+        Runnable task = () -> {
+            Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), gameSession.getGamePhase());
+            publishMessage(roomId, vote);
+        };
+        executor.schedule(task, 20, TimeUnit.SECONDS);
+    }
 
-    @MessageMapping("/pub/chat/{roomId}/nightVote")
-    public void nightVote(SimpMessageHeaderAccessor accessor,
-                          @DestinationVariable Long roomId,
-                          @Payload GameSessionVoteRequestDto request) {
+    @MessageMapping("/chat/{roomId}/vote/night")
+    private void nightVote(SimpMessageHeaderAccessor accessor,
+                         @DestinationVariable Long roomId,
+                         @Payload GameSessionVoteRequestDto request) {
         String playerName = getMemberName(accessor);
-        Long playerID = gameSessionManager.findMemberByMemberName(playerName).getId();
-        GameRole role = gameSessionManager.findMemberByMemberName(playerName).getMemberGameInfo().getInGameRole();
+        Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
+        log.info("Player {} vote {}", playerName, request.getVote());
 
+        log.info("밤 투표 메시지 받기 완료");
+        log.info("PlayerName: {}", playerName);
+        Player player = gameSessionManager.findPlayerByMemberName(playerName);
+        Long playerID = player.getMemberId();
+        GameRole role = player.getRole();
         log.info("Player {} GameRole: {}", playerName, role);
+
+        if(role == GameRole.CIVILIAN || role == GameRole.OBSERVER || role == GameRole.NONE) {
+            throw new CustomException(ErrorCode.VOTE_NOT_VALID);
+        }
 
         if (request.getPhase() != GamePhase.NIGHT_VOTE) {
             throw new CustomException(ErrorCode.GAME_PHASE_NOT_NIGHT_VOTE);
@@ -161,9 +183,7 @@ public class VoteController {
         // 관찰자들을 위한 투표 결과 반환
         Map<Long, Long> forObserver = gameSessionVoteService.getVoteResult(roomId, request);
 
-        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
-        Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), gameSession.getGamePhase());
-        publishMessage(roomId, vote);
+        log.info("night vote result: {}", voteResult.toString());
 
     }
 

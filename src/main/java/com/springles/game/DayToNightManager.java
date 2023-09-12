@@ -34,7 +34,8 @@ public class DayToNightManager {
     public void sendMessage(Long roomId) {
         log.info("Day To Night Session까지 진행");
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
-        gameSessionManager.changePhase(roomId, GamePhase.NIGHT_VOTE);
+        gameSession.setGamePhase(GamePhase.NIGHT_VOTE);
+        gameSessionManager.saveSession(gameSession);
 
         List<Player> players = playerRedisRepository.findByRoomId(roomId);
         List<Player> voteList = new ArrayList<>();
@@ -101,21 +102,18 @@ public class DayToNightManager {
                 gameSession.getRoomId(), "admin"
         );
         messageManager.sendMessage(
-                "/sub/chat/" + roomId + "/gameRole/" + GameRole.MAFIA,
-                "마피아는 죽일 사람을, 의사는 살릴 사람을, 경찰은 조사할 사람을 선택해 주세요."
+                "/sub/chat/" + gameSession.getRoomId(),
+                "마피아는 죽일 사람을, 의사는 살릴 사람을, 경찰은 조사할 사람을 선택해 주세요.",
+                gameSession.getRoomId(), "admin"
         );
+        messageManager.sendMessage(
+                "/sub/chat/" + roomId + "/voteInfo",
+                voteList);
 
-        ScheduledExecutorService notice = Executors.newSingleThreadScheduledExecutor();
-        // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
-        Runnable task = () -> {
-
-
-            messageManager.sendMessage(
-                    "/sub/chat/" + roomId + "/voteInfo",
-                     voteList);
-        };
-        // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
-        // 아래의 예제는 5초 후에 작업을 실행합니다.
-        notice.schedule(task, 2, TimeUnit.SECONDS);
+        messageManager.sendMessage(
+                "/sub/chat/" + roomId + "/timer",
+                "night",
+                gameSession.getRoomId(), "admin"
+        );
     }
 }

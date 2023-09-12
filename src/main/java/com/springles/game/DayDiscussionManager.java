@@ -47,8 +47,6 @@ public class DayDiscussionManager {
                 message.getSuspiciousList();
 
         log.info("Room {} suspicious List: {}", roomId, suspiciousList.toString());
-        log.info(String.valueOf(suspiciousList.isEmpty()));
-        Optional<Player> deadPlayerOptional = playerRedisRepository.findById(suspiciousList.get(0));
         if (suspiciousList.isEmpty()) {
             log.info("Room {} suspicious List is Empty", roomId);
             messageManager.sendMessage(
@@ -62,6 +60,7 @@ public class DayDiscussionManager {
             return;
         }
         else {
+            Optional<Player> deadPlayerOptional = playerRedisRepository.findById(suspiciousList.get(0));
             Player deadPlayer = deadPlayerOptional.get();
             log.info("{}가 마피아로 지목되었습니다.", deadPlayer.getMemberName());
             messageManager.sendMessage(

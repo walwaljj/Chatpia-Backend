@@ -22,6 +22,21 @@ public class MemberController {
     private final MemberService memberService;
     private final CookieService cookieService;
 
+    // 채팅 참여자 목록 정보 조회
+    @GetMapping("/info/player")
+    public ResponseEntity<ResResult> playerInfo(@RequestBody PlayerInfoRequest playerInfoRequest) {
+        // 멤버 정보 가져오기
+        ResponseCode responseCode = ResponseCode.MEMBER_DETAIL;
+        return ResponseEntity.ok(
+                ResResult.builder()
+                        .responseCode(responseCode)
+                        .code(responseCode.getCode())
+                        .message(responseCode.getMessage())
+                        .data(memberService.getPlayerInfo(playerInfoRequest))
+                        .build());
+    }
+
+
     // 멤버 프로필 조회(simple)
     @GetMapping("/info/profile/simple")
     public ResponseEntity<ResResult> profileInfo(HttpServletRequest request) {
