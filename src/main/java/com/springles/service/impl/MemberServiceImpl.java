@@ -1,6 +1,7 @@
 package com.springles.service.impl;
 
 import com.springles.domain.constants.Level;
+import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.member.*;
 import com.springles.domain.entity.*;
 import com.springles.exception.CustomException;
@@ -8,6 +9,7 @@ import com.springles.exception.constants.ErrorCode;
 import com.springles.jwt.JwtTokenUtils;
 import com.springles.repository.*;
 import com.springles.repository.MemberGameInfoJpaRepository;
+import com.springles.repository.custom.ChatRoomJpaRepositoryCustom;
 import com.springles.service.MemberService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -36,6 +38,25 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
     private final JavaMailSender javaMailSender;
+    private final ChatRoomJpaRepository chatRoomJpaRepository;
+
+    /**
+     * 채팅 player 정보 반환
+     **/
+    @Override
+    public PlayerInfoResponse getPlayerInfo(PlayerInfoRequest playerInfoRequest){
+        // 방장 id 조회
+        ChatRoom findChatRoom = chatRoomJpaRepository.findById(playerInfoRequest.getRoomId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+        Long ownerId =findChatRoom.getOwnerId();
+
+        // 게임 이름, 프로필 이미지, 레벨 이미지 조회
+        Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(playerInfoRequest.getMemberId());
+
+        return PlayerInfoResponse.of(playerInfoRequest.getMemberId(), ownerId, optionalMemberGameInfo.get());
+
+    }
+
 
     /**
      * 사용자 정보 반환
