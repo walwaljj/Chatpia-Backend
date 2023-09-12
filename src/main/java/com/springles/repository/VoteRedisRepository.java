@@ -95,17 +95,6 @@ public class VoteRedisRepository {
         updateVote(playerId, voteDao);
     }
 
-    // 투표를 확정하는 메소드
-    public boolean confirmVote(Long playerId) {
-        Vote voteDao = getVote(playerId);
-        if (!voteDao.isConfirm()) {
-            voteDao.setConfirm(true);
-            updateVote(playerId, voteDao);
-            return true;
-        }
-        return false;
-    }
-
     public void endVote(List<Long> players, GamePhase phase) {
         players.forEach((playerId) -> {
             Vote voteDao = getVote(playerId);
@@ -113,9 +102,5 @@ public class VoteRedisRepository {
                 deleteVote(playerId);
             }
         });
-    }
-
-    public void removeVote(Long playerId) {
-        deleteVote(playerId);
     }
 }

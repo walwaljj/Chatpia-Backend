@@ -2,7 +2,6 @@ package com.springles.game;
 
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
-import com.springles.domain.dto.message.RoleExplainMessage;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
@@ -16,10 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -50,7 +45,6 @@ public class DayToNightManager {
             }
             // 죽었다면 게임에서 제거하고 관찰자에 추가
             player.setRole(GameRole.OBSERVER);
-            // gameSessionManager.removePlayer(gameSession.getRoomId(), player.getMemberName());
             playerRedisRepository.save(player);
         }
 

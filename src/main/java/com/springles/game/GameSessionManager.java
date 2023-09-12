@@ -2,7 +2,6 @@ package com.springles.game;
 
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
-import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 import com.springles.domain.entity.ChatRoom;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Member;
@@ -16,7 +15,6 @@ import com.springles.repository.PlayerRedisRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
