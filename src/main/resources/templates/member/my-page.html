@@ -32,10 +32,15 @@
                         <!--------------------- 경험치(현재 경험치/목표 경험치) -------->
                         <div class="game-info-box col pl-2 pr-2">
                             <table class="my-tb">
+                                <!--------------------- 랭킹 -------->
+                                <tr>
+                                    <td class="game-info-title pt-0">랭킹</td>
+                                    <td class="game-info-data pt-0"><span id="rank"></span> 위</td>
+                                </tr>
                                 <!--------------------- 경험치 -------->
                                 <tr>
-                                    <td class="game-info-title pt-0">경험치</td>
-                                    <td class="game-info-data pt-0">
+                                    <td class="game-info-title">경험치</td>
+                                    <td class="game-info-data">
                                         <span id="exp"></span> exp
                                         <span class="goal-exp-txt">/</span>
                                         <span class="goal-exp-txt" id="goal-exp"></span>
@@ -56,11 +61,6 @@
                                         <!-- BOSS 레벨 일 경우 -->
                                         <span id="final-level" class="final-level"></span>
                                     </td>
-                                </tr>
-                                <!--------------------- 랭킹 -------->
-                                <tr>
-                                    <td class="game-info-title">랭킹</td>
-                                    <td class="game-info-data"><span id="rank"></span> 위</td>
                                 </tr>
                             </table>
                         </div>
