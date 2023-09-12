@@ -84,15 +84,14 @@ public class GameSessionManager {
     public void removePlayer(Long roomId, String memberName) {
         Player player = findPlayerByMemberName(memberName);
         GameSession gameSession = findGameByRoomId(roomId);
-        Member member = findMemberByMemberName(memberName);
-        playerRedisRepository.deleteById(member.getId());
+        playerRedisRepository.deleteById(player.getMemberId());
         List<Player> players = findPlayersByRoomId(roomId);
         // 아무도 없다면 방삭제
         if (players.isEmpty()) {
             removeGame(roomId);
         }
         // 남은 플레이어가 존재하고 방장이 나갔다면 랜덤으로 방장 넘겨주기
-        else if (Objects.equals(gameSession.getHostId(), member.getId())) {
+        else if (Objects.equals(gameSession.getHostId(), player.getMemberId())) {
             Random random = new Random();
             Player nextHost = players.get(random.nextInt(players.size()));
             gameSession.changeHost(nextHost.getMemberId());

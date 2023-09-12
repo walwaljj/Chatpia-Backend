@@ -5,14 +5,9 @@ import com.springles.domain.constants.ResponseCode;
 import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
-import com.springles.domain.dto.member.MemberCreateRequest;
 import com.springles.domain.dto.member.MemberInfoResponse;
 import com.springles.domain.dto.response.ResResult;
-import com.springles.domain.entity.Player;
-import com.springles.exception.CustomException;
-import com.springles.exception.constants.ErrorCode;
 import com.springles.game.GameSessionManager;
-import com.springles.jwt.JwtTokenUtils;
 import com.springles.service.ChatRoomService;
 import com.springles.service.CookieService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
@@ -48,9 +42,6 @@ public class ChatRoomController {
         MemberInfoResponse info = memberUiController.info(accessToken);
         Long id = info.getId();
         String memberName = info.getMemberName();
-
-//        log.info("MemberCreateRequest.getMemberName() = {}",((MemberCreateRequest) auth.getPrincipal()).getMemberName()); // 인증 된 멤버 이름
-//        log.info("MemberCreateRequest.isAuthenticated() = {}", auth.isAuthenticated()); // 인증 되었다면 true
 
         // 응답 메시지 return
         ResponseCode responseCode = ResponseCode.CHATROOM_CREATE;
@@ -113,12 +104,6 @@ public class ChatRoomController {
                         .data(chatRoomService.findAllByTitleAndNickname(content))
                         .build(), HttpStatus.OK);
 
-//            // 일치하는 방이 하나도 없을 때
-////            model.addAttribute("errorMessage", String.format("'%s'에 해당하는 유저 또는 방을 찾지 못해 전체 목록을 불러옵니다.",searchContent));
-//            // 전체 채팅 목록 불러오기
-//            List<ChatRoomResponseDto> allChatRooms = chatRoomService.findAllChatRooms();
-////            model.addAttribute("allChatRooms", allChatRooms);
-//        }
     }
 
     // 채팅방 수정

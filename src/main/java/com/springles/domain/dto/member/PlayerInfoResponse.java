@@ -14,7 +14,7 @@ public class PlayerInfoResponse {
     // 사용자 게임 네임
     private String nickName;
     // 프로필 이미지
-    private ProfileImg profileImg;
+    private String profileImg;
     // 방장 여부
     private Boolean isOwner;
     // 레벨 이미지
@@ -25,7 +25,7 @@ public class PlayerInfoResponse {
         return PlayerInfoResponse.builder()
                 .id(memberId)
                 .nickName(gameInfo.getNickname())
-                .profileImg(gameInfo.getProfileImg())
+                .profileImg(gameInfo.getProfileImg().getFileUrl())
                 .levelImg(gameInfo.getLevel().getImgUrl())
                 .isOwner(Objects.equals(memberId, ownerId))
                 .build();
