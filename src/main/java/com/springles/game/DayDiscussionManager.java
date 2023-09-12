@@ -1,13 +1,9 @@
 package com.springles.game;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.dto.message.DayDiscussionMessage;
-import com.springles.domain.dto.message.DayEliminationMessage;
-import com.springles.domain.dto.response.GameStatus;
-import com.springles.domain.dto.response.GameStatusRes;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
@@ -16,10 +12,8 @@ import com.springles.repository.PlayerRedisRepository;
 import com.springles.service.GameSessionVoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -127,7 +121,6 @@ public class DayDiscussionManager {
     }
 
     private void setDayToNight(Long roomId) {
-
         dayToNightManager.sendMessage(roomId);
     }
 }
