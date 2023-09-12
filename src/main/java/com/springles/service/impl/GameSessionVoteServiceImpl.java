@@ -80,26 +80,35 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
     @Override
     public Map<Long, Player> getSuspectResult(GameSession gameSession, Map<Long, Long> vote) {
+        log.info("GameSessionVoteService getSuspectResult 호출");
         Map<Long, Player> suspectResult = new HashMap<>();
+
 
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
         // <memberId, player>로 만든 맵
         Map<Long, Player> playerMap = players.stream().collect(Collectors.toMap(Player::getMemberId, p -> p));
 
         for (Player player : playerMap.values()) {
+            log.info("Player {} is {}", player.getMemberName(), player.getRole());
             if (player.getRole() == GameRole.POLICE) {
                 Long policeId = player.getMemberId();
                 Long suspectId = vote.get(policeId);
+                log.info("policeID: {}, suspectedID: {}", policeId, suspectId);
+
+                if (suspectId == null) continue;
+
                 Optional<Player> suspectOptional = playerRedisRepository.findById(suspectId);
                 if (suspectOptional.isEmpty()) {
                     throw new CustomException(ErrorCode.SUSPECT_PLAYER_NOT_FOUND);
                 }
                 else {
                     Player suspect = suspectOptional.get();
+                    log.info("suspect: {}", suspect.toString());
                     suspectResult.put(policeId, suspect);
                 }
             }
         }
+        log.info(suspectResult.toString());
         return suspectResult;
     }
 
@@ -202,10 +211,16 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
         return deadPlayerId;
     }
 
-    private Map<GameRole, Long> getNightVoteResult(GameSession gameSession, Map<Long, Long> voteResult) {
+    @Override
+    public Map<GameRole, Long> getNightVoteResult(GameSession gameSession, Map<Long, Long> voteResult) {
+        log.info("GameSessionVoteService getNightVoteResult 호출");
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
         // <memberId, player>로 만든 맵
         Map<Long, Player> playerMap = players.stream().collect(Collectors.toMap(Player::getMemberId, p -> p));
+
+        for (Player player : playerMap.values()) {
+            log.info("Player {} is {}", player.getMemberName(), player.getRole());
+        }
 
         // 마피아가 아닌 직업들 결과에 담기
         // <어떤 직업, 누구한테 투표했는지>
@@ -213,6 +228,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
                 .filter(e -> playerMap.get(e.getKey()).getRole() != GameRole.MAFIA) // 직업이 마피아가 아니고
                 .filter(e -> e.getValue() != null) // 투표값이 존재하고
                 .collect(Collectors.toMap(e -> playerMap.get(e.getKey()).getRole(), e -> e.getValue()));
+        log.info("Doctor Vote: {}", result.toString());
 
         // 마피아의 투표만 따로 저장하기
         // <투표받은 사람 <투표한사람>>
@@ -220,6 +236,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
                 .filter(key -> playerMap.get(key).getRole() == GameRole.MAFIA) // 마피아일 때
                 .filter(key -> voteResult.get(key) != null) // 투표가 존재할 때
                 .collect(Collectors.groupingBy(key -> voteResult.get(key)));
+        log.info("Mafia Vote: {}", mafiaVote.toString());
 
         // 마피아의 투표였을 때
         if (mafiaVote.size() > 0) {
@@ -242,6 +259,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
                 result.put(GameRole.MAFIA, deadList.get(0));
             }
         }
+        log.info(result.toString());
         return result;
     }
 }
