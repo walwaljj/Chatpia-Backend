@@ -720,26 +720,26 @@
           message);
     })
 
-    document.getElementById("vote-form-night").addEventListener("submit", (event) => {
-      event.preventDefault()
+     document.getElementById("vote-form-night").addEventListener("submit", (event) => {
+            event.preventDefault()
 
-      const list = document.getElementById('vote-select-night');
-      const selectedIndex = list.selectedIndex;
-      const selectedOption = list.options[selectedIndex];
-      const selectedValue = selectedOption.value;
-      const selectedText = selectedOption.text;
-      alert(selectedText + "님을 투표했습니다!");
-      console.log(selectedValue);
-      const message = JSON.stringify({
-        'phase': 'NIGHT_VOTE',
-        'vote': selectedValue
-      });
-      console.log(message);
-      stompClient.send(`/pub/chat/${roomId}/nightVote`, {
-            "Authorization": getCookie("accessToken")
-          },
-          message);
-    })
+            const list = document.getElementById('vote-select-night');
+            const selectedIndex = list.selectedIndex;
+            const selectedOption = list.options[selectedIndex];
+            const selectedValue = selectedOption.value;
+            const selectedText = selectedOption.text;
+            alert(selectedText + "님을 투표했습니다!");
+            console.log(selectedValue);
+            const message = JSON.stringify({
+                'phase': 'NIGHT_VOTE',
+                'vote': selectedValue
+            });
+            console.log(message);
+            stompClient.send(`/pub/chat/${roomId}/vote/night`, {
+                    "Authorization": getCookie("accessToken")
+                },
+                message);
+        })
 
     document.getElementById("message-form").addEventListener("submit", (event) => {
       event.preventDefault()

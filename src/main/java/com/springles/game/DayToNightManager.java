@@ -56,16 +56,16 @@ public class DayToNightManager {
 
         // 살아 있는 인원 업데이트
         gameSession.setAliveCivilian((int) players.stream()
-                .filter(e -> e.getRole() != GameRole.CIVILIAN)
+                .filter(e -> e.getRole() == GameRole.CIVILIAN)
                 .filter(Player::isAlive).count());
         gameSession.setAliveDoctor((int) players.stream()
-                .filter(e -> e.getRole() != GameRole.DOCTOR)
+                .filter(e -> e.getRole() == GameRole.DOCTOR)
                 .filter(Player::isAlive).count());
         gameSession.setAliveMafia((int) players.stream()
-                .filter(e -> e.getRole() != GameRole.MAFIA)
+                .filter(e -> e.getRole() == GameRole.MAFIA)
                 .filter(Player::isAlive).count());
         gameSession.setAlivePolice((int) players.stream()
-                .filter(e -> e.getRole() != GameRole.POLICE)
+                .filter(e -> e.getRole() == GameRole.POLICE)
                 .filter(Player::isAlive).count());
 
         gameSessionManager.saveSession(gameSession);

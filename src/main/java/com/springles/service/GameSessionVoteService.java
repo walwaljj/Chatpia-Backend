@@ -22,4 +22,6 @@ public interface GameSessionVoteService {
     List<Long> getSuspiciousList(GameSession gameSession, Map<Long, Long> voteResult);
 
     Long getEliminationPlayer(GameSession gameSession, Map<Long, Long> voteResult);
+
+    Map<GameRole, Long> getNightVoteResult(GameSession gameSession, Map<Long, Long> voteResult);
 }
