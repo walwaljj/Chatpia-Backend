@@ -311,6 +311,7 @@ body {
 .lv-content {
     max-height: 50px;
     line-height: 50px;
+    font-size: 14px;
 }
 
 .lv-img {
@@ -336,7 +337,7 @@ body {
     width: 14px;
     height: 14px;
     position: relative;
-    top: -2px;
+    top: -1px;
 }
 
 .profile-lv-img {
