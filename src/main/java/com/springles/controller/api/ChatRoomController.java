@@ -10,6 +10,7 @@ import com.springles.domain.dto.response.ResResult;
 import com.springles.game.GameSessionManager;
 import com.springles.service.ChatRoomService;
 import com.springles.service.CookieService;
+import com.springles.valid.ValidationSequence;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
@@ -36,7 +38,7 @@ public class ChatRoomController {
     // 채팅방 생성
     @Operation(summary = "채팅방 생성", description = "채팅방 생성")
     @PostMapping(value = "/chatrooms")
-    public ResponseEntity<ResResult> createChatRoom(@Valid @RequestBody ChatRoomReqDTO chatRoomReqDTO, HttpServletRequest request, Authentication auth) {
+    public ResponseEntity<ResResult> createChatRoom(@Validated({ValidationSequence.class}) @RequestBody ChatRoomReqDTO chatRoomReqDTO, HttpServletRequest request, Authentication auth) {
 
         String accessToken = cookieService.atkFromCookie(request);
         MemberInfoResponse info = memberUiController.info(accessToken);

@@ -92,7 +92,7 @@
                             location.replace('http://localhost:8080/v1/chat/'+ roomId + '/' + nickName);
                         },
                         error: function(response) {
-                            alert(JSON.stringify(response.responseJSON.message))
+                            alert((response.responseJSON.message).split('##')[0])
                         },
                     });
                 });
