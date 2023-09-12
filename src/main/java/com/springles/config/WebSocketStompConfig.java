@@ -1,15 +1,7 @@
 package com.springles.config;
 
-import com.springles.game.DayDiscussionManager;
-import com.springles.game.DayEliminationManager;
-import com.springles.game.MessageInterceptor;
-import com.springles.game.NightVoteManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
-import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -19,8 +11,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketStompConfig implements WebSocketMessageBrokerConfigurer {
-
-    private final MessageInterceptor interceptor;
 
     // registerWebSocketHandlers (어떤 주소에 어떤 핸들러를 활용할지를 정의하는 메소드) 대신
     // STOMP 규약을 사용하는 WebSocket 엔드포인트를 구성하는 메소드
