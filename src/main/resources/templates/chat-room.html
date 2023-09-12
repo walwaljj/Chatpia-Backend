@@ -17,6 +17,7 @@
 
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
+            <!------------------------------------------- 방 정보 ------------------------------------------->
             <div class="form-inline my-2 my-lg-0">
                 <a class="nav-link" onclick="openRoomDetail()">설정</a>
 
@@ -79,10 +80,12 @@
 
                                     <div class="row mt-4" style="margin-left: 150px;">
                                         <div>
-                                            <button class="btn modal-btn-secondary" id="close_btn" type="submit">닫기</button>
+                                            <button class="btn modal-btn-secondary" id="close_btn" type="submit">닫기
+                                            </button>
                                         </div>
                                         <div class="ml-2">
-                                            <button class="btn modal-btn-primary" id="submit_btn" type="submit">저장</button>
+                                            <button class="btn modal-btn-primary" id="submit_btn" type="submit">저장
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -91,17 +94,167 @@
                     </div>
                 </div>
                 <!-- 모달 끝 -->
+                <!------------------------------------------- 방 정보 끝------------------------------------------->
+
                 <div class="nav-item">
-                    <a class="nav-link" onclick=gameStart()>게임시작</a>
-                    <a class="nav-link" href="#">내 직업 설명</a>
+                    <!------------------------------------------- 게임시작 시작------------------------------------------->
+                    <a class="nav-link text-white" onclick=gameStart()>게임시작</a>
+                    <!------------------------------------------- 게임시작 끝------------------------------------------->
+
+                    <!------------------------------------------- 내 직업 설명 시작------------------------------------------->
+                    <a class="nav-link text-white" onclick="myRoleOpen()">내 직업 설명</a>
                     <!--                    th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).PLAYING.getValue()}"-->
                 </div>
-                <div class="nav-item">
-                    <a class="nav-link" href="#">게임룰</a>
+                <!-- 내 직업 설명 모달-->
+                <div class="modal fade" id="myRoleDetailModal" tabindex="-1"
+                     aria-labelledby="myRoleDetailModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content pl-3 pr-3 pt-2 pb-2">
+                            <div class="modal-header">
+                                <h3 class="modal-title fs-5" id="myRoleDetailModalLabel">내 직업 설명</h3>
+                            </div>
+                            <div class="modal-body center">
+                                <div class="my-role-box mb-4 mt-3">
+                                    <!------------------------- 마피아 시작------------------------->
+                                    <div id="my-role-mafia" style="display: none;">
+                                        <p class="role-top-txt">마피아</p>
+                                        <p class="role-tit mt-2">
+                                            <mark>능력</mark>
+                                        </p>
+                                        <p>
+                                            매일 밤, 원하는 대상을 지목하여 살해할 수 있다.<br>
+                                            마피아 팀끼리의 대화가 가능하며,<br>살해 대상은 다수결로 결정된다.
+                                        </p>
+                                    </div>
+                                    <!------------------------- 마피아 끝------------------------->
+                                    <!------------------------- 시민 시작------------------------->
+                                    <div id="my-role-citizen" style="display: none;">
+                                        <p class="role-top-txt">시민</p>
+                                        <p class="role-tit mt-2">
+                                            <mark>능력</mark>
+                                        </p>
+                                        <p>없음</p>
+                                    </div>
+                                    <!------------------------- 시민 끝------------------------->
+                                    <!------------------------- 경찰 시작------------------------->
+                                    <div id="my-role-police" style="display: none;">
+                                        <p class="role-top-txt">경찰</p>
+                                        <p class="role-tit mt-2">
+                                            <mark>능력</mark>
+                                        </p>
+                                        <p>
+                                            매일 밤, 마피아로 의심되는 대상을 지목하여<br>직업을 알 수 있다.
+                                        </p>
+                                    </div>
+                                    <!------------------------- 경찰 끝------------------------->
+                                    <!------------------------- 의사 시작------------------------->
+                                    <div id="my-role-doctor" style="display: none;">
+                                        <p class="role-top-txt">의사</p>
+                                        <p class="role-tit mt-2">
+                                            <mark>능력</mark>
+                                        </p>
+                                        <p>
+                                            매일 밤, 원하는 대상을 지목하여 살릴 수 있다.<br>
+                                            지목한 대상은 그 날 밤 마피아에게 지목 당하더라도<br>살 수 있게 된다.
+                                        </p>
+                                    </div>
+                                    <!------------------------- 의사 끝------------------------->
+                                    <!------------------------- 직업 없음 시작------------------------->
+                                    <div id="my-role-none">
+                                        <p class="mt-5">아직 부여된 직업이 없습니다.</p>
+                                    </div>
+                                    <!------------------------- 직업 없음 끝------------------------->
+                                </div>
+                            </div>
+                            <div class="lv-modal-close-btn mt-4">
+                                <button class="btn modal-btn-secondary" type="button" onclick="myRoleClose()">
+                                    닫기
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <!-- 내 직업 설명 모달 끝 -->
+                <!------------------------------------------- 내 직업 설명 끝------------------------------------------->
+
+                <!------------------------------------------- 게임룰 시작------------------------------------------->
+                <div class="nav-item">
+                    <a class="nav-link text-white" onclick="gameRuleOpen()">게임 룰</a>
+                </div>
+                <!-- 게임룰 모달-->
+                <div class="modal fade" id="gameRuleDetailModal" tabindex="-1"
+                     aria-labelledby="gameRuleDetailModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content pl-3 pr-3 pt-2 pb-2">
+                            <div class="modal-header">
+                                <h3 class="modal-title fs-5" id="gameRuleDetailModalLabel">게임 룰</h3>
+                            </div>
+                            <div class="modal-body center">
+                                <div class="game-rule-box mb-4 mt-3">
+                                    <div>
+                                        <p class="rule-top-txt mb-2">
+                                            <u class="txt-u">
+                                                대화와 추리를 통해<br>
+                                                자신이 속한 팀이 승리할 수 있도록 해야한다.
+                                            </u>
+                                        </p>
+                                    </div>
+                                    <p class="mb-0">-</p>
+                                    <p class="rule-tit mt-2">
+                                        <mark>팀 구성</mark>
+                                    </p>
+                                    <table class="rule-cnt-tb center mt-3 ml-5">
+                                        <tbody>
+                                        <tr class="rule-cnt-tb-tr">
+                                            <td class="rule-cnt-tb-td-tit">시민 팀</td>
+                                            <td class="rule-cnt-tb-td-tit">마피아 팀</td>
+                                        </tr>
+                                        <tr class="rule-cnt-tb-tr">
+                                            <td class="rule-cnt-tb-td">시민, 경찰, 의사</td>
+                                            <td class="rule-cnt-tb-td">마피아</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <p class="rule-tit">
+                                        <mark>진행 순서</mark>
+                                    </p>
+                                    <ul class="rule-cnt-list">
+                                        <li class="seq-tit mt-3">1. 게임 시작</li>
+                                        <li class="seq-cnt">게임이 시작되면 플레이어 마다 직업이 부여된다.</li>
+                                        <li class="seq-tit">2. 낮</li>
+                                        <li class="seq-cnt">투표를 통해 처형할 대상을 선정한다.<br>
+                                            선정된 대상은 최후의 변론 기회가 주어지며, <br>이후 최종 투표를 통해 처형 여부가 결정된다.
+                                        </li>
+                                        <li class="seq-tit">3. 밤</li>
+                                        <li class="seq-cnt">자신의 직업에 따라 능력을 사용한다.</li>
+                                        <li class="seq-tit">4. 게임 종료</li>
+                                        <li class="seq-cnt">승리 조건에 해당될 때까지 낮 · 밤 라운드를 반복한다.</li>
+                                    </ul>
+                                    <p class="rule-tit">
+                                        <mark>승리조건</mark>
+                                    </p>
+                                    <p class="rule-cnt mt-3">
+                                        마피아가 모두 처형 당했다면 <u class="txt-u"><strong>시민 팀 승리</strong></u><br>
+                                        마피아의 수가 시민의 수보다 많아지면 <u class="txt-u"><strong>마피아 팀 승리</strong></u>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="lv-modal-close-btn mt-4">
+                                <button class="btn modal-btn-secondary" type="button" onclick="gameRuleClose()">
+                                    닫기
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 게임룰 모달 끝 -->
+                <!------------------------------------------- 게임룰 끝------------------------------------------->
+
+                <!------------------------------------------- 나가기 시작------------------------------------------->
                 <div class="nav-item" id="leave-btn">
                     <a class="nav-link" onclick="leave()">나가기</a>
                 </div>
+                <!------------------------------------------- 나가기 끝------------------------------------------->
             </div>
         </div>
     </nav>
@@ -179,6 +332,8 @@
         let pathname = window.location.pathname;
         let roomId = parseInt(pathname.split("/")[3]);
         let nickname = decodeURI(pathname.split("/")[4]);
+        let inGameRole = 'NONE' // 내 직업 정보 팝업 출력용
+
         function getRoomName() {
             fetch(`/v1/chatRooms/${roomId}`).then((response) => {
                 response.json().then((responseBody) => {
@@ -245,6 +400,8 @@
                     stompClient.subscribe(`/sub/chat/${roomId}/${body.gameRole}`) // 직업 url
                     stompClient.unsubscribe(`/sub/chat/${roomId}/playerRole/${nickname}`)
                     receiveMessage(body)
+                    // 내 직업 정보 팝업에 플레이어별 부여된 역할에 맞는 내용 출력
+                    inGameRole = body.gameRole
                 }))
 
             });
@@ -577,6 +734,47 @@
                 }
             });
         };
+
+        /* 게임룰 모달 열기 */
+        function gameRuleOpen() {
+            $('#gameRuleDetailModal').modal('show');
+        }
+
+        /* 게임룰 모달 닫기 */
+        function gameRuleClose() {
+            $('#gameRuleDetailModal').modal('hide');
+        }
+
+        /* 내 직업 설명 모달 열기 */
+        function myRoleOpen() {
+            $('#myRoleDetailModal').modal('show');
+
+            // inGameRole에 따라 해당하는 직업 설명 출력
+            switch(inGameRole) {
+                case 'MAFIA':
+                    $('#my-role-mafia').attr('style', "display: block;")
+                    $('#my-role-none').attr('style', "display: none;")
+                    break;
+                case 'CIVILIAN':
+                    $('#my-role-citizen').attr('style', "display: block;")
+                    $('#my-role-none').attr('style', "display: none;")
+                    break;
+                case 'POLICE':
+                    $('#my-role-police').attr('style', "display: block;")
+                    $('#my-role-none').attr('style', "display: none;")
+                    break;
+                case 'DOCTOR':
+                    $('#my-role-doctor').attr('style', "display: block;")
+                    $('#my-role-none').attr('style', "display: none;")
+                    break;
+            }
+        }
+
+        /* 내 직업 설명 모달 닫기 */
+        function myRoleClose() {
+            $('#myRoleDetailModal').modal('hide');
+        }
+
     </script>
     <script src="/js/stomp.js"></script>
 </div>
