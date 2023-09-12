@@ -311,6 +311,7 @@ body {
 .lv-content {
     max-height: 50px;
     line-height: 50px;
+    font-size: 14px;
 }
 
 .lv-img {
@@ -336,7 +337,7 @@ body {
     width: 14px;
     height: 14px;
     position: relative;
-    top: -2px;
+    top: -1px;
 }
 
 .profile-lv-img {
@@ -663,6 +664,10 @@ body {
     font-weight: bold; /* 굵은 글씨로 */
     color: #333; /* 색상 변경 */
     margin-bottom: 3px; /* 작성자 이름과 메시지 내용 간격 조절 */
+}
+
+.final-level {
+    color : #A6907A;
 }
 
 
