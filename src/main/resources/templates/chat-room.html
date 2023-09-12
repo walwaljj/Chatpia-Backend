@@ -224,6 +224,12 @@
                     updateNightVoteList(message)
                 })
 
+                // 타이머용 구독
+                stompClient.subscribe(`/sub/chat/${roomId}/timer`, function (message) {
+                    console.log(message);
+
+                    startNight(message);
+                })
 
                 // 개인 채팅 URL 구독
                 stompClient.subscribe(`/sub/chat/${roomId}/${nickname}`, (message) => {
@@ -264,6 +270,15 @@
                 list.appendChild(li)
             }
             document.getElementById('gamePlayer').innerText = i;
+        }
+
+        function startNight(messageOutput) {
+            const messageJson = JSON.parse(messageOutput.body);
+            const messageType = messageJson.message;
+            console.log(messageType);
+            if (messageType == "night") {
+                stompClient.send(`/pub/chat/${roomId}/nightStart`);
+            }
         }
 
         function updateVoteList(message) {
