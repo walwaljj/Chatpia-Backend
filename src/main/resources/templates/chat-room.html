@@ -160,7 +160,7 @@
                                     </div>
                                     <!------------------------- 의사 끝------------------------->
                                     <!------------------------- 직업 없음 시작------------------------->
-                                    <div id="my-role-none" style="display: none;">
+                                    <div id="my-role-none">
                                         <p class="mt-5">아직 부여된 직업이 없습니다.</p>
                                     </div>
                                     <!------------------------- 직업 없음 끝------------------------->
@@ -332,6 +332,7 @@
         let pathname = window.location.pathname;
         let roomId = parseInt(pathname.split("/")[3]);
         let nickname = decodeURI(pathname.split("/")[4]);
+        let inGameRole = 'NONE' // 내 직업 정보 팝업 출력용
 
         function getRoomName() {
             fetch(`/v1/chatRooms/${roomId}`).then((response) => {
@@ -399,6 +400,8 @@
                     stompClient.subscribe(`/sub/chat/${roomId}/${body.gameRole}`) // 직업 url
                     stompClient.unsubscribe(`/sub/chat/${roomId}/playerRole/${nickname}`)
                     receiveMessage(body)
+                    // 내 직업 정보 팝업에 플레이어별 부여된 역할에 맞는 내용 출력
+                    inGameRole = body.gameRole
                 }))
 
             });
@@ -746,17 +749,24 @@
         function myRoleOpen() {
             $('#myRoleDetailModal').modal('show');
 
-            // TODO 실제 데이터를 받아올 수 있도록 수정 필요(현재는 테스트용으로 mafia 고정 출력)
-            // 현재 플레이어의 inGameRole
-            const inGameRole = 'mafia';
-
             // inGameRole에 따라 해당하는 직업 설명 출력
             switch(inGameRole) {
-                case 'mafia': $('#my-role-mafia').attr('style', "display: block;"); break;
-                case 'citizen': $('#my-role-citizen').attr('style', "display: block;"); break;
-                case 'police': $('#my-role-police').attr('style', "display: block;"); break;
-                case 'doctor': $('#my-role-doctor').attr('style', "display: block;"); break;
-                default: $('#my-role-none').attr('style', "display: block;");
+                case 'MAFIA':
+                    $('#my-role-mafia').attr('style', "display: block;")
+                    $('#my-role-none').attr('style', "display: none;")
+                    break;
+                case 'CIVILIAN':
+                    $('#my-role-citizen').attr('style', "display: block;")
+                    $('#my-role-none').attr('style', "display: none;")
+                    break;
+                case 'POLICE':
+                    $('#my-role-police').attr('style', "display: block;")
+                    $('#my-role-none').attr('style', "display: none;")
+                    break;
+                case 'DOCTOR':
+                    $('#my-role-doctor').attr('style', "display: block;")
+                    $('#my-role-none').attr('style', "display: none;")
+                    break;
             }
         }
 
