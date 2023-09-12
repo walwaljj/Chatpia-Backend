@@ -665,4 +665,8 @@ body {
     margin-bottom: 3px; /* 작성자 이름과 메시지 내용 간격 조절 */
 }
 
+.final-level {
+    color : #A6907A;
+}
+
 
