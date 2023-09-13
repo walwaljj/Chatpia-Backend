@@ -242,6 +242,8 @@ body {
 
 .my_bg_img{
     width: 100%;
+    border-radius: 70%;
+    overflow: hidden;
 }
 
 .record-item {
@@ -540,7 +542,8 @@ body {
 /* 채팅방 내에 참여자 목록 */
 .playerList {
     height:30vh;
-    overflow-y:scroll;
+    overflow-y:auto;
+    display: none;
 }
 
 .scroll::-webkit-scrollbar {
