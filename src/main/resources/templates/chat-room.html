@@ -98,11 +98,11 @@
 
         <div class="nav-item">
           <!------------------------------------------- 게임시작 시작------------------------------------------->
-          <a class="nav-link text-white" onclick=gameStart()>게임시작</a>
+          <a class="nav-link text-white" id="gameStart" onclick=gameStart()>게임시작</a>
           <!------------------------------------------- 게임시작 끝------------------------------------------->
 
           <!------------------------------------------- 내 직업 설명 시작------------------------------------------->
-          <a class="nav-link text-white" onclick="myRoleOpen()">내 직업 설명</a>
+          <a class="nav-link text-white" id="myRoleInfo" onclick="myRoleOpen()" style="display: none;">내 직업 설명</a>
           <!--                    th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).PLAYING.getValue()}"-->
         </div>
         <!-- 내 직업 설명 모달-->
@@ -406,6 +406,11 @@
           receiveMessage(body)
           // 내 직업 정보 팝업에 플레이어별 부여된 역할에 맞는 내용 출력
           inGameRole = body.gameRole
+
+          // 내 직업 정보 팝업에 플레이어별 부여된 역할에 맞는 내용 출력
+          inGameRole = body.gameRole
+          $('#gameStart').attr('style', "display:none;")
+          $('#myRoleInfo').attr('style', "display:block;")
         }))
 
       });
