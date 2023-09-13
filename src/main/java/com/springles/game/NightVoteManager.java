@@ -3,6 +3,7 @@ package com.springles.game;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.dto.message.NightVoteMessage;
+import com.springles.domain.dto.message.RoleExplainMessage;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
@@ -71,10 +72,15 @@ public class NightVoteManager {
 
         // 용의자 조사 결과 관찰자와 경찰에게 전송
         for (Long voter : suspectVote.keySet()) {
+            Optional<Player> policeOptional = playerRedisRepository.findById(voter);
+            String policeName = "";
+            if (policeOptional.isPresent()) {
+                policeName = policeOptional.get().getMemberName();
+            }
             Player suspectPlayer = suspectVote.get(voter);
             log.info("Room {} NightVote suspectPlayer: {}", roomId, suspectPlayer.getMemberId());
             messageManager.sendMessage(
-                    "/sub/chat/" + roomId + '/' + GameRole.POLICE,
+                    "/sub/chat/" + roomId + '/' + GameRole.POLICE + '/' + policeName,
                     suspectPlayer.getMemberName()+ "님은 " + suspectPlayer.getRole() + "입니다.",
                     gameSession.getRoomId(), "admin"
             );
@@ -118,7 +124,6 @@ public class NightVoteManager {
                     "아무도 죽지 않았습니다.",
                     gameSession.getRoomId(), "admin"
             );
-            throw new CustomException(ErrorCode.DEAD_PLAYER_NOT_FOUND);
         }
         else {
             Optional<Player> deadPlayerOptional = playerRedisRepository.findById(deadPlayerId);
@@ -135,6 +140,10 @@ public class NightVoteManager {
                 deadPlayer.setAlive(false);
                 deadPlayer.setRole(GameRole.OBSERVER);
                 playerRedisRepository.save(deadPlayer);
+
+                if (gameSessionManager.isEnd(gameSession)) {
+                    gameSessionManager.endGame(gameSession.getRoomId());
+                }
             }
         }
         log.info("Room {} NightVote deadPlayer: {}", gameSession.getRoomId(), deadPlayerId);

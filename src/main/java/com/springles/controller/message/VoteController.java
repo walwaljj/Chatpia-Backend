@@ -57,6 +57,10 @@ public class VoteController {
 
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
 
+        messageManager.sendMessage(
+                "/sub/chat/" + roomId + "/votePlayer",
+                players);
+
         Map<Long, GameRole> alivePlayerMap = new HashMap<>();
         for (Player player : players) {
             //log.info("Room {} has Player {} ", gameSession.getRoomId(), player.getMemberName());

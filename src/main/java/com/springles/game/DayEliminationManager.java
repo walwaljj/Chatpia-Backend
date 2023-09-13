@@ -93,13 +93,16 @@ public class DayEliminationManager {
                             gameSession.getRoomId(), "admin"
                     );
                 };
+                executor.schedule(task, 1, TimeUnit.SECONDS);
 
                 // 죽임
                 deadPlayer.setAlive(false);
                 deadPlayer.setRole(GameRole.OBSERVER);
                 playerRedisRepository.save(deadPlayer);
-                // gameSessionManager.removePlayer(gameSession.getRoomId(), deadPlayer.getMemberName());
-                // 관찰자에 추가
+
+                if (gameSessionManager.isEnd(gameSession)) {
+                    gameSessionManager.endGame(gameSession.getRoomId());
+                }
 
             }
         }

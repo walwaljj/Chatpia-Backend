@@ -150,13 +150,21 @@ public class GameSessionManager {
         gameSessionRedisRepository.save(gameSession);
     }
 
-    public void passDay(Long roomId) {
-        GameSession gameSession = findGameByRoomId(roomId);
-        gameSession.passADay();
+    public void saveSession(GameSession gameSession) {
+
         gameSessionRedisRepository.save(gameSession);
     }
 
-    public void saveSession(GameSession gameSession) {
-        gameSessionRedisRepository.save(gameSession);
+    public boolean isEnd(GameSession gameSession) {
+        if (gameSession.getAliveMafia() == 0) {
+            return true;
+        }
+        else if (gameSession.getDay() > 20) {
+            return true;
+        }
+        else if (gameSession.getAliveMafia() >= gameSession.getAlivePolice() + gameSession.getAliveDoctor() + gameSession.getAliveCivilian()) {
+            return true;
+        }
+        return false;
     }
 }
