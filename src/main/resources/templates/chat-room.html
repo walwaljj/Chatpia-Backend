@@ -295,7 +295,12 @@
                         </button>
                     </form>
                     <form id="confirm-form">
-
+                        <button id="approve" class="btn btn-primary" style="margin: 0 0 4px;"
+                                type="submit">찬성
+                        </button>
+                        <button id="opposite" class="btn btn-primary" style="margin: 0 0 4px;"
+                                type="submit">반대
+                        </button>
                     </form>
                     <form id="vote-form-night">
                         <select id="vote-select-night" class="form-select" aria-label="Default select example">
@@ -351,6 +356,19 @@
             getRoomName();
 
             const socket = new WebSocket('ws://localhost:8080/chatting');
+            socket.onopen = function () {
+                var t = setInterval(function(){
+                    if (ws.readyState != 1) {
+                        clearInterval(t);
+                        return;
+                    }
+                    socket.send('{type:"ping"}');
+                }, 55000);
+            };
+
+            socket.onclose = function() {
+                setTimeout(connect, 300); // 웹소켓을 재연결하는 코드 삽입
+            };
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
                 console.log('Connected: ' + frame);
@@ -372,7 +390,7 @@
 
                 // 죽을 사람 후보
                 stompClient.subscribe(`/sub/chat/${roomId}/deadPlayer`, function (message) {
-                    updateDeadPlayer(message)
+                    confirmVote(message);
                 })
 
                 // 낮 투표 후보
@@ -498,8 +516,6 @@
                 stompClient.send(`/pub/chat/${roomId}/nightStart`);
             } else if (messageType == "day") {
                 setTimeout(voteStart, 60000);
-            } else if (messageType == "confirm") {
-                stompClient.send(`/pub/chat/${roomId}/confirm`);
             }
         }
 
@@ -517,8 +533,6 @@
         }
 
         function updateNightVoteList(message) {
-            const deadPlayer = document.getElementById("confirm-form");
-            deadPlayer.innerHTML = "";
             const list = document.getElementById('vote-select-night');
             list.innerHTML = "";
             let i = 0
@@ -531,14 +545,11 @@
             }
         }
 
-        function updateDeadPlayer(message) {
-            const deadPlayer = document.getElementById("confirm-form");
-            deadPlayer.innerHTML = "";
-            const player = JSON.parse(message.body)
+        function confirmVote(message) {
+            const player = JSON.parse(message.body);
             console.log(player.memberName);
-            // 찬성 버튼 생성
-            const approveButton = document.createElement("button");
-            approveButton.textContent = "찬성"; // 버튼 텍스트 설정
+
+            const approveButton = document.getElementById("approve");
             approveButton.addEventListener("click", () => {
                 // 찬성 버튼이 클릭되었을 때 실행될 코드 작성
                 alert("찬성했습니다!");
@@ -553,10 +564,8 @@
                     message);
             });
 
-            // 반대 버튼 생성
-            const opposeButton = document.createElement("button");
-            opposeButton.textContent = "반대"; // 버튼 텍스트 설정
-            opposeButton.addEventListener("click", () => {
+            const oppositeButton = document.getElementById("opposite");
+            oppositeButton.addEventListener("click", () => {
                 // 반대 버튼이 클릭되었을 때 실행될 코드 작성
                 alert("반대했습니다!");
                 const message = JSON.stringify({
@@ -569,11 +578,8 @@
                     message);
 
             });
-
-            // 찬성과 반대 버튼을 vote-form 요소에 추가
-            deadPlayer.appendChild(approveButton);
-            deadPlayer.appendChild(opposeButton);
         }
+
 
         function gameStart() {
             stompClient.send(`/pub/gameStart/${roomId}`)
