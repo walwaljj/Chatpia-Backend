@@ -461,11 +461,19 @@
               isOwner.style.color = 'white'
               isOwner.style.marginLeft = '2px';
             }
+
+            const line = document.createElement('br');
+            const line2 = document.createElement('hr');
+
             i++;
             div.append(profileImg)
             div.append(nickName)
             div.append(isOwner)
+            div.append(line)
+            div.append(line2)
             list.appendChild(div)
+            list.appendChild(line)
+            list.appendChild(line2)
             document.getElementById('gamePlayer').innerText = i;
           },
           error: function(response) {
