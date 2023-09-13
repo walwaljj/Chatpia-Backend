@@ -114,14 +114,12 @@
                         });
                 });
 
-
-
                 // 채팅방 입장
                 function enterRoom(chatRoomId, isClose) {
-                    // 비밀방은 비밀번호 입력 Modal
+                    // 비밀방 입장하는 경우 비밀번호 입력 Modal open
                     if (isClose === true) {
                         const modal = document.getElementById("exampleModal");
-                        // modal.style.display = "block";
+                        // Modal에서 비밀번호 입력했을 때
                         $("button[name='password-submit']").click(function (event) {
                             event.preventDefault();
                             $.ajax({
@@ -131,14 +129,15 @@
                                     const nickName = document.getElementById("nickName").innerText;
                                     const userInput = document.getElementById('userInput').value;
                                     const roomPassword = data.data.password;
-
+                                    // 비밀번호 일치하지 않는 경우 alert
                                     if (roomPassword !== userInput) {
                                         alert('비밀번호가 일치하지 않습니다.')
-                                    } else {
-                                        // window.location.href = 'v1/chat/' + chatRoomId + '/' + nickName; // 맞다면 이동
-                                        // window.location.href = '/v1/enter'
-                                        location.replace('http://localhost:8080/v1/chat/'+ chatRoomId + '/' + memberName);
-                                        }
+                                    }
+                                    // 비밀번호 일치하는 경우 채팅방 입장
+                                    else {
+                                        enterRoomApi(chatRoomId, nickName);
+                                        location.replace('http://localhost:8080/v1/chat/'+ chatRoomId + '/' + nickName);
+                                    }
                                 },
                                 error: function(response) {
                                     alert(JSON.stringify(response))
@@ -146,16 +145,32 @@
                             });
                         });
 
-                        // 오픈방이면 바로 이동
+                    // 오픈방인 경우 채팅방 바로 입장
                     } else {
                         const nickName = document.getElementById("nickName").innerText
                         console.log("chatRoomId = "+chatRoomId)
                         console.log("nickName = "+nickName)
-
-                        // window.location.href = '/v1/chat/' + chatRoomId + '/' + nickName;
-                        // window.location.href = '/v1/enter'
+                        // 채팅방 입장 API
+                        enterRoomApi(chatRoomId, nickName);
                         location.replace('http://localhost:8080/v1/chat/'+ chatRoomId + '/' + memberName);
                     }
+                }
+
+
+                // 채팅방 입장 함수
+                function enterRoomApi(roomId, nickName) {
+                    const path = `http://localhost:8080/v1/chatrooms/${roomId}/${nickName}`;
+                    $.ajax({
+                            url: path,
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function(data) {
+                                console.log("성공")
+                            },
+                            error: function(response) {
+                                console.log("실패")
+                            },
+                    });
                 }
 
                 // 채팅방이 없는 경우
@@ -164,6 +179,7 @@
                     $("#display").empty();
                     $("#display").append(html);
                 }
+
                 // 채팅방 목록 생성
                 function chatRoomList(data){
                 var html = `<div id="chatroomList" class="chatroomList">`
@@ -175,7 +191,6 @@
                                 data-toggle="${modal_info2()}"
                                 data-target="${modal_info()}"
                                 style="margin: 1vw 3vw;border-radius: 15px;width: 88%;">`
-
                         + `<div class="test d-flex w-100 justify-content-between">`
                             + `<span class="state badge badge-pill" style="background-color: #A6907A; color: white; height: 20px;">` + item.state + `</span>`
                             + `<div class="d-flex w-100 justify-content-between">`
@@ -226,6 +241,7 @@
                 html += "</div>";
                 $("#display").empty();
                 $("#display").append(html);
+                return false;
             }
 
                 // 채팅방 검색
@@ -275,7 +291,6 @@
                             }
                         },
                     });
-
                 }
                 </script>
             </th:block>

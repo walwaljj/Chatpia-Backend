@@ -51,6 +51,7 @@ public class ChatRoom {
     @Column(nullable = false)
     private Boolean close;
 
+    // 채팅방 수정
     public void modify(ChatRoom chatRoom){
         this.title = chatRoom.getTitle();
         this.password = chatRoom.getPassword();
@@ -61,6 +62,18 @@ public class ChatRoom {
         this.close = chatRoom.getClose();
     }
 
+    // 채팅방 참여 시 인원 + 1
+    public void headPlus(ChatRoom chatRoom){
+        chatRoom.head += 1;
+    }
+
+    // 채팅방 참여 시 인원 - 1
+    public void headMinus(ChatRoom chatRoom){
+        chatRoom.head -= 1;
+    }
+
+
+    // 채팅방 방장 수정
     public void changeHost(Long nextHostId) {
         this.ownerId = nextHostId;
     }

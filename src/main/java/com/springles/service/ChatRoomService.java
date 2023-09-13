@@ -5,7 +5,6 @@ import com.springles.domain.dto.chatroom.ChatRoomReqDTO;
 import com.springles.domain.dto.chatroom.ChatRoomResponseDto;
 import com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto;
 
-import com.springles.domain.entity.ChatRoom;
 import java.util.List;
 
 public interface ChatRoomService {
@@ -19,7 +18,8 @@ public interface ChatRoomService {
     ChatRoomResponseDto findChatRoomByChatRoomId(Long id);
     List<ChatRoomResponseDto> findAllByTitleAndNickname(String searchContent);
     List<ChatRoomResponseDto> findAllChatRooms();
-    ChatRoomResponseDto enterChatRoom(Long roomId, String nickName);
+    void enterChatRoom(Long roomId, String nickName);
     ChatRoomResponseDto chatRoomCondition(Long roomId);
     ChatRoomResponseDto quickEnter();
+    void exitChatRoom(Long roomId);
 }

@@ -159,19 +159,10 @@ public class ChatRoomController {
     }
 
     // 채팅방 입장
-    @GetMapping("chatrooms/{room-id}/{nick-name}")
-    public ResponseEntity<ResResult> enterRoom(@PathVariable("room-id") Long roomId,
-                                               @PathVariable("nick-name") String nickName) {
-
-        // 채팅 방 정보
-        ResponseCode responseCode = ResponseCode.CHATROOM_ENTER;
-
-        return new ResponseEntity<>(ResResult.builder()
-                .responseCode(responseCode)
-                .code(responseCode.getCode())
-                .message(responseCode.getMessage())
-                .data(chatRoomService.enterChatRoom(roomId, nickName))
-                .build(), HttpStatus.OK);
+    @GetMapping("/chatrooms/{roomId}/{nickName}")
+    public void enterRoom(@PathVariable(value = "roomId") Long roomId,
+                            @PathVariable(value = "nickName") String nickName) {
+        chatRoomService.enterChatRoom(roomId, nickName);
     }
 
     /**
@@ -189,4 +180,12 @@ public class ChatRoomController {
                 .data(chatRoomService.quickEnter())
                 .build(), HttpStatus.OK);
     }
+
+    /**
+     * 채팅방 퇴장 **/
+    @GetMapping("/chatrooms/exit/{roomId}")
+    public void exitRoom(@PathVariable(value = "roomId") Long roomId) {
+        chatRoomService.exitChatRoom(roomId);
+    }
+
 }
