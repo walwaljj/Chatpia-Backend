@@ -440,12 +440,16 @@
                         // 프로필 이미지
                         const profileImg = document.createElement('img');
                         profileImg.src = data.data.profileImg;
-                        profileImg.style.height = '2px';
-                        profileImg.style.width = '2px';
+                        profileImg.style.height = '20px';
+                        profileImg.style.width = '20px';
+                        profileImg.style.borderRadius = '70%';
+                        profileImg.style.overflow = 'hidden';
+
 
                         // 닉네임
                         const nickName = document.createElement('span');
                         nickName.innerText = data.data.nickName;
+                        nickName.style.marginLeft = '2px';
 
                         // 방장 여부
                         const isOwner = document.createElement('span');
@@ -454,20 +458,21 @@
                             isOwner.className = 'badge badge-pill'
                             isOwner.style.backgroundColor = '#4B2200'
                             isOwner.style.color = 'white'
+                            isOwner.style.marginLeft = '2px';
                         }
                         i++;
                         div.append(profileImg)
                         div.append(nickName)
                         div.append(isOwner)
                         list.appendChild(div)
-                        // document.getElementById('gamePlayer').innerText = i;
+                        document.getElementById('gamePlayer').innerText = i;
                     },
                     error: function(response) {
                         console.log(response)
                     },
                 });
             }
-            document.getElementById('gamePlayer').innerText = i;
+            // document.getElementById('gamePlayer').innerText = i;
         }
 
         function startNight(messageOutput) {
