@@ -91,7 +91,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     log.info("atk valid 정상");
 
                     // atk의 유효시간이 적게 남았는지 확인
-                    if(((jwtTokenUtils.parseClaims(accessToken).getExpiration().getTime() - Date.from(Instant.now()).getTime()) / 1000) < 30L) {
+                    if(((jwtTokenUtils.parseClaims(accessToken).getExpiration().getTime() - Date.from(Instant.now()).getTime()) / 1000) < 60 * 5L) {
                         // rtk가 추출되었는지 확인
                         if (!refreshTokenId.equals("")) {
 
