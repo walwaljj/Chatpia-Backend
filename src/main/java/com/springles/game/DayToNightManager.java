@@ -51,21 +51,6 @@ public class DayToNightManager {
             playerRedisRepository.save(player);
         }
 
-        // 살아 있는 인원 업데이트
-//        gameSession.setAliveCivilian((int) players.stream()
-//                .filter(e -> e.getRole() == GameRole.CIVILIAN)
-//                .filter(Player::isAlive).count());
-//        gameSession.setAliveDoctor((int) players.stream()
-//                .filter(e -> e.getRole() == GameRole.DOCTOR)
-//                .filter(Player::isAlive).count());
-//        gameSession.setAliveMafia((int) players.stream()
-//                .filter(e -> e.getRole() == GameRole.MAFIA)
-//                .filter(Player::isAlive).count());
-//        gameSession.setAlivePolice((int) players.stream()
-//                .filter(e -> e.getRole() == GameRole.POLICE)
-//                .filter(Player::isAlive).count());
-//
-//        gameSessionManager.saveSession(gameSession);
         log.info("Room {} CIVILIAN: {}, POLICE: {}, MAFIA: {}, DOCTOR: {}",
                 roomId,
                 gameSession.getAliveCivilian(),
@@ -74,8 +59,40 @@ public class DayToNightManager {
                 gameSession.getAliveDoctor());
 
         if (gameSessionManager.isEnd(gameSession)) {
+            if (gameSessionManager.mafiaWin(gameSession) == 1) {
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        "마피아팀이 승리하였습니다",
+                        gameSession.getRoomId(), "admin"
+                );
+            }
+            else if (gameSessionManager.mafiaWin(gameSession) == 0) {
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        "시민팀이 승리하였습니다",
+                        gameSession.getRoomId(), "admin"
+                );
+            }
+            else {
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        "무승부입니다",
+                        gameSession.getRoomId(), "admin"
+                );
+            }
+
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    "end",
+                    gameSession.getRoomId(), "admin"
+            );
             log.info("game end");
             gameSessionManager.endGame(gameSession.getRoomId());
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId + "/timer",
+                    "end",
+                    gameSession.getRoomId(), "admin"
+            );
             return;
         }
 
