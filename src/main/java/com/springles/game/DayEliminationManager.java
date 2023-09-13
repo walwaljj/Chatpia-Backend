@@ -37,26 +37,29 @@ public class DayEliminationManager {
         log.info("Room: {}, Dead Player Id: {}", roomId, deadPlayerId);
         log.info("Room {} at Phase {}", roomId, gameSession.getGamePhase());
 
-        setDayToNight(gameSession, deadPlayerId);
+        boolean isEnd = setDayToNight(gameSession, deadPlayerId);
 
-        List<Player> players = playerRedisRepository.findByRoomId(roomId);
-        // 종료된 게임인지 체크
-        if (!gameSessionManager.existRoomByRoomId(roomId)) {
-            throw new CustomException(ErrorCode.GAME_NOT_FOUND);
+        if (!isEnd) {
+
+            List<Player> players = playerRedisRepository.findByRoomId(roomId);
+            // 종료된 게임인지 체크
+            if (!gameSessionManager.existRoomByRoomId(roomId)) {
+                throw new CustomException(ErrorCode.GAME_NOT_FOUND);
+            }
+
+            // 죽은 사람이 존재하는 플레이어긴 했는지 검사
+            Optional<Player> deadPlayerOptional = playerRedisRepository.findById(deadPlayerId);
+            if (deadPlayerOptional.isEmpty()) {
+                throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
+            }
+            // 현재 진행 상황 기록
+            log.info("Room {} start Day {} {} ", roomId, gameSession.getDay(), gameSession.getGamePhase());
+
+            dayToNightManager.sendMessage(roomId);
         }
-
-        // 죽은 사람이 존재하는 플레이어긴 했는지 검사
-        Optional<Player> deadPlayerOptional = playerRedisRepository.findById(deadPlayerId);
-        if (deadPlayerOptional.isEmpty()) {
-            throw new CustomException(ErrorCode.PLAYER_NOT_FOUND);
-        }
-        // 현재 진행 상황 기록
-        log.info("Room {} start Day {} {} ", roomId, gameSession.getDay(), gameSession.getGamePhase());
-
-        dayToNightManager.sendMessage(roomId);
     }
 
-    private void setDayToNight(GameSession gameSession, Long deadPlayerId)    {
+    private boolean setDayToNight(GameSession gameSession, Long deadPlayerId)    {
         gameSessionManager.changePhase(gameSession.getRoomId(), GamePhase.DAY_TO_NIGHT);
         // 죽어서 관찰만 하는 사람들
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
@@ -101,11 +104,14 @@ public class DayEliminationManager {
                 playerRedisRepository.save(deadPlayer);
 
                 if (gameSessionManager.isEnd(gameSession)) {
+                    log.info("game end");
                     gameSessionManager.endGame(gameSession.getRoomId());
+                    return true;
                 }
 
             }
         }
         log.info("Room {} ElimainationVote deadPlayer: {}", gameSession.getRoomId(), deadPlayerId);
+        return false;
     }
 }

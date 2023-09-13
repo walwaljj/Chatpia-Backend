@@ -369,14 +369,14 @@
           updatePlayerList(message)
         })
 
-        // 낮 투표 후보
-        stompClient.subscribe(`/sub/chat/${roomId}/votePlayer`, function (message) {
-          updateVoteList(message)
-        })
-
         // 죽을 사람 후보
         stompClient.subscribe(`/sub/chat/${roomId}/deadPlayer`, function (message) {
           updateDeadPlayer(message)
+        })
+
+        // 낮 투표 후보
+        stompClient.subscribe(`/sub/chat/${roomId}/votePlayer`, function (message) {
+          updateVoteList(message)
         })
 
         // 밤 투표 때 투표할 수 있는 사람 리스트 구독
@@ -388,7 +388,6 @@
         // 타이머용 구독
         stompClient.subscribe(`/sub/chat/${roomId}/timer`, function (message) {
           console.log(message);
-
           publish(message);
         })
 
@@ -492,6 +491,9 @@
       }
       else if (messageType == "day") {
         setTimeout(voteStart, 60000);
+      }
+      else if (messageType == "confirm") {
+        stompClient.send(`/pub/chat/${roomId}/confirm`);
       }
     }
 
