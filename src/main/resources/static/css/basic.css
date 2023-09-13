@@ -9,14 +9,14 @@ body {
 }
 
 .nav-link {
-    font-size : 20px;
+    font-size : 18px;
     color: #4b2200;
 }
 
 .navbar {
     padding-left: 40px;
     padding-right: 40px;
-    height: 12vh;
+    height: 10vh;
     background-color:#f3efe1;
 }
 
@@ -672,4 +672,55 @@ body {
     color : #A6907A;
 }
 
+.game-start-btn {
+    background-color: #4b2200;
+    color: #ffffff;
+    border: 0px solid #ced4da;
+    border-radius: 14px;
+    box-shadow:0px 0px 10px #c5bbaf;
+    width: 130px;
+    text-align: center;
+}
+
+.my-role-info-btn {
+    background-color: #9A9A9A;
+    color: #ffffff;
+    border-radius: 14px;
+    margin-left: 10px;
+    text-align: center;
+    font-size: 16px;
+    padding-left: 9px;
+    padding-right: 9px;
+    padding-top: 5px;
+    padding-bottom: 3px;
+    width: 124px;
+    height: 34px;
+}
+
+.game-rule-btn {
+    background-color: #9A9A9A;
+    color: #ffffff;
+    border-radius: 14px;
+    margin-left: 18px;
+    text-align: center;
+    font-size: 16px;
+    padding-left: 9px;
+    padding-right: 9px;
+    padding-top: 5px;
+    padding-bottom: 3px;
+    width: 84px;
+    height: 34px;
+}
+
+.room-setting {
+    font-weight: bold;
+    color: #666666;
+}
+
+.room-setting-img {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    top: -2px;
+}
 

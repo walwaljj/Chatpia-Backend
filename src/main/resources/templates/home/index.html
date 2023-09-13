@@ -6,7 +6,7 @@
 <div layout:fragment="content">
     <div th:insert="fragments/header::header"></div>
     <div class="index-container">
-        <div class="row cover m-2">
+        <div class="row cover m-2  mt-5">
             <form class="form-inline">
                 <!------------------ 리셋 ---------------------------->
                 <button type="button" class="btn btn-light my-1" onclick="clearButton()">리셋</button>
@@ -177,7 +177,7 @@
                                 style="margin: 1vw 3vw;border-radius: 15px;width: 88%;">`
 
                         + `<div class="test d-flex w-100 justify-content-between">`
-                            + `<span class="state badge badge-pill" style="background-color: #A6907A; color: white;">` + item.state + `</span>`
+                            + `<span class="state badge badge-pill" style="background-color: #A6907A; color: white; height: 20px;">` + item.state + `</span>`
                             + `<div class="d-flex w-100 justify-content-between">`
                                 + `<span class="mb-1">`
                                 + `<img id="roomImage" class="lock_thumbnail" src="${img_info()}">`

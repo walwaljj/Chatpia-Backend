@@ -15,94 +15,95 @@
         <!--        <div sec:authorize="isAuthenticated()">-->
         <a class="navbar-brand" href="#" id="chatroomTitle" style="color:#4b2200"></a>
 
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
-            <!------------------------------------------- 방 정보 ------------------------------------------->
-            <div class="form-inline my-2 my-lg-0">
-                <a class="nav-link" onclick="openRoomDetail()">설정</a>
+        <!------------------------------------------- 방 정보 ------------------------------------------->
+        <a class="nav-link room-setting" onclick="openRoomDetail()"><img class="room-setting-img" src="/images/icon_chatroom_info.png" alt="방정보 아이콘"></a>
+        <!-- 방 정보 모달 -->
+        <div class="form-inline my-2 my-lg-0">
+            <div class="modal fade" id="roomDetailModal" tabindex="-1"
+                 aria-labelledby="roomDetailModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content pl-3 pr-3 pt-2 pb-2">
+                        <div class="modal-header">
+                            <h3 class="modal-title fs-5" id="room-info">방 정보</h3>
+                            <!--  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" action="#" class="">
 
+                                <div class="row mt-3">
+                                    <p class="room-info-item-title col-3 mb-0">방 제목</p>
+                                    <input type="text" class="form-control room-info-item-input col-7"
+                                           id="room-name" name="room-name">
+                                </div>
+                                <div class="row mt-3">
+                                    <p class="room-info-item-title col-3 mb-0">공개 여부</p>
 
-                <!-- 방 정보 모달 -->
-                <div class="modal fade" id="roomDetailModal" tabindex="-1"
-                     aria-labelledby="roomDetailModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                        <div class="modal-content pl-3 pr-3 pt-2 pb-2">
-                            <div class="modal-header">
-                                <h3 class="modal-title fs-5" id="room-info">설정</h3>
-                                <!--  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
-                            </div>
-                            <div class="modal-body">
-                                <form method="post" action="#" class="">
+                                    <input type="button" class="form-control" id="room-close" name="room-close"
+                                           value="공개방"/>
+                                    <input type="button" class="form-control ml-2" id="room-open" name="room-open"
+                                           value="비밀방">
+                                </div>
+                                <div class="row mt-3">
+                                    <p class="room-info-item-title col-3 mb-0">비밀번호</p>
+                                    <input type="text" class="form-control" id="room-password"
+                                           name="room-password">
+                                </div>
+                                <div class="row mt-3">
+                                    <p class="room-info-item-title col-3 mb-0">인원 수</p>
+                                    <input type="text" class="form-control" id="room-capacity"
+                                           name="room-capacity">
+                                </div>
+                                <!--                                    <div class="row mt-3">-->
+                                <!--                                        <p class="room-info-item-title col-3 mb-0">초대 코드</p>-->
+                                <!--                                        <p class="form-control" id="room-invite" name="room-invite"></p>-->
+                                <!--                                    </div>-->
 
-                                    <div class="row mt-3">
-                                        <p class="room-info-item-title col-3 mb-0">방 제목</p>
-                                        <input type="text" class="form-control room-info-item-input col-7"
-                                               id="room-name" name="room-name">
-                                    </div>
-                                    <div class="row mt-3">
-                                        <p class="room-info-item-title col-3 mb-0">공개 여부</p>
-
-                                        <input type="button" class="form-control" id="room-close" name="room-close"
-                                               value="공개방"/>
-                                        <input type="button" class="form-control ml-2" id="room-open" name="room-open"
-                                               value="비밀방">
-                                    </div>
-                                    <div class="row mt-3">
-                                        <p class="room-info-item-title col-3 mb-0">비밀번호</p>
-                                        <input type="text" class="form-control" id="room-password"
-                                               name="room-password">
-                                    </div>
-                                    <div class="row mt-3">
-                                        <p class="room-info-item-title col-3 mb-0">인원 수</p>
-                                        <input type="text" class="form-control" id="room-capacity"
-                                               name="room-capacity">
-                                    </div>
-                                    <!--                                    <div class="row mt-3">-->
-                                    <!--                                        <p class="room-info-item-title col-3 mb-0">초대 코드</p>-->
-                                    <!--                                        <p class="form-control" id="room-invite" name="room-invite"></p>-->
-                                    <!--                                    </div>-->
-
-                                    <!-- 공유하기 -->
-                                    <div class="row mb-3 mt-3">
-                                        <div class="col mx-auto">
-                                            <div class="sns">
-                                                <a href="#n" id="btnKakao"
-                                                   onclick="fn_sendFB('kakaotalk');return false;"
-                                                   class="kakaotalk text-link" target="_self"
-                                                   title="카카오톡 새창열림"><span class="skip">카카오톡</span></a>
-                                                <a href="#n" onclick="handleCopyClipBoard();return false;"
-                                                   class="clipboard text-link" target="_self"
-                                                   title="클립보드 복사"><span class="skip">복사하기</span></a>
-                                                <!--<img id="preview"  alt="Preview" class="rounded-circle shadow" width="200px" height="200px">-->
-                                            </div>
+                                <!-- 공유하기 -->
+                                <div class="row mb-3 mt-3">
+                                    <div class="col mx-auto">
+                                        <div class="sns">
+                                            <a href="#n" id="btnKakao"
+                                               onclick="fn_sendFB('kakaotalk');return false;"
+                                               class="kakaotalk text-link" target="_self"
+                                               title="카카오톡 새창열림"><span class="skip">카카오톡</span></a>
+                                            <a href="#n" onclick="handleCopyClipBoard();return false;"
+                                               class="clipboard text-link" target="_self"
+                                               title="클립보드 복사"><span class="skip">복사하기</span></a>
+                                            <!--<img id="preview"  alt="Preview" class="rounded-circle shadow" width="200px" height="200px">-->
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div class="row mt-4" style="margin-left: 150px;">
-                                        <div>
-                                            <button class="btn modal-btn-secondary" id="close_btn" type="submit">닫기
-                                            </button>
-                                        </div>
-                                        <div class="ml-2">
-                                            <button class="btn modal-btn-primary" id="submit_btn" type="submit">저장
-                                            </button>
-                                        </div>
+                                <div class="row mt-4" style="margin-left: 150px;">
+                                    <div>
+                                        <button class="btn modal-btn-secondary" id="close_btn" type="submit">닫기
+                                        </button>
                                     </div>
-                                </form>
-                            </div>
+                                    <div class="ml-2">
+                                        <button class="btn modal-btn-primary" id="submit_btn" type="submit">저장
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-                <!-- 모달 끝 -->
-                <!------------------------------------------- 방 정보 끝------------------------------------------->
+            </div>
+        </div>
+        <!-- 모달 끝 -->
+        <!------------------------------------------- 방 정보 끝------------------------------------------->
 
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0"></ul>
+            <div class="form-inline my-2 my-lg-0">
                 <div class="nav-item">
                     <!------------------------------------------- 게임시작 시작------------------------------------------->
-                    <a class="nav-link text-white" onclick=gameStart()>게임시작</a>
+                    <a class="nav-link text-white game-start-btn" id="gameStart" onclick=gameStart()>게임시작</a>
                     <!------------------------------------------- 게임시작 끝------------------------------------------->
 
                     <!------------------------------------------- 내 직업 설명 시작------------------------------------------->
-                    <a class="nav-link text-white" onclick="myRoleOpen()">내 직업 설명</a>
+                    <a class="nav-link my-role-info-btn" id="myRoleInfo" onclick="myRoleOpen()" style="display: none;">내
+                        직업 설명</a>
                     <!--                    th:if="${chatroom.state.getValue() == T(com.springles.domain.constants.ChatRoomCode).PLAYING.getValue()}"-->
                 </div>
                 <!-- 내 직업 설명 모달-->
@@ -179,7 +180,7 @@
 
                 <!------------------------------------------- 게임룰 시작------------------------------------------->
                 <div class="nav-item">
-                    <a class="nav-link text-white" onclick="gameRuleOpen()">게임 룰</a>
+                    <a class="nav-link game-rule-btn" onclick="gameRuleOpen()">게임 룰</a>
                 </div>
                 <!-- 게임룰 모달-->
                 <div class="modal fade" id="gameRuleDetailModal" tabindex="-1"
@@ -409,6 +410,11 @@
                     receiveMessage(body)
                     // 내 직업 정보 팝업에 플레이어별 부여된 역할에 맞는 내용 출력
                     inGameRole = body.gameRole
+
+                    // 게임시작 후 역할부여 전/후에 따라 게임시작 버튼/내 직업 설명 버튼 분기 노출
+                    inGameRole = body.gameRole
+                    $('#gameStart').attr('style', "display:none;")
+                    $('#myRoleInfo').attr('style', "display:block;")
                 }))
 
             });
