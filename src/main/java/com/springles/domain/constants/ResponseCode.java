@@ -17,6 +17,7 @@ public enum ResponseCode {
     CHATROOM_SEARCH(HttpStatus.OK,"200", "채팅방 검색 완료"),
     CHATROOM_READ(HttpStatus.OK,"200", "채팅방 조회 완료"),
     CHATROOM_ENTER(HttpStatus.OK,"200", "채팅방 입장 완료"),
+    CHATROOM_EXIT(HttpStatus.OK,"200", "채팅방 퇴장 완료"),
 
     /* AUTH */
     MEMBER_SAVE(HttpStatus.CREATED, "201", "회원가입 성공"),

@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.springles.domain.dto.chatroom.ChatRoomReqDTO.createToEntity;
 import static com.springles.domain.dto.chatroom.ChatRoomUpdateReqDto.updateToEntity;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -91,14 +92,17 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         if (findChatRoom.getHead() >= findChatRoom.getCapacity()) {
             throw new CustomException(ErrorCode.GAME_HEAD_FULL);
         }
-        // 비밀 방 일 때
-        if (findChatRoom.getClose()) {
-            throw new CustomException(ErrorCode.CLOSE_ROOM_ERROR);
-        }
+
         // 이미 진행 중 일 때
         if (findChatRoom.getState().getValue().equals("PLAYING")) {
             throw new CustomException(ErrorCode.PLAYER_STILL_INGAME);
         }
+
+        // 비밀 방 일 때
+        if (findChatRoom.getClose()) {
+            throw new CustomException(ErrorCode.CLOSE_ROOM_ERROR);
+        }
+
 
         return ChatRoomResponseDto.of(findChatRoom);
     }
@@ -110,7 +114,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     public ChatRoomResponseDto quickEnter() {
         List<ChatRoomResponseDto> chatRoomResponseDtoList = chatRoomJpaRepository.findAllByCloseFalseAndState(
                 ChatRoomCode.WAITING); // 오픈된 방이고 , 대기중인 리스트
-        if (chatRoomResponseDtoList.isEmpty()){
+        if (chatRoomResponseDtoList.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_QUICK_ENTRY_ROOM);
         }
         return chatRoomResponseDtoList.get(0);// 정원수 - 입장 인원 수 중 가장 상단에 있는 방
@@ -227,10 +231,32 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         return list.stream().distinct().toList();
     }
 
-    // 채팅방 입장 시 채팅 정보 받아오기
-    public ChatRoomResponseDto enterChatRoom(Long roomId, String nickname) {
+    // 채팅방 입장 시, 채팅 정보 조회와 참여 인원 증가
+    @Transactional
+    @Override
+    public void enterChatRoom(Long roomId, String nickname) {
         ChatRoom findChatRoom = chatRoomJpaRepository.findById(roomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
-        return ChatRoomResponseDto.of(findChatRoom);
+
+        // 입장 시도 시 정원이 다 찼을 때
+        if (findChatRoom.getHead() >= findChatRoom.getCapacity()) {
+            throw new CustomException(ErrorCode.GAME_HEAD_FULL);
+        }
+
+        // 이미 진행 중 일 때
+        if (findChatRoom.getState().getValue().equals("PLAYING")) {
+            throw new CustomException(ErrorCode.PLAYER_STILL_INGAME);
+        }
+
+        findChatRoom.headPlus(findChatRoom);
+    }
+
+    // 채팅방 퇴장 시, 참여 인원 감소
+    @Transactional
+    @Override
+    public void exitChatRoom(Long roomId) {
+        ChatRoom findChatRoom = chatRoomJpaRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
+        findChatRoom.headMinus(findChatRoom);
     }
 }
