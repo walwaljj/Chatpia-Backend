@@ -96,7 +96,7 @@ public class GameSessionManager {
             chatRoomJpaRepository.findByIdCustom(roomId).changeHost(nextHost.getMemberId());
             messageManager.sendMessage(
                 "/sub/chat/"+roomId,
-                nextHost.getMemberName()+"님이 방장이 되었습니다.",
+                nextHost.getNickName()+"님이 방장이 되었습니다.",
                 roomId, "admin");
             gameSessionRedisRepository.save(gameSession);
         }

@@ -97,6 +97,7 @@ public class MessageController {
     public void sendMessage_GameExit(SimpMessageHeaderAccessor accessor,
         @DestinationVariable Long roomId) {
         String memberName = getMemberName(accessor);
+        String nickName = gameSessionManager.findPlayerByMemberName(memberName).getNickName();
         gameSessionManager.removePlayer(roomId, memberName);
 
         // 게임 참여자 목록 갱신
@@ -108,7 +109,7 @@ public class MessageController {
         // 게임 퇴장 메시지 전송
         messageManager.sendMessage(
             "/sub/chat/" + roomId,
-            memberName + "님이 퇴장했습니다.",
+            nickName + "님이 퇴장했습니다.",
             roomId, "admin"
         );
     }
