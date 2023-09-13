@@ -419,8 +419,8 @@
       event.preventDefault();
       stompClient.send(`/pub/gameExit/${roomId}`)
     });
-    
-    // 채팅 참여자 목록 
+
+    // 채팅 참여자 목록
     function updatePlayerList(message) {
       const list = document.getElementById('playerList');
       list.innerHTML = ""
@@ -429,8 +429,8 @@
         console.log(player);
         // player 정보 조회
         const path = `http://localhost:8080/member/info/player/${player.roomId}/${player.memberId}`;
-        
-        $.ajax({ 
+
+        $.ajax({
           url: path,
           type: 'GET',
           dataType: 'json',
@@ -442,39 +442,45 @@
             // 프로필 이미지
             const profileImg = document.createElement('img');
             profileImg.src = data.data.profileImg;
-            profileImg.style.height = '2px';
-            profileImg.style.width = '2px';
+            profileImg.style.height = '20px';
+            profileImg.style.width = '20px';
+            profileImg.style.borderRadius = '70%';
+            profileImg.style.overflow = 'hidden';
 
             // 닉네임
-            const nickName = document.createElement('li');
-            nickName.innerText = 'data.data.nickName';
+            const nickName = document.createElement('span');
+            nickName.innerText = data.data.nickName;
+            nickName.style.marginLeft = '3px';
 
             // 방장 여부
             const isOwner = document.createElement('span');
             if (data.data.isOwner === true) {
               isOwner.innerText = '방장'
               isOwner.className = 'badge badge-pill'
+              isOwner.style.backgroundColor = '#4B2200'
+              isOwner.style.color = 'white'
+              isOwner.style.marginLeft = '2px';
             }
+
+            const line = document.createElement('br');
+            const line2 = document.createElement('hr');
+
             i++;
             div.append(profileImg)
             div.append(nickName)
             div.append(isOwner)
+            div.append(line)
+            div.append(line2)
             list.appendChild(div)
+            list.appendChild(line)
+            list.appendChild(line2)
             document.getElementById('gamePlayer').innerText = i;
           },
           error: function(response) {
             console.log(response)
           },
         });
-
-        const li = document.createElement('li');
-        li.appendChild(document.createTextNode(
-            "[" + player.memberName + "]"
-        ))
-        i++;
-        list.appendChild(li)
       }
-      document.getElementById('gamePlayer').innerText = i;
     }
 
     function publish(messageOutput) {
