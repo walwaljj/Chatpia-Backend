@@ -543,7 +543,6 @@ body {
 .playerList {
     height:30vh;
     overflow-y:auto;
-    display: none;
 }
 
 .scroll::-webkit-scrollbar {
