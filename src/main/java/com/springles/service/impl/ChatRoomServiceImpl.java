@@ -110,11 +110,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     public ChatRoomResponseDto quickEnter() {
         List<ChatRoomResponseDto> chatRoomResponseDtoList = chatRoomJpaRepository.findAllByCloseFalseAndState(
                 ChatRoomCode.WAITING); // 오픈된 방이고 , 대기중인 리스트
-        try {
-            return chatRoomResponseDtoList.get(0);// 정원수 - 입장 인원 수 중 가장 상단에 있는 방
-        } catch (IndexOutOfBoundsException e) {
+        if (chatRoomResponseDtoList.isEmpty()){
             throw new CustomException(ErrorCode.NOT_FOUND_QUICK_ENTRY_ROOM);
         }
+        return chatRoomResponseDtoList.get(0);// 정원수 - 입장 인원 수 중 가장 상단에 있는 방
 
     }
 

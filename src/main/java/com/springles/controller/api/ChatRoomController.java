@@ -174,4 +174,19 @@ public class ChatRoomController {
                 .build(), HttpStatus.OK);
     }
 
+    /**
+     * 빠른방 입장
+     */
+    @GetMapping("chatrooms/quick-enter")
+    public ResponseEntity<ResResult> quickEnterRoom(){
+
+        ResponseCode responseCode = ResponseCode.CHATROOM_ENTER;
+
+        return new ResponseEntity<>(ResResult.builder()
+                .responseCode(responseCode)
+                .code(responseCode.getCode())
+                .message(responseCode.getMessage())
+                .data(chatRoomService.quickEnter())
+                .build(), HttpStatus.OK);
+    }
 }
