@@ -17,6 +17,8 @@
 
         <!------------------------------------------- 방 정보 ------------------------------------------->
         <a class="nav-link room-setting" onclick="openRoomDetail()"><img class="room-setting-img" src="/images/icon_chatroom_info.png" alt="방정보 아이콘"></a>
+
+
         <!-- 방 정보 모달 -->
         <div class="form-inline my-2 my-lg-0">
             <div class="modal fade" id="roomDetailModal" tabindex="-1"
@@ -28,30 +30,30 @@
                             <!--  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
                         </div>
                         <div class="modal-body">
-                            <form method="post" action="#" class="">
+                            <form id="form">
 
                                 <div class="row mt-3">
                                     <p class="room-info-item-title col-3 mb-0">방 제목</p>
                                     <input type="text" class="form-control room-info-item-input col-7"
-                                           id="room-name" name="room-name">
+                                           id="room-name" name="room-name" value="" disabled>
                                 </div>
                                 <div class="row mt-3">
                                     <p class="room-info-item-title col-3 mb-0">공개 여부</p>
 
-                                    <input type="button" class="form-control" id="room-close" name="room-close"
-                                           value="공개방"/>
-                                    <input type="button" class="form-control ml-2" id="room-open" name="room-open"
-                                           value="비밀방">
+                                    <input type="button" class="form-control" id="room-open" name="room-open"
+                                           value="공개방" disabled/>
+                                    <input type="button" class="form-control ml-2" id="room-close" name="room-close"
+                                           value="비밀방" disabled/>
                                 </div>
                                 <div class="row mt-3">
                                     <p class="room-info-item-title col-3 mb-0">비밀번호</p>
                                     <input type="text" class="form-control" id="room-password"
-                                           name="room-password">
+                                           name="room-password" value="" disabled>
                                 </div>
                                 <div class="row mt-3">
                                     <p class="room-info-item-title col-3 mb-0">인원 수</p>
                                     <input type="text" class="form-control" id="room-capacity"
-                                           name="room-capacity">
+                                           name="room-capacity" value="" disabled>
                                 </div>
                                 <!--                                    <div class="row mt-3">-->
                                 <!--                                        <p class="room-info-item-title col-3 mb-0">초대 코드</p>-->
@@ -59,30 +61,28 @@
                                 <!--                                    </div>-->
 
                                 <!-- 공유하기 -->
-                                <div class="row mb-3 mt-3">
-                                    <div class="col mx-auto">
-                                        <div class="sns">
-                                            <a href="#n" id="btnKakao"
+                                <div class="hr-sect mt-4">친구에게 공유하기</div>
+                                <div class="mb-3 mt-3">
+                                        <div class="sns center">
+                                            <button id="btnKakao"
                                                onclick="fn_sendFB('kakaotalk');return false;"
-                                               class="kakaotalk text-link" target="_self"
-                                               title="카카오톡 새창열림"><span class="skip">카카오톡</span></a>
-                                            <a href="#n" onclick="handleCopyClipBoard();return false;"
-                                               class="clipboard text-link" target="_self"
-                                               title="클립보드 복사"><span class="skip">복사하기</span></a>
+                                               class="kakaotalk text-link sns-btn" target="_self"
+                                               title="카카오톡 새창열림"><span class="skip">카카오톡<br>공유하기</span></button>
+                                            <button onclick="handleCopyClipBoard();return false;"
+                                               class="clipboard text-link sns-btn ml-2" target="_self"
+                                               title="클립보드 복사"><span class="skip">URL<br>복사하기</span></button>
                                             <!--<img id="preview"  alt="Preview" class="rounded-circle shadow" width="200px" height="200px">-->
                                         </div>
-                                    </div>
                                 </div>
-
-                                <div class="row mt-4" style="margin-left: 150px;">
+                                <div class="mt-4 center">
                                     <div>
-                                        <button class="btn modal-btn-secondary" id="close_btn" type="submit">닫기
+                                        <button class="btn modal-btn-secondary" onclick="roomInfoClose()">닫기
                                         </button>
                                     </div>
-                                    <div class="ml-2">
-                                        <button class="btn modal-btn-primary" id="submit_btn" type="submit">저장
-                                        </button>
-                                    </div>
+<!--                                    <div class="ml-2">-->
+<!--                                        <button class="btn modal-btn-primary" id="submit_btn" type="submit">저장-->
+<!--                                        </button>-->
+<!--                                    </div>-->
                                 </div>
                             </form>
                         </div>
@@ -791,6 +791,7 @@
             }
         }
 
+
         //
         // $.get(`/v1/chatrooms/${roomId}/${nickname}`,
         //     function (result) {
@@ -823,9 +824,61 @@
         //
         //     });
 
+        // 방 정보 모달 열기
         function openRoomDetail() {
-            $('#roomDetailModal').modal('show'); // 모달 열기
+            $('#roomDetailModal').modal('show');
+
+            $.get(`/v1/chatroom/${roomId}`,
+                function (response) {
+
+                    const rawRoomInfo = response.data
+                    $('#room-name').attr('value', rawRoomInfo.title)
+                    $('#room-capacity').attr('value', rawRoomInfo.capacity)
+                    $('#room-password').attr('value', rawRoomInfo.password)
+                    if (rawRoomInfo.close === true) {
+                        $("#room-close").attr('style', "font-weight: bold; border: 2px solid #495057;")
+                    } else {
+                        $("#room-open").attr('style', "font-weight: bold; border: 2px solid #495057;")
+                    }
+                })
         }
+
+
+        /* 방 정보 모달 닫기 */
+        function roomInfoClose() {
+            $('#roomDetailModal').modal('hide');
+            event.preventDefault();
+        }
+
+        /* 방 정보 모달 > 비밀방 클릭 시 */
+        function roomCloseBtnPressed() {
+            $("#room-close").attr('style', "font-weight: bold; border: 2px solid #495057;")
+            $("#room-open").attr('style', "font-weight: normal;")
+            $("#room-password").attr('disabled', false)
+
+        }
+
+        /* 방 정보 모달 > 공개방 클릭 시 */
+        function roomOpenBtnPressed() {
+            $("#room-close").attr('style', "font-weight: normal;")
+            $("#room-open").attr('style', "font-weight: bold; border: 2px solid #495057;")
+            $("#room-password").attr('disabled', true)
+        }
+
+
+        // 채팅방 타이틀 가져오기
+        $.get(`/v1/chatroom/${roomId}`,
+            function (result) {
+                // 채팅방 타이틀
+                $("#chatroomTitle").text(result.data.title);
+
+                // // +채팅방 정보 로그
+                // console.log("title" + result.data.title)
+                // console.log("capacity" + result.data.capacity)
+                // console.log("roomPassword" + result.data.password)
+                // console.log("isClose" + result.data.close)  // boolean
+            });
+
 
         // 나가기 버튼
         function leave() {
@@ -848,6 +901,8 @@
         function gameRuleClose() {
             $('#gameRuleDetailModal').modal('hide');
         }
+
+
 
         /* 내 직업 설명 모달 열기 */
         function myRoleOpen() {
@@ -878,6 +933,7 @@
         function myRoleClose() {
             $('#myRoleDetailModal').modal('hide');
         }
+
 
     </script>
     <script src="/js/stomp.js"></script>
