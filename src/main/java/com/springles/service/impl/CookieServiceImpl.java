@@ -19,7 +19,7 @@ public class CookieServiceImpl implements CookieService {
         Cookie cookie = new Cookie(cookieDto.getKey(), cookieDto.getValue());
         cookie.setDomain("localhost");
         cookie.setPath("/");
-        cookie.setMaxAge(60 * 60);  // 1시간(테스트용)
+        cookie.setMaxAge(60 * 60);  // 1시간
         cookie.setHttpOnly(true);
         cookie.setSecure(false);   // 사파리 브라우저에서 쿠키 저장이 안되는 이슈 해결을 위해 설정 해제
         response.addCookie(cookie);
