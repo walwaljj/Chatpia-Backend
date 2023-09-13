@@ -140,6 +140,32 @@ public class NightVoteManager {
                 deadPlayer.setRole(GameRole.OBSERVER);
                 playerRedisRepository.save(deadPlayer);
 
+
+                List<Player> playersRe = playerRedisRepository.findByRoomId(gameSession.getRoomId());
+
+
+                // 살아 있는 인원 업데이트
+                gameSession.setAliveCivilian((int) playersRe.stream()
+                        .filter(e -> e.getRole() == GameRole.CIVILIAN)
+                        .filter(Player::isAlive).count());
+                gameSession.setAliveDoctor((int) playersRe.stream()
+                        .filter(e -> e.getRole() == GameRole.DOCTOR)
+                        .filter(Player::isAlive).count());
+                gameSession.setAliveMafia((int) playersRe.stream()
+                        .filter(e -> e.getRole() == GameRole.MAFIA)
+                        .filter(Player::isAlive).count());
+                gameSession.setAlivePolice((int) playersRe.stream()
+                        .filter(e -> e.getRole() == GameRole.POLICE)
+                        .filter(Player::isAlive).count());
+
+                gameSessionManager.saveSession(gameSession);
+                log.info("Room {} CIVILIAN: {}, POLICE: {}, MAFIA: {}, DOCTOR: {}",
+                        roomId,
+                        gameSession.getAliveCivilian(),
+                        gameSession.getAlivePolice(),
+                        gameSession.getAliveMafia(),
+                        gameSession.getAliveDoctor());
+
                 if (gameSessionManager.isEnd(gameSession)) {
                     log.info("game end");
                     gameSessionManager.endGame(gameSession.getRoomId());

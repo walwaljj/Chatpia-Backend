@@ -294,10 +294,12 @@
                                 type="submit">낮 투표하기
                         </button>
                     </form>
-                    <form id="confirm-form">
+                    <form id="approve-form">
                         <button id="approve" class="btn btn-primary" style="margin: 0 0 4px;"
                                 type="submit">찬성
                         </button>
+                    </form>
+                    <form id="opposite-form">
                         <button id="opposite" class="btn btn-primary" style="margin: 0 0 4px;"
                                 type="submit">반대
                         </button>
@@ -549,9 +551,9 @@
             const player = JSON.parse(message.body);
             console.log(player.memberName);
 
-            const approveButton = document.getElementById("approve");
-            approveButton.addEventListener("click", () => {
-                // 찬성 버튼이 클릭되었을 때 실행될 코드 작성
+            const approveButton = document.getElementById("approve-form");
+            approveButton.addEventListener("submit", (event) => {
+                event.preventDefault()
                 alert("찬성했습니다!");
                 const message = JSON.stringify({
                     'phase': 'DAY_ELIMINATE',
@@ -562,21 +564,19 @@
                         "Authorization": getCookie("accessToken")
                     },
                     message);
-            });
+            })
 
-            const oppositeButton = document.getElementById("opposite");
-            oppositeButton.addEventListener("click", () => {
-                // 반대 버튼이 클릭되었을 때 실행될 코드 작성
+            const oppositeButton = document.getElementById("opposite-form");
+            oppositeButton.addEventListener("submit", (event) => {
+                event.preventDefault()
                 alert("반대했습니다!");
                 const message = JSON.stringify({
                     'phase': 'DAY_ELIMINATE'
                 });
                 console.log(message);
                 stompClient.send(`/pub/chat/${roomId}/vote`, {
-                        "Authorization": getCookie("accessToken")
-                    },
-                    message);
-
+                    "Authorization": getCookie("accessToken")
+                }, message);
             });
         }
 
