@@ -165,7 +165,7 @@ public class MessageController {
 
         // 마피아들에게 마피아가 누구인지 알려주기
         String mafiaListString = mafiaList.stream()
-            .map(Player::getMemberName)
+            .map(Player::getNickName)
             .collect(Collectors.joining(", "));
         mafiaList.forEach(m -> {
             messageManager.sendMessage(

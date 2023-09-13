@@ -56,10 +56,10 @@ public class DayDiscussionManager {
         else {
             Optional<Player> deadPlayerOptional = playerRedisRepository.findById(suspiciousList.get(0));
             Player deadPlayer = deadPlayerOptional.get();
-            log.info("{}가 마피아로 지목되었습니다.", deadPlayer.getMemberName());
+            log.info("{}가 마피아로 지목되었습니다.", deadPlayer.getNickName());
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
-                    deadPlayer.getMemberName() + "님이 마피아로 지목되셨습니다.",
+                    deadPlayer.getNickName() + "님이 마피아로 지목되셨습니다.",
                     roomId, "admin"
             );
             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();

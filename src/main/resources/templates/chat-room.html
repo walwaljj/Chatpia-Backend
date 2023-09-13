@@ -403,7 +403,7 @@
           const body = JSON.parse(message.body)
           console.log("역할 설명 메시지: " + body)
           stompClient.subscribe(`/sub/chat/${roomId}/${body.gameRole}`) // 직업 url
-          //stompClient.unsubscribe(`/sub/chat/${roomId}/playerRole/${nickname}`)
+          stompClient.unsubscribe(`/sub/chat/${roomId}/playerRole/${nickname}`)
           receiveMessage(body)
           // 내 직업 정보 팝업에 플레이어별 부여된 역할에 맞는 내용 출력
           inGameRole = body.gameRole
@@ -504,7 +504,7 @@
       for (const player of JSON.parse(message.body)) {
         const option = document.createElement('option');
         option.value = player.memberId;
-        option.text = player.memberName;
+        option.text = player.nickName;
         list.appendChild(option);
         i++;
       }
@@ -519,7 +519,7 @@
       for (const player of JSON.parse(message.body)) {
         const option = document.createElement('option');
         option.value = player.memberId;
-        option.text = player.memberName;
+        option.text = player.nickName;
         list.appendChild(option);
         i++;
       }
