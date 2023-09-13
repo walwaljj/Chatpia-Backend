@@ -58,51 +58,50 @@ public class NightVoteManager {
             throw new CustomException(ErrorCode.GAME_NOT_FOUND);
         }
 
-        Map<Long, Player> playerMap = players.stream().collect(
-                Collectors.toMap(Player::getMemberId, Function.identity()));
+        boolean isEnd = setNightDay(gameSession, deadPlayerId);
 
-        setNightDay(gameSession, deadPlayerId);
-
-        // 밤이 지나고 이제 낮이 시작
-        log.info("Room {} start Day {} {} ",
-                gameSession.getRoomId(),
-                gameSession.getDay(),
-                gameSession.getGamePhase());
+        if (!isEnd) {
+            // 밤이 지나고 이제 낮이 시작
+            log.info("Room {} start Day {} {} ",
+                    gameSession.getRoomId(),
+                    gameSession.getDay(),
+                    gameSession.getGamePhase());
 
 
-        // 용의자 조사 결과 관찰자와 경찰에게 전송
-        for (Long voter : suspectVote.keySet()) {
-            Optional<Player> policeOptional = playerRedisRepository.findById(voter);
-            String policeName = "";
-            if (policeOptional.isPresent()) {
-                policeName = policeOptional.get().getMemberName();
+            // 용의자 조사 결과 관찰자와 경찰에게 전송
+            for (Long voter : suspectVote.keySet()) {
+                Optional<Player> policeOptional = playerRedisRepository.findById(voter);
+                String policeName = "";
+                if (policeOptional.isPresent()) {
+                    policeName = policeOptional.get().getMemberName();
+                }
+                Player suspectPlayer = suspectVote.get(voter);
+                log.info("Room {} NightVote suspectPlayer: {}", roomId, suspectPlayer.getMemberId());
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId + '/' + GameRole.POLICE + '/' + policeName,
+                        suspectPlayer.getMemberName() + "님은 " + suspectPlayer.getRole() + "입니다.",
+                        gameSession.getRoomId(), "admin"
+                );
             }
-            Player suspectPlayer = suspectVote.get(voter);
-            log.info("Room {} NightVote suspectPlayer: {}", roomId, suspectPlayer.getMemberId());
+
+            ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+            Runnable task = () -> {
+                messageManager.sendMessage("/sub/chat/" + roomId,
+                        "토의를 시작해 주세요. 시간은 60 초입니다.",
+                        roomId, "admin");
+            };
+            executor.schedule(task, 1, TimeUnit.SECONDS);
+
             messageManager.sendMessage(
-                    "/sub/chat/" + roomId + '/' + GameRole.POLICE + '/' + policeName,
-                    suspectPlayer.getMemberName()+ "님은 " + suspectPlayer.getRole() + "입니다.",
+                    "/sub/chat/" + roomId + "/timer",
+                    "day",
                     gameSession.getRoomId(), "admin"
             );
         }
-
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
-        Runnable task = () -> {
-            messageManager.sendMessage("/sub/chat/" + roomId,
-                    "토의를 시작해 주세요. 시간은 60 초입니다.",
-                    roomId, "admin");
-        };
-        executor.schedule(task, 1, TimeUnit.SECONDS);
-
-        messageManager.sendMessage(
-                "/sub/chat/" + roomId + "/timer",
-                "day",
-                gameSession.getRoomId(), "admin"
-        );
     }
 
-    private void setNightDay(GameSession gameSession, Long deadPlayerId) {
+    private boolean setNightDay(GameSession gameSession, Long deadPlayerId) {
         gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 7);
         Long roomId = gameSession.getRoomId();
         gameSessionManager.saveSession(gameSession);
@@ -142,10 +141,13 @@ public class NightVoteManager {
                 playerRedisRepository.save(deadPlayer);
 
                 if (gameSessionManager.isEnd(gameSession)) {
+                    log.info("game end");
                     gameSessionManager.endGame(gameSession.getRoomId());
+                    return true;
                 }
             }
         }
         log.info("Room {} NightVote deadPlayer: {}", gameSession.getRoomId(), deadPlayerId);
+        return false;
     }
 }

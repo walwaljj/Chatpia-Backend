@@ -48,7 +48,7 @@ public class VoteController {
         Player host = hostOptional.get();
 
         if (!playerName.equals(host.getMemberName()) || gameSession.getGamePhase() == GamePhase.DAY_VOTE) {
-            throw new CustomException(ErrorCode.BAD_REQUEST_ERROR);
+            return;
         }
         log.info("day Start 잘 받음");
         gameSession.changePhase(GamePhase.DAY_VOTE, 100);
@@ -126,25 +126,28 @@ public class VoteController {
                     votedPlayerName + "가 투표되었습니다.",
                     roomId, "admin"
             );
-
-            int killCnt = voteResult.entrySet().stream()
-                    .filter(e -> e.getValue() != null)
-                    .collect(Collectors.toList())
-                    .size();
-
-            int alivePlayerCnt = gameSession.getAliveCivilian()
-                    + gameSession.getAliveDoctor()
-                    + gameSession.getAlivePolice()
-                    + gameSession.getAliveMafia();
-
-            log.info("killCnt: {}, alivePlayerCnt: {}", killCnt, alivePlayerCnt);
-            if (gameSession.getGamePhase() == GamePhase.DAY_ELIMINATE) {
-                if (killCnt > alivePlayerCnt / 2) { // 과반수 이상이 찬성하면
-                    Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), request.getPhase());
-                    publishMessage(roomId, vote);
-                }
-            }
         }
+    }
+    @MessageMapping("/chat/{roomId}/confirm")
+    private void confirmVote (SimpMessageHeaderAccessor accessor,
+                                 @DestinationVariable Long roomId) {
+        String playerName = getMemberName(accessor);
+        GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+        Optional<Player> hostOptional = playerRedisRepository.findById(gameSession.getHostId());
+        Player host = hostOptional.get();
+        if (!playerName.equals(host.getMemberName())) {
+            return;
+        }
+
+        log.info("confirmVote 잘 받음");
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        log.info("Game Phase: {}", gameSession.getGamePhase());
+        Runnable task = () -> {
+            Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), GamePhase.DAY_ELIMINATE);
+            publishMessage(roomId, vote);
+        };
+        executor.schedule(task, 30, TimeUnit.SECONDS);
     }
 
     @MessageMapping("/chat/{roomId}/nightStart")
@@ -155,7 +158,7 @@ public class VoteController {
         Optional<Player> hostOptional = playerRedisRepository.findById(gameSession.getHostId());
         Player host = hostOptional.get();
         if (!playerName.equals(host.getMemberName())) {
-            throw new CustomException(ErrorCode.BAD_REQUEST_ERROR);
+            return;
         }
 
         log.info("nightVote 잘 받음");
