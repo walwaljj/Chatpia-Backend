@@ -46,6 +46,10 @@ public class VoteRepository {
         return voteResultConvert(getRedisVoteResult(getVoters(roomId)));
     }
 
+    public Map<Long, Long> getVote(Long roomId) {
+        return voteResultConvert(getRedisVoteResult(getVoters(roomId)));
+    }
+
     // 밤에 투표를 하는 메소드
     public Map<Long, Long> nightVote (Long roomId, Long playerId, Long player, GameRole role) {
         voteRedisRepository.vote(playerId, player);

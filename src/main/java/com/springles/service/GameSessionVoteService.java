@@ -17,6 +17,8 @@ public interface GameSessionVoteService {
     Map<Long, Long> nightVote (Long roomId, Long playerId, GameSessionVoteRequestDto request, GameRole role);
     Map<Long, Long> getVoteResult(Long roomId, GameSessionVoteRequestDto request);
 
+    Map<Long, Long> getVotePossible(Long roomId);
+
     Map<Long, Player> getSuspectResult(GameSession gameSession, Map<Long, Long> vote);
 
     List<Long> getSuspiciousList(GameSession gameSession, Map<Long, Long> voteResult);

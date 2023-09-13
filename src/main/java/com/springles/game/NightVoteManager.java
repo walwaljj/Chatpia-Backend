@@ -3,7 +3,6 @@ package com.springles.game;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.dto.message.NightVoteMessage;
-import com.springles.domain.dto.message.RoleExplainMessage;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
@@ -19,8 +18,6 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -58,7 +55,7 @@ public class NightVoteManager {
             throw new CustomException(ErrorCode.GAME_NOT_FOUND);
         }
 
-        boolean isEnd = setNightDay(gameSession, deadPlayerId);
+        boolean isEnd = setNightToDay(gameSession, deadPlayerId);
 
         if (!isEnd) {
             // 밤이 지나고 이제 낮이 시작
@@ -79,7 +76,7 @@ public class NightVoteManager {
                 log.info("Room {} NightVote suspectPlayer: {}", roomId, suspectPlayer.getMemberId());
                 messageManager.sendMessage(
                         "/sub/chat/" + roomId + '/' + GameRole.POLICE + '/' + policeName,
-                        suspectPlayer.getMemberName() + "님은 " + suspectPlayer.getRole() + "입니다.",
+                        suspectPlayer.getMemberName() + "님은 '" + suspectPlayer.getRole().getVal() + "'입니다.",
                         gameSession.getRoomId(), "admin"
                 );
             }
@@ -87,9 +84,11 @@ public class NightVoteManager {
             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
             Runnable task = () -> {
-                messageManager.sendMessage("/sub/chat/" + roomId,
-                        "토의를 시작해 주세요. 시간은 60 초입니다.",
-                        roomId, "admin");
+                messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    gameSession.getDay() + "번째 날 아침이 밝았습니다. 아침 시간은 60 초 입니다.",
+                    roomId, "admin"
+                );
             };
             executor.schedule(task, 1, TimeUnit.SECONDS);
 
@@ -101,7 +100,7 @@ public class NightVoteManager {
         }
     }
 
-    private boolean setNightDay(GameSession gameSession, Long deadPlayerId) {
+    private boolean setNightToDay(GameSession gameSession, Long deadPlayerId) {
         gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 7);
         Long roomId = gameSession.getRoomId();
         gameSessionManager.saveSession(gameSession);
@@ -120,7 +119,7 @@ public class NightVoteManager {
         if (deadPlayerId == null) {
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
-                    "아무도 죽지 않았습니다.",
+                    "밤 사이 아무일도 일어나지 않았습니다.",
                     gameSession.getRoomId(), "admin"
             );
         }
@@ -129,10 +128,21 @@ public class NightVoteManager {
             Player deadPlayer = deadPlayerOptional.get();
             // 아직 살아 있다면
             if (deadPlayer.isAlive()) {
+                if (deadPlayer.getRole() == GameRole.CIVILIAN) {
+                    gameSession.setAliveCivilian(gameSession.getAliveCivilian() - 1);
+                } else if (deadPlayer.getRole() == GameRole.MAFIA) {
+                    gameSession.setAliveMafia(gameSession.getAliveMafia() - 1);
+                } else if (deadPlayer.getRole() == GameRole.DOCTOR) {
+                    gameSession.setAliveDoctor(gameSession.getAliveDoctor() - 1);
+                } else if (deadPlayer.getRole() == GameRole.POLICE) {
+                    gameSession.setAlivePolice(gameSession.getAlivePolice() - 1);
+                }
+                gameSessionManager.saveSession(gameSession);
+              
                 log.info("{} 님이 마피아에게 사망하셨습니다.", deadPlayer.getMemberName());
                 messageManager.sendMessage(
                         "/sub/chat/" + roomId,
-                        deadPlayer.getMemberName() + "님이 마피아에게 사망하셨습니다.",
+                        deadPlayer.getMemberName() + "님이 님이 마피아에게 살해 당했습니다.",
                         gameSession.getRoomId(), "admin"
                 );
                 // 죽임
@@ -143,22 +153,6 @@ public class NightVoteManager {
 
                 List<Player> playersRe = playerRedisRepository.findByRoomId(gameSession.getRoomId());
 
-
-                // 살아 있는 인원 업데이트
-                gameSession.setAliveCivilian((int) playersRe.stream()
-                        .filter(e -> e.getRole() == GameRole.CIVILIAN)
-                        .filter(Player::isAlive).count());
-                gameSession.setAliveDoctor((int) playersRe.stream()
-                        .filter(e -> e.getRole() == GameRole.DOCTOR)
-                        .filter(Player::isAlive).count());
-                gameSession.setAliveMafia((int) playersRe.stream()
-                        .filter(e -> e.getRole() == GameRole.MAFIA)
-                        .filter(Player::isAlive).count());
-                gameSession.setAlivePolice((int) playersRe.stream()
-                        .filter(e -> e.getRole() == GameRole.POLICE)
-                        .filter(Player::isAlive).count());
-
-                gameSessionManager.saveSession(gameSession);
                 log.info("Room {} CIVILIAN: {}, POLICE: {}, MAFIA: {}, DOCTOR: {}",
                         roomId,
                         gameSession.getAliveCivilian(),
@@ -167,8 +161,40 @@ public class NightVoteManager {
                         gameSession.getAliveDoctor());
 
                 if (gameSessionManager.isEnd(gameSession)) {
+                    if (gameSessionManager.mafiaWin(gameSession) == 1) {
+                        messageManager.sendMessage(
+                                "/sub/chat/" + roomId,
+                                "마피아팀이 승리하였습니다",
+                                gameSession.getRoomId(), "admin"
+                        );
+                    }
+                    else if (gameSessionManager.mafiaWin(gameSession) == 0) {
+                        messageManager.sendMessage(
+                                "/sub/chat/" + roomId,
+                                "시민팀이 승리하였습니다",
+                                gameSession.getRoomId(), "admin"
+                        );
+                    }
+                    else {
+                        messageManager.sendMessage(
+                                    "/sub/chat/" + roomId,
+                                    "무승부입니다",
+                                    gameSession.getRoomId(), "admin"
+                            );
+                    }
+
+                    messageManager.sendMessage(
+                            "/sub/chat/" + roomId + "/timer",
+                            "end",
+                            gameSession.getRoomId(), "admin"
+                    );
                     log.info("game end");
                     gameSessionManager.endGame(gameSession.getRoomId());
+                    messageManager.sendMessage(
+                            "/sub/chat/" + roomId + "/timer",
+                            "end",
+                            gameSession.getRoomId(), "admin"
+                    );
                     return true;
                 }
             }

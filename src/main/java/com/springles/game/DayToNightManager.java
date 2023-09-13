@@ -51,21 +51,6 @@ public class DayToNightManager {
             playerRedisRepository.save(player);
         }
 
-        // 살아 있는 인원 업데이트
-//        gameSession.setAliveCivilian((int) players.stream()
-//                .filter(e -> e.getRole() == GameRole.CIVILIAN)
-//                .filter(Player::isAlive).count());
-//        gameSession.setAliveDoctor((int) players.stream()
-//                .filter(e -> e.getRole() == GameRole.DOCTOR)
-//                .filter(Player::isAlive).count());
-//        gameSession.setAliveMafia((int) players.stream()
-//                .filter(e -> e.getRole() == GameRole.MAFIA)
-//                .filter(Player::isAlive).count());
-//        gameSession.setAlivePolice((int) players.stream()
-//                .filter(e -> e.getRole() == GameRole.POLICE)
-//                .filter(Player::isAlive).count());
-//
-//        gameSessionManager.saveSession(gameSession);
         log.info("Room {} CIVILIAN: {}, POLICE: {}, MAFIA: {}, DOCTOR: {}",
                 roomId,
                 gameSession.getAliveCivilian(),
@@ -74,8 +59,36 @@ public class DayToNightManager {
                 gameSession.getAliveDoctor());
 
         if (gameSessionManager.isEnd(gameSession)) {
+            if (gameSessionManager.mafiaWin(gameSession) == 1) {
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        "마피아팀이 승리하였습니다",
+                        gameSession.getRoomId(), "admin"
+                );
+            }
+            else if (gameSessionManager.mafiaWin(gameSession) == 0) {
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        "시민팀이 승리하였습니다",
+                        gameSession.getRoomId(), "admin"
+                );
+            }
+            else {
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        "무승부입니다",
+                        gameSession.getRoomId(), "admin"
+                );
+            }
+
+
             log.info("game end");
             gameSessionManager.endGame(gameSession.getRoomId());
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId + "/timer",
+                    "end",
+                    gameSession.getRoomId(), "admin"
+            );
             return;
         }
 
@@ -108,22 +121,28 @@ public class DayToNightManager {
 
         Runnable taskOne = () -> {
             messageManager.sendMessage(
-                    "/sub/chat/" + gameSession.getRoomId(),
-                    "마피아는 죽일 사람을, 의사는 살릴 사람을, 경찰은 조사할 사람을 선택해 주세요.",
+                    "/sub/chat/" + gameSession.getRoomId() +"/"+GameRole.MAFIA,
+                    "회의를 통해 제거하고 싶은 플레이어에게 투표해 주십시오. 투표 시간은 30초 입니다.",
                     gameSession.getRoomId(), "admin"
             );
-        };
-
-        Runnable taskTwo = () -> {
             messageManager.sendMessage(
-                    "/sub/chat/" + roomId,
-                    "투표는 30 초입니다.",
-                    roomId, "admin"
+                "/sub/chat/" + gameSession.getRoomId() +"/"+GameRole.POLICE,
+                "직업을 알아내고 싶은 플레이어에게 투표해 주십시오. 투표 시간은 30초 입니다.",
+                gameSession.getRoomId(), "admin"
+            );
+            messageManager.sendMessage(
+                "/sub/chat/" + gameSession.getRoomId() +"/"+GameRole.DOCTOR,
+                "밤 사이 살려내고 싶은 플레이어에게 투표해 주십시오. 투표 시간은 30초 입니다.",
+                gameSession.getRoomId(), "admin"
+            );
+            messageManager.sendMessage(
+                "/sub/chat/" + gameSession.getRoomId() +"/"+GameRole.CIVILIAN,
+                "시민은 밤에 역할이 제한 됩니다. 30초 간 대기합니다.",
+                gameSession.getRoomId(), "admin"
             );
         };
-        executor.schedule(taskOne, 1, TimeUnit.SECONDS);
-        executor.schedule(taskTwo, 1, TimeUnit.SECONDS);
 
+        executor.schedule(taskOne, 1, TimeUnit.SECONDS);
 
         messageManager.sendMessage(
                 "/sub/chat/" + roomId + "/voteInfo",

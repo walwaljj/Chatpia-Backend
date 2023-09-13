@@ -40,7 +40,6 @@ public class MessageController {
     public void sendMessage(SimpMessageHeaderAccessor accessor, String message,
         @DestinationVariable Long roomId) {
 
-
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         Player player = gameSessionManager.findPlayerByMemberName(getMemberName(accessor));
 
@@ -154,36 +153,32 @@ public class MessageController {
             "게임이 시작되었습니다.",
             roomId, "admin");
 
-        // 게임 시작 -> 직업 랜덤 부여, 게임 페이즈 변경, 직업 설명
-        List<Player> mafiaList = new ArrayList<>();
-        gameSessionManager.startGame(roomId, getMemberName(accessor)).forEach(p -> {
-            messageManager.sendMessage(
-                "/sub/chat/" + roomId + "/gameRole/" + p.getMemberName(),
-                new RoleExplainMessage(p.getRole(), getTimeString())
-            );
-            if (p.getRole().equals(GameRole.MAFIA)) {
-                mafiaList.add(p);
-            }
-        });
-
-        // 마피아들에게 마피아가 누구인지 알려주기
-        String mafiaListString = mafiaList.stream()
-            .map(Player::getNickName)
-            .collect(Collectors.joining(", "));
-        mafiaList.forEach(m -> {
-            messageManager.sendMessage(
-                "/sub/chat/" + roomId + "/" + m.getMemberName(),
-                "마피아 플레이어는" + " [" + mafiaListString + "] " + "입니다.",
-                roomId, "admin"
-            );
-        });
-
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
         Runnable task = () -> {
-            messageManager.sendMessage("/sub/chat/" + roomId,
-                    "자기소개를 시작해 주세요. 시간은 60 초입니다.",
-                    roomId, "admin");
+            // 게임 시작 -> 직업 랜덤 부여, 게임 페이즈 변경, 직업 설명
+            List<Player> mafiaList = new ArrayList<>();
+            gameSessionManager.startGame(roomId, getMemberName(accessor)).forEach(p -> {
+                messageManager.sendMessage(
+                    "/sub/chat/" + roomId + "/gameRole/" + p.getMemberName(),
+                    new RoleExplainMessage(p.getRole(), getTimeString())
+                );
+                if (p.getRole().equals(GameRole.MAFIA)) {
+                    mafiaList.add(p);
+                }
+            });
+
+            // 마피아들에게 마피아가 누구인지 알려주기
+            String mafiaListString = mafiaList.stream()
+                .map(Player::getNickName)
+                .collect(Collectors.joining(", "));
+            mafiaList.forEach(m -> {
+                messageManager.sendMessage(
+                    "/sub/chat/" + roomId + "/" + m.getMemberName(),
+                    "마피아 플레이어는" + " [" + mafiaListString + "] " + "입니다.",
+                    roomId, "admin"
+                );
+            });
         };
         executor.schedule(task, 1, TimeUnit.SECONDS);
     }

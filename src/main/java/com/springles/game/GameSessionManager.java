@@ -96,8 +96,6 @@ public class GameSessionManager {
 
         // MemberGameInfo 반영
 
-
-
         gameSession.end();
         gameSessionRedisRepository.save(gameSession);
         List<Player> players = findPlayersByRoomId(roomId);
@@ -206,5 +204,15 @@ public class GameSessionManager {
             return true;
         }
         return false;
+    }
+
+    public int mafiaWin(GameSession gameSession) {
+        if (gameSession.getAliveMafia() >= gameSession.getAlivePolice() + gameSession.getAliveDoctor() + gameSession.getAliveCivilian()) {
+            return 1;
+        }
+        else if (gameSession.getAliveMafia() == 0) {
+            return 0;
+        }
+        else return 2;
     }
 }

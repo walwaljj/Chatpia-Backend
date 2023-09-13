@@ -518,7 +518,14 @@
                 stompClient.send(`/pub/chat/${roomId}/nightStart`);
             } else if (messageType == "day") {
                 setTimeout(voteStart, 60000);
+            } else if (messageType == "end") {
+                changeButton();
             }
+        }
+
+        function changeButton() {
+            $('#gameStart').attr('style', "display:block;")
+            $('#myRoleInfo').attr('style', "display:none;")
         }
 
         function updateVoteList(message) {
@@ -583,7 +590,7 @@
 
         function gameStart() {
             stompClient.send(`/pub/gameStart/${roomId}`)
-            setTimeout(voteStart, 60000);
+            setTimeout(voteStart, 3000);
         }
 
         function voteStart() {
