@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -89,17 +92,33 @@ public class DayToNightManager {
 
         log.info("NIGHT_VOTE 투표 생성! - {}", roomId);
 
-
         messageManager.sendMessage(
                 "/sub/chat/" + gameSession.getRoomId(),
                 "밤이 되었습니다.",
                 gameSession.getRoomId(), "admin"
         );
-        messageManager.sendMessage(
-                "/sub/chat/" + gameSession.getRoomId(),
-                "마피아는 죽일 사람을, 의사는 살릴 사람을, 경찰은 조사할 사람을 선택해 주세요.",
-                gameSession.getRoomId(), "admin"
-        );
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+        Runnable taskOne = () -> {
+            messageManager.sendMessage(
+                    "/sub/chat/" + gameSession.getRoomId(),
+                    "마피아는 죽일 사람을, 의사는 살릴 사람을, 경찰은 조사할 사람을 선택해 주세요.",
+                    gameSession.getRoomId(), "admin"
+            );
+        };
+
+        Runnable taskTwo = () -> {
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    "투표는 30 초입니다.",
+                    roomId, "admin"
+            );
+        };
+        executor.schedule(taskOne, 1, TimeUnit.SECONDS);
+        executor.schedule(taskTwo, 1, TimeUnit.SECONDS);
+
+
         messageManager.sendMessage(
                 "/sub/chat/" + roomId + "/voteInfo",
                 voteList);

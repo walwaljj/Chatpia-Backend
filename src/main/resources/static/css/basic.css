@@ -242,6 +242,8 @@ body {
 
 .my_bg_img{
     width: 100%;
+    border-radius: 70%;
+    overflow: hidden;
 }
 
 .record-item {

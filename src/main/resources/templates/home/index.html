@@ -52,7 +52,7 @@
                     </button>
                 </div>
                 <div>
-                    <button class="my_btn btn-size" type="button" onclick="location.href='/v1/quick-enter'">
+                    <button class="my_btn btn-size" type="button" onclick="quickEnterBtn()" >
                         <span class="text-white mt-4">빠른 입장</span>
                     </button>
                 </div>
@@ -138,7 +138,6 @@
                                         // window.location.href = 'v1/chat/' + chatRoomId + '/' + nickName; // 맞다면 이동
                                         // window.location.href = '/v1/enter'
                                         location.replace('http://localhost:8080/v1/chat/'+ chatRoomId + '/' + memberName);
-
                                         }
                                 },
                                 error: function(response) {
@@ -255,6 +254,28 @@
                 function clearButton() {
                     // 검색어 input 비우기
                     $('#search-content').val("");
+                    window.location.href = `/v1/index`;
+                }
+
+                // 빠른 입장
+                function quickEnterBtn(){
+                    $.ajax({
+                        url: `/v1/chatrooms/quick-enter`,
+                        type: 'GET',
+                        success: function(data) {
+                            location.replace('http://localhost:8080/v1/chat/'+ data.data.id + '/' + memberName)
+                        },
+                        error: function(response) {
+                            // 오류메시지 alert (해당하는 방이 없는 경우)
+                            alert(JSON.stringify(response.responseJSON.message));
+                            if (confirm("방을 생성 하시겠습니까 ? ") == true) {
+                                window.location.href = "/v1/add"
+                            } else {
+                                // 취소 버튼을 누른 경우 페이지 이동 등 동작 없음
+                            }
+                        },
+                    });
+
                 }
                 </script>
             </th:block>

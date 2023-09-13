@@ -63,7 +63,6 @@ public class DayDiscussionManager {
                     roomId, "admin"
             );
             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-            // 일정 시간(초 단위) 후에 실행하고자 하는 작업을 정의합니다.
             Runnable task = () -> {
                 log.info("최후 변론을 시작합니다.");
                 // 실행하고자 하는 코드를 여기에 작성합니다.
@@ -73,9 +72,7 @@ public class DayDiscussionManager {
                         roomId, "admin"
                 );
             };
-            // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
-            // 아래의 예제는 5초 후에 작업을 실행합니다.
-            executor.schedule(task, 2, TimeUnit.SECONDS);
+            executor.schedule(task, 1, TimeUnit.SECONDS);
 
             List<Player> players = playerRedisRepository.findByRoomId(roomId);
 
@@ -114,13 +111,28 @@ public class DayDiscussionManager {
                         roomId, "admin"
                 );
             };
-            // 일정 시간(초 단위)을 지정하여 작업을 예약합니다.
-            // 아래의 예제는 5초 후에 작업을 실행합니다.
+
+            Runnable notice = () -> {
+                log.info("투표 시간은 30초입니다.");
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        "투표 시간은 30초입니다.",
+                        roomId, "admin"
+                );
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId + "/timer",
+                        "confirm",
+                        gameSession.getRoomId(), "admin"
+                );
+            };
+
             executor.schedule(eliminationTask, 60, TimeUnit.SECONDS);
+            executor.schedule(notice, 61, TimeUnit.SECONDS);
         }
     }
 
     private void setDayToNight(Long roomId) {
+
         dayToNightManager.sendMessage(roomId);
     }
 }

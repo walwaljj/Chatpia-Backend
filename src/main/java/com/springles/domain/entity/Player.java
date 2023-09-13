@@ -30,6 +30,8 @@ public class Player {
     @Indexed
     private String memberName;
 
+    private String nickName;
+
     public void setAlive(boolean alive) {
         this.alive = alive;
     }
@@ -38,16 +40,17 @@ public class Player {
         this.role = role;
     }
 
-    public static Player of(Long memberId, Long roomId, String memberName) {
+    public static Player of(Long memberId, Long roomId, String memberName, String nickName) {
         return Player.builder()
             .memberId(memberId)
             .roomId(roomId)
             .role(GameRole.NONE)
             .alive(true)
             .memberName(memberName)
+            .nickName(nickName)
             .build();
     }
-
+    
     public void updateRole(GameRole role) {
         this.role = role;
     }

@@ -112,7 +112,7 @@ public class GameSessionManager {
         if (playerRedisRepository.existsByMemberName(memberName)) {
             throw new CustomException(ErrorCode.PLAYER_STILL_INGAME);
         }
-        playerRedisRepository.save(Player.of(member.getId(), roomId, memberName));
+        playerRedisRepository.save(Player.of(member.getId(), roomId, memberName, member.getMemberGameInfo().getNickname()));
         return findPlayersByRoomId(roomId);
     }
 
@@ -150,13 +150,21 @@ public class GameSessionManager {
         gameSessionRedisRepository.save(gameSession);
     }
 
-    public void passDay(Long roomId) {
-        GameSession gameSession = findGameByRoomId(roomId);
-        gameSession.passADay();
+    public void saveSession(GameSession gameSession) {
+
         gameSessionRedisRepository.save(gameSession);
     }
 
-    public void saveSession(GameSession gameSession) {
-        gameSessionRedisRepository.save(gameSession);
+    public boolean isEnd(GameSession gameSession) {
+        if (gameSession.getAliveMafia() == 0) {
+            return true;
+        }
+        else if (gameSession.getDay() > 20) {
+            return true;
+        }
+        else if (gameSession.getAliveMafia() >= gameSession.getAlivePolice() + gameSession.getAliveDoctor() + gameSession.getAliveCivilian()) {
+            return true;
+        }
+        return false;
     }
 }
