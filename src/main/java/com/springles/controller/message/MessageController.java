@@ -40,10 +40,12 @@ public class MessageController {
     public void sendMessage(SimpMessageHeaderAccessor accessor, String message,
         @DestinationVariable Long roomId) {
 
-        log.info("수신 메시지: " + message + " 방 id: " + roomId + " 발송자: " + getMemberName(accessor));
 
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
         Player player = gameSessionManager.findPlayerByMemberName(getMemberName(accessor));
+
+        log.info("수신 메시지: " + message + " 방 id: " + roomId + " 발송자: " + getMemberName(accessor) + "페이즈: " + gameSession.getGamePhase());
+
         // 관전자는 관전자들끼리만 채팅이 가능
         if (player.getRole().equals(GameRole.OBSERVER)) {
             messageManager.sendMessage("/sub/chat/" + roomId + "/" + GameRole.OBSERVER, message,
