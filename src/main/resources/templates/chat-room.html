@@ -582,7 +582,7 @@
       stompClient.send(`/pub/gameExit/${roomId}`)
       stompClient.disconnect();
       exitRoomApi(roomId)
-      location.href = '/v1/index';
+      location.replace('http://localhost:8080/v1/index');
     }
 
 
@@ -770,37 +770,37 @@
             }
         }
 
-
-        $.get(`/v1/chatrooms/${roomId}/${nickname}`,
-            function (result) {
-
-                const title = result.data.title;
-                const capacity = result.data.capacity;
-                const roomPassword = result.data.password;
-                const isClose = result.data.close; // boolean
-                console.log("title" + title)
-                console.log("capacity" + capacity)
-                console.log("roomPassword" + roomPassword)
-                console.log("isClose" + isClose)
-                $("#chatroomTitle").text(title);
-                $("#room-name").text(title);
-                $("#room-capacity").text(capacity);
-                $("#room-password").text(roomPassword);
-                $("#room-close")
-                if (isClose == "true") {
-
-                }
-
-                console.log("result = " + result)
-            });
-
-        $.get(`/v1/chatrooms/${roomId}/player-list`,
-            function (result) {
-                // $("#chatroomTitle").text(result.data.level);
-                $("#chatroomTitle").text(result.data.title);
-                console.log("result = " + result)
-
-            });
+        //
+        // $.get(`/v1/chatrooms/${roomId}/${nickname}`,
+        //     function (result) {
+        //
+        //         const title = result.data.title;
+        //         const capacity = result.data.capacity;
+        //         const roomPassword = result.data.password;
+        //         const isClose = result.data.close; // boolean
+        //         console.log("title" + title)
+        //         console.log("capacity" + capacity)
+        //         console.log("roomPassword" + roomPassword)
+        //         console.log("isClose" + isClose)
+        //         $("#chatroomTitle").text(title);
+        //         $("#room-name").text(title);
+        //         $("#room-capacity").text(capacity);
+        //         $("#room-password").text(roomPassword);
+        //         $("#room-close")
+        //         if (isClose == "true") {
+        //
+        //         }
+        //
+        //         console.log("result = " + result)
+        //     });
+        //
+        // $.get(`/v1/chatrooms/${roomId}/player-list`,
+        //     function (result) {
+        //         // $("#chatroomTitle").text(result.data.level);
+        //         $("#chatroomTitle").text(result.data.title);
+        //         console.log("result = " + result)
+        //
+        //     });
 
         function openRoomDetail() {
             $('#roomDetailModal').modal('show'); // 모달 열기
@@ -812,9 +812,8 @@
             event.preventDefault();
             leave.addEventListener("click", () => {
                 if (confirm('퇴장 하시겠습니까?')) {
-                    location.href = 'http://localhost:8080/v1/index'
-                } else {
-                    // 취소 버튼을 누른 경우 페이지 이동 등 동작 없음
+                    exitRoomApi(roomId)
+                    location.replace('http://localhost:8080/v1/index');
                 }
             });
         };

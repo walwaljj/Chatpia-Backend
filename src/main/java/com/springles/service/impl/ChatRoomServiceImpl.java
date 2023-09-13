@@ -233,7 +233,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     // 채팅방 입장 시, 채팅 정보 조회와 참여 인원 증가
     @Transactional
-    @Override
     public void enterChatRoom(Long roomId, String nickname) {
         ChatRoom findChatRoom = chatRoomJpaRepository.findById(roomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
@@ -253,7 +252,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     // 채팅방 퇴장 시, 참여 인원 감소
     @Transactional
-    @Override
     public void exitChatRoom(Long roomId) {
         ChatRoom findChatRoom = chatRoomJpaRepository.findById(roomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_ROOM));
