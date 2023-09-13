@@ -12,16 +12,16 @@ values
 
 
 insert into member_game_info
-(is_observer, exp, member_game_info_id, member_id, in_game_role, level, nickname, profile_img)
+(exp, member_game_info_id, member_id, in_game_role, level, nickname, profile_img)
 values
-    (0,'0','1','1','NONE','BEGINNER','test1','PROFILE01'),
-    (0,'0','2','2','NONE','BEGINNER','test2','PROFILE01'),
-    (0,'0','3','3','NONE','BEGINNER','test3','PROFILE01'),
-    (0,'0','4','4','NONE','BEGINNER','test4','PROFILE01'),
-    (0,'0','5','5','NONE','BEGINNER','test5','PROFILE01'),
-    (0,'0','6','6','NONE','BEGINNER','test6','PROFILE01'),
-    (0,'0','7','7','NONE','BEGINNER','test7','PROFILE01'),
-    (0,'0','8','8','NONE','BEGINNER','test8','PROFILE01');
+    ('0','1','1','NONE','BEGINNER','test1','PROFILE01'),
+    ('0','2','2','NONE','BEGINNER','test2','PROFILE01'),
+    ('0','3','3','NONE','BEGINNER','test3','PROFILE01'),
+    ('0','4','4','NONE','BEGINNER','test4','PROFILE01'),
+    ('0','5','5','NONE','BEGINNER','test5','PROFILE01'),
+    ('0','6','6','NONE','BEGINNER','test6','PROFILE01'),
+    ('0','7','7','NONE','BEGINNER','test7','PROFILE01'),
+    ('0','8','8','NONE','BEGINNER','test8','PROFILE01');
 
 /*insert into game_record
 (title, owner_id, state, capacity, head, open, winner, duration)
