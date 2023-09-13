@@ -42,14 +42,19 @@ public class VoteController {
     @MessageMapping("/chat/{roomId}/dayStart")
     private void voteStart (SimpMessageHeaderAccessor accessor,
                             @DestinationVariable Long roomId) {
+        String playerName = getMemberName(accessor);
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
+        Optional<Player> hostOptional = playerRedisRepository.findById(gameSession.getHostId());
+        Player host = hostOptional.get();
+
+        if (!playerName.equals(host.getMemberName()) || gameSession.getGamePhase() == GamePhase.DAY_VOTE) {
+            throw new CustomException(ErrorCode.BAD_REQUEST_ERROR);
+        }
+        log.info("day Start 잘 받음");
         gameSession.changePhase(GamePhase.DAY_VOTE, 100);
         gameSession.passADay();
         gameSessionManager.saveSession(gameSession);
-        // 종료된 게임인지 체크
-        /*if (!gameSessionManager.existRoomByRoomId(roomId)) {
-            throw new CustomException(ErrorCode.GAME_NOT_FOUND);
-        }*/
+
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
 
         Map<Long, GameRole> alivePlayerMap = new HashMap<>();
@@ -82,7 +87,7 @@ public class VoteController {
                     roomId, "admin"
             );
         };
-        executor.schedule(task, 2, TimeUnit.SECONDS);
+        executor.schedule(task, 1, TimeUnit.SECONDS);
 
 
         Runnable endVoteTask = () -> {
@@ -90,7 +95,7 @@ public class VoteController {
             publishMessage(roomId, vote);
         };
 
-        executor.schedule(endVoteTask, 60, TimeUnit.SECONDS);
+        executor.schedule(endVoteTask, 30, TimeUnit.SECONDS);
     }
 
 
@@ -152,16 +157,11 @@ public class VoteController {
         log.info("nightVote 잘 받음");
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         log.info("Game Phase: {}", gameSession.getGamePhase());
-        messageManager.sendMessage(
-                "/sub/chat/" + roomId,
-                "투표는 20 초입니다.",
-                roomId, "admin"
-        );
         Runnable task = () -> {
             Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), gameSession.getGamePhase());
             publishMessage(roomId, vote);
         };
-        executor.schedule(task, 20, TimeUnit.SECONDS);
+        executor.schedule(task, 30, TimeUnit.SECONDS);
     }
 
     @MessageMapping("/chat/{roomId}/vote/night")

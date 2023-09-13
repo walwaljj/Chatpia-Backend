@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -171,6 +174,15 @@ public class MessageController {
                 roomId, "admin"
             );
         });
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+        Runnable task = () -> {
+            messageManager.sendMessage("/sub/chat/" + roomId,
+                    "자기소개를 시작해 주세요. 시간은 60 초입니다.",
+                    roomId, "admin");
+        };
+        executor.schedule(task, 1, TimeUnit.SECONDS);
     }
 
     private String getMemberName(SimpMessageHeaderAccessor accessor) {

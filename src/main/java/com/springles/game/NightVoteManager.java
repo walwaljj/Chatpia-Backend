@@ -12,10 +12,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -58,12 +60,7 @@ public class NightVoteManager {
         Map<Long, Player> playerMap = players.stream().collect(
                 Collectors.toMap(Player::getMemberId, Function.identity()));
 
-        // 살해당한 인간
-        Player deadPlayer = playerMap.get(deadPlayerId);
-        log.info("Mafia kill {}", deadPlayer.getMemberName());
-
-        // 목격자들
-        List<Long> victims = setNightDay(gameSession, deadPlayerId);
+        setNightDay(gameSession, deadPlayerId);
 
         // 밤이 지나고 이제 낮이 시작
         log.info("Room {} start Day {} {} ",
@@ -71,20 +68,6 @@ public class NightVoteManager {
                 gameSession.getDay(),
                 gameSession.getGamePhase());
 
-        // 밤 투표 결과 모두에게 전송
-        if (deadPlayer == null) {
-            messageManager.sendMessage(
-                    "/sub/chat/" + roomId,
-                     "마피아의 지목을 의사가 살렸습니다.",
-                    gameSession.getRoomId(), "admin"
-            );
-        } else {
-            messageManager.sendMessage(
-                    "/sub/chat/" + roomId,
-                    deadPlayer.getMemberName() + "님이 마피아에게 사망하셨습니다.",
-                    gameSession.getRoomId(), "admin"
-            );
-        }
 
         // 용의자 조사 결과 관찰자와 경찰에게 전송
         for (Long voter : suspectVote.keySet()) {
@@ -96,15 +79,30 @@ public class NightVoteManager {
                     gameSession.getRoomId(), "admin"
             );
         }
+
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+        Runnable task = () -> {
+            messageManager.sendMessage("/sub/chat/" + roomId,
+                    "토의를 시작해 주세요. 시간은 60 초입니다.",
+                    roomId, "admin");
+        };
+        executor.schedule(task, 1, TimeUnit.SECONDS);
+
+        messageManager.sendMessage(
+                "/sub/chat/" + roomId + "/timer",
+                "day",
+                gameSession.getRoomId(), "admin"
+        );
     }
 
-    private List<Long> setNightDay(GameSession gameSession, Long deadPlayerId) {
+    private void setNightDay(GameSession gameSession, Long deadPlayerId) {
         gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 7);
+        Long roomId = gameSession.getRoomId();
         gameSessionManager.saveSession(gameSession);
         log.info("Room {} is {}", gameSession.getRoomId(), gameSession.getGamePhase());
-        List<Long> victims = new ArrayList<>();
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
-
+        log.info("deadPlayerId: {}", deadPlayerId);
         for (Player player : players) {
             // 살아 있으면 패스
             if (player.isAlive()) {
@@ -112,33 +110,33 @@ public class NightVoteManager {
             }
             // 죽었다면 게임에서 제거하고 관찰자에 추가
             gameSessionManager.removePlayer(gameSession.getRoomId(), player.getMemberName());
-            victims.add(player.getMemberId());
         }
 
-
-
-        Optional<Player> deadPlayerOptional = playerRedisRepository.findById(deadPlayerId);
-
-        // 죽을 인간이 존재하면
-        if (deadPlayerOptional.isPresent()) {
+        if (deadPlayerId == null) {
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    "아무도 죽지 않았습니다.",
+                    gameSession.getRoomId(), "admin"
+            );
+            throw new CustomException(ErrorCode.DEAD_PLAYER_NOT_FOUND);
+        }
+        else {
+            Optional<Player> deadPlayerOptional = playerRedisRepository.findById(deadPlayerId);
             Player deadPlayer = deadPlayerOptional.get();
             // 아직 살아 있다면
             if (deadPlayer.isAlive()) {
                 log.info("{} 님이 마피아에게 사망하셨습니다.", deadPlayer.getMemberName());
+                messageManager.sendMessage(
+                        "/sub/chat/" + roomId,
+                        deadPlayer.getMemberName() + "님이 마피아에게 사망하셨습니다.",
+                        gameSession.getRoomId(), "admin"
+                );
                 // 죽임
                 deadPlayer.setAlive(false);
                 deadPlayer.setRole(GameRole.OBSERVER);
                 playerRedisRepository.save(deadPlayer);
-                // gameSessionManager.removePlayer(gameSession.getRoomId(), deadPlayer.getMemberName());
-                // 관찰자에 추가
-                victims.add(deadPlayerId);
             }
         }
-
-        else {
-            throw new CustomException(ErrorCode.DEAD_PLAYER_NOT_FOUND);
-        }
         log.info("Room {} NightVote deadPlayer: {}", gameSession.getRoomId(), deadPlayerId);
-        return victims;
     }
 }

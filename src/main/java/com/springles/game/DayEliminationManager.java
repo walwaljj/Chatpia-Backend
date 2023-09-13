@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -82,11 +85,15 @@ public class DayEliminationManager {
                         deadPlayer.getMemberName() + "님이 마피아로 지목되어 사망하셨습니다.",
                         gameSession.getRoomId(), "admin"
                 );
-                messageManager.sendMessage(
-                        "/sub/chat/" + gameSession.getRoomId(),
-                        deadPlayer.getMemberName() + "님은 " + deadPlayer.getRole() + "입니다.",
-                        gameSession.getRoomId(), "admin"
-                );
+                ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+                Runnable task = () -> {
+                    messageManager.sendMessage(
+                            "/sub/chat/" + gameSession.getRoomId(),
+                            deadPlayer.getMemberName() + "님은 " + deadPlayer.getRole() + "입니다.",
+                            gameSession.getRoomId(), "admin"
+                    );
+                };
+
                 // 죽임
                 deadPlayer.setAlive(false);
                 deadPlayer.setRole(GameRole.OBSERVER);

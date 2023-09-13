@@ -304,11 +304,6 @@
                     type="submit">밤 투표하기
             </button>
           </form>
-          <form id="vote-test">
-            <input class="chat_input_ui" style="margin:0;" type="text" id="vote" placeholder="vote"/>
-            <button class="btn btn-primary" style="margin: 0 0 4px;" type="submit">투표 시작
-            </button>
-          </form>
         </div>
       </div>
       <!------------------- 채팅----------------------------------------------------------------------------------->
@@ -387,7 +382,7 @@
         stompClient.subscribe(`/sub/chat/${roomId}/timer`, function (message) {
           console.log(message);
 
-          startNight(message);
+          publish(message);
         })
 
         // 개인 채팅 URL 구독
@@ -402,7 +397,7 @@
           const body = JSON.parse(message.body)
           console.log("역할 설명 메시지: " + body)
           stompClient.subscribe(`/sub/chat/${roomId}/${body.gameRole}`) // 직업 url
-          stompClient.unsubscribe(`/sub/chat/${roomId}/playerRole/${nickname}`)
+          //stompClient.unsubscribe(`/sub/chat/${roomId}/playerRole/${nickname}`)
           receiveMessage(body)
           // 내 직업 정보 팝업에 플레이어별 부여된 역할에 맞는 내용 출력
           inGameRole = body.gameRole
@@ -475,12 +470,15 @@
       document.getElementById('gamePlayer').innerText = i;
     }
 
-    function startNight(messageOutput) {
+    function publish(messageOutput) {
       const messageJson = JSON.parse(messageOutput.body);
       const messageType = messageJson.message;
       console.log(messageType);
       if (messageType == "night") {
         stompClient.send(`/pub/chat/${roomId}/nightStart`);
+      }
+      else if (messageType == "day") {
+        setTimeout(voteStart, 60000);
       }
     }
 
@@ -556,6 +554,13 @@
 
     function gameStart() {
       stompClient.send(`/pub/gameStart/${roomId}`)
+      setTimeout(voteStart, 60000);
+    }
+
+    function voteStart() {
+      stompClient.send(`/pub/chat/${roomId}/dayStart`, {
+        "Authorization": getCookie("accessToken")
+      });
     }
 
     function gameExit() {
@@ -625,16 +630,6 @@
       response.appendChild(authorName);
       response.appendChild(chat);
     }
-
-    // 투표 테스트를 위한 임시 코드
-    document.getElementById("vote-test").addEventListener("submit", (event) => {
-      event.preventDefault()
-      stompClient.send(`/pub/chat/${roomId}/dayStart`, {
-        "Authorization": getCookie("accessToken")
-      });
-      // /pub/chat/{roomId}/start
-
-    })
 
     // 투표 제출이 되는지
     document.getElementById("vote-form").addEventListener("submit", (event) => {
