@@ -135,7 +135,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
                 gameSession.getAlivePolice() +
                 gameSession.getAliveMafia();
 
-        if (voteCnt > (alivePlayer - 1) / 2) { // 과반수 이상이 투표에 참여했을 때
+        if (voteCnt > 0) { // 과반수 이상이 투표에 참여했을 때
             List<Long> suspects = new ArrayList<>(voteNum.keySet()); // 투표를 한 번이라도 받은 사람들 정리
             // 투표 수 오름차순으로 정리
             Collections.sort(suspects, (o1, o2) -> voteNum.get(o2).compareTo(voteNum.get(o1)));

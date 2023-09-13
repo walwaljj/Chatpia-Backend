@@ -112,22 +112,7 @@ public class DayDiscussionManager {
                 );
             };
 
-            Runnable notice = () -> {
-                log.info("투표 시간은 30초입니다.");
-                messageManager.sendMessage(
-                        "/sub/chat/" + roomId,
-                        "투표 시간은 30초입니다.",
-                        roomId, "admin"
-                );
-                messageManager.sendMessage(
-                        "/sub/chat/" + roomId + "/timer",
-                        "confirm",
-                        gameSession.getRoomId(), "admin"
-                );
-            };
-
             executor.schedule(eliminationTask, 60, TimeUnit.SECONDS);
-            executor.schedule(notice, 61, TimeUnit.SECONDS);
         }
     }
 
