@@ -294,6 +294,9 @@
                                 type="submit">낮 투표하기
                         </button>
                     </form>
+                    <form id="confirm-form">
+
+                    </form>
                     <form id="vote-form-night">
                         <select id="vote-select-night" class="form-select" aria-label="Default select example">
                             <option selected>Open this select menu</option>
@@ -303,11 +306,6 @@
                         </select>
                         <button id="submit-vote-night" class="btn btn-primary" style="margin: 0 0 4px;"
                                 type="submit">밤 투표하기
-                        </button>
-                    </form>
-                    <form id="vote-test">
-                        <input class="chat_input_ui" style="margin:0;" type="text" id="vote" placeholder="vote"/>
-                        <button class="btn btn-primary" style="margin: 0 0 4px;" type="submit">투표 시작
                         </button>
                     </form>
                 </div>
@@ -370,12 +368,16 @@
                 // 채팅방 목록 URL 구독
                 stompClient.subscribe(`/sub/chat/${roomId}/playerList`, function (message) {
                     updatePlayerList(message)
-                    updateVoteList(message)
                 })
 
                 // 죽을 사람 후보
                 stompClient.subscribe(`/sub/chat/${roomId}/deadPlayer`, function (message) {
                     updateDeadPlayer(message)
+                })
+
+                // 낮 투표 후보
+                stompClient.subscribe(`/sub/chat/${roomId}/votePlayer`, function (message) {
+                    updateVoteList(message)
                 })
 
                 // 밤 투표 때 투표할 수 있는 사람 리스트 구독
@@ -387,8 +389,7 @@
                 // 타이머용 구독
                 stompClient.subscribe(`/sub/chat/${roomId}/timer`, function (message) {
                     console.log(message);
-
-                    startNight(message);
+                    publish(message);
                 })
 
                 // 개인 채팅 URL 구독
@@ -408,7 +409,7 @@
                     // 내 직업 정보 팝업에 플레이어별 부여된 역할에 맞는 내용 출력
                     inGameRole = body.gameRole
 
-                    // 내 직업 정보 팝업에 플레이어별 부여된 역할에 맞는 내용 출력
+                    // 게임시작 후 역할부여 전/후에 따라 게임시작 버튼/내 직업 설명 버튼 분기 노출
                     inGameRole = body.gameRole
                     $('#gameStart').attr('style', "display:none;")
                     $('#myRoleInfo').attr('style', "display:block;")
@@ -446,47 +447,57 @@
                         // 프로필 이미지
                         const profileImg = document.createElement('img');
                         profileImg.src = data.data.profileImg;
-                        profileImg.style.height = '2px';
-                        profileImg.style.width = '2px';
+                        profileImg.style.height = '20px';
+                        profileImg.style.width = '20px';
+                        profileImg.style.borderRadius = '70%';
+                        profileImg.style.overflow = 'hidden';
 
                         // 닉네임
-                        const nickName = document.createElement('li');
-                        nickName.innerText = 'data.data.nickName';
+                        const nickName = document.createElement('span');
+                        nickName.innerText = data.data.nickName;
+                        nickName.style.marginLeft = '3px';
 
                         // 방장 여부
                         const isOwner = document.createElement('span');
                         if (data.data.isOwner === true) {
                             isOwner.innerText = '방장'
                             isOwner.className = 'badge badge-pill'
+                            isOwner.style.backgroundColor = '#4B2200'
+                            isOwner.style.color = 'white'
+                            isOwner.style.marginLeft = '2px';
                         }
+
+                        const line = document.createElement('br');
+                        const line2 = document.createElement('hr');
+
                         i++;
                         div.append(profileImg)
                         div.append(nickName)
                         div.append(isOwner)
+                        div.append(line)
+                        div.append(line2)
                         list.appendChild(div)
+                        list.appendChild(line)
+                        list.appendChild(line2)
                         document.getElementById('gamePlayer').innerText = i;
                     },
                     error: function (response) {
                         console.log(response)
                     },
                 });
-
-                const li = document.createElement('li');
-                li.appendChild(document.createTextNode(
-                    "[" + player.memberName + "]"
-                ))
-                i++;
-                list.appendChild(li)
             }
-            document.getElementById('gamePlayer').innerText = i;
         }
 
-        function startNight(messageOutput) {
+        function publish(messageOutput) {
             const messageJson = JSON.parse(messageOutput.body);
             const messageType = messageJson.message;
             console.log(messageType);
             if (messageType == "night") {
                 stompClient.send(`/pub/chat/${roomId}/nightStart`);
+            } else if (messageType == "day") {
+                setTimeout(voteStart, 60000);
+            } else if (messageType == "confirm") {
+                stompClient.send(`/pub/chat/${roomId}/confirm`);
             }
         }
 
@@ -497,27 +508,29 @@
             for (const player of JSON.parse(message.body)) {
                 const option = document.createElement('option');
                 option.value = player.memberId;
-                option.text = player.memberName;
+                option.text = player.nickName;
                 list.appendChild(option);
                 i++;
             }
         }
 
         function updateNightVoteList(message) {
+            const deadPlayer = document.getElementById("confirm-form");
+            deadPlayer.innerHTML = "";
             const list = document.getElementById('vote-select-night');
             list.innerHTML = "";
             let i = 0
             for (const player of JSON.parse(message.body)) {
                 const option = document.createElement('option');
                 option.value = player.memberId;
-                option.text = player.memberName;
+                option.text = player.nickName;
                 list.appendChild(option);
                 i++;
             }
         }
 
         function updateDeadPlayer(message) {
-            const deadPlayer = document.getElementById("vote-form");
+            const deadPlayer = document.getElementById("confirm-form");
             deadPlayer.innerHTML = "";
             const player = JSON.parse(message.body)
             console.log(player.memberName);
@@ -562,6 +575,13 @@
 
         function gameStart() {
             stompClient.send(`/pub/gameStart/${roomId}`)
+            setTimeout(voteStart, 60000);
+        }
+
+        function voteStart() {
+            stompClient.send(`/pub/chat/${roomId}/dayStart`, {
+                "Authorization": getCookie("accessToken")
+            });
         }
 
         function gameExit() {
@@ -631,16 +651,6 @@
             response.appendChild(authorName);
             response.appendChild(chat);
         }
-
-        // 투표 테스트를 위한 임시 코드
-        document.getElementById("vote-test").addEventListener("submit", (event) => {
-            event.preventDefault()
-            stompClient.send(`/pub/chat/${roomId}/dayStart`, {
-                "Authorization": getCookie("accessToken")
-            });
-            // /pub/chat/{roomId}/start
-
-        })
 
         // 투표 제출이 되는지
         document.getElementById("vote-form").addEventListener("submit", (event) => {
@@ -784,20 +794,13 @@
             $('#roomDetailModal').modal('show'); // 모달 열기
         }
 
-
+        // 나가기 버튼
         function leave() {
             const leave = document.getElementById('leave-btn');
             event.preventDefault();
             leave.addEventListener("click", () => {
                 if (confirm('퇴장 하시겠습니까?')) {
-                    $.ajax({
-                        url: `http://localhost:8080/v1/chatroom/${roomId}/${nickname}`,
-                        type: 'POST',
-                        success: function () {
-                            gameExit()
-                            location.href = 'http://localhost:8080/v1/index'
-                        }
-                    })
+                    location.href = 'http://localhost:8080/v1/index'
                 } else {
                     // 취소 버튼을 누른 경우 페이지 이동 등 동작 없음
                 }

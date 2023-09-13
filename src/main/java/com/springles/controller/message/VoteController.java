@@ -119,7 +119,7 @@ public class VoteController {
         }
         else {
             Player voted = playerRedisRepository.findById(voteResult.get(playerId)).get();
-            String votedPlayerName = voted.getMemberName();
+            String votedPlayerName = voted.getNickName();
             log.info("{}가 투표되었습니다.", votedPlayerName);
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,

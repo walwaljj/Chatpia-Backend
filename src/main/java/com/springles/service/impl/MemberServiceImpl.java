@@ -512,6 +512,12 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.BAD_REQUEST_ERROR);
         }
 
+        // 이미 존재하는 닉네임인지 체크
+        Optional<MemberGameInfo> optionalNickname = memberGameInfoJpaRepository.findByNickname(memberDto.getNickname());
+        if (optionalNickname.isPresent()) {
+            throw new CustomException(ErrorCode.EXIST_NICKNAME);
+        }
+
         MemberProfileCreateRequest newMemberInfo = new MemberProfileCreateRequest();
         MemberGameInfo newMemberGameInfo = memberGameInfoJpaRepository.save(newMemberInfo.newMemberGameInfo(memberDto, optionalMember.get()));
         return MemberProfileResponse.of(newMemberGameInfo, optionalMember.get());
@@ -541,6 +547,12 @@ public class MemberServiceImpl implements MemberService {
         // 이미 프로필이 설정되어 있는지 체크
         if (optionalMemberGameInfo.isEmpty()) {
             throw new CustomException(ErrorCode.BAD_REQUEST_ERROR);
+        }
+
+        // 이미 존재하는 닉네임인지 체크
+        Optional<MemberGameInfo> optionalNickname = memberGameInfoJpaRepository.findByNickname(memberDto.getNickname());
+        if (optionalNickname.isPresent()) {
+            throw new CustomException(ErrorCode.EXIST_NICKNAME);
         }
 
         MemberProfileUpdateRequest memberProfileUpdateRequest = new MemberProfileUpdateRequest();

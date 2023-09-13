@@ -24,6 +24,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 오류가 발생했습니다."),
     NOT_AUTHORIZED_CONTENT(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
     NO_CONTENT(HttpStatus.BAD_REQUEST,"입력된 값이 없습니다."),
+
     /* JWT */
     NO_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "로그인 정보가 존재하지 않습니다. 다시 로그인해 주세요."),
     NOT_AUTHORIZED_TOKEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
@@ -59,6 +60,7 @@ public enum ErrorCode {
     NOT_FOUND_GAME_INFO(HttpStatus.NOT_FOUND, "등록된 게임정보(프로필)이 없습니다."),
     NO_IN_GAME_ROLE(HttpStatus.BAD_REQUEST, "부여된 GameRole이 없습니다."),
     NOT_FOUND_MEMBER_RECORD(HttpStatus.NOT_FOUND, "해당 회원 게임 기록이 없습니다."),
+    EXIST_NICKNAME(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
 
     /* PLAYER */
     PLAYER_HEAD_ERROR(HttpStatus.BAD_REQUEST, "5명 이상 10명 이하로 플레이 가능합니다."),
