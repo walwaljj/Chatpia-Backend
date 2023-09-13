@@ -28,10 +28,6 @@ public class GameRecord {
     @Column(nullable = false)
     private Long ownerId; // 방장 ID
 
-    // enum으로 수정할 것
-    @Column(nullable = false)
-    private String state; // 게임방 상태(게임 진행중, 게임 참여 가능)
-
     @Column(nullable = false)
     private Long capacity; // 정원
 
@@ -55,5 +51,7 @@ public class GameRecord {
     )
     private final List<Member> memberList = new ArrayList<>();
 
-
+    public void addMember(Member member) {
+        memberList.add(member);
+    }
 }

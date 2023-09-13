@@ -50,7 +50,6 @@ public class MemberProfileUpdateRequest {
                     .level(memberGameInfo.getLevel())
                     .exp(memberGameInfo.getExp())
                     .inGameRole(memberGameInfo.getInGameRole())
-                    .isObserver(memberGameInfo.isObserver())
                     .build();
     }
 }
