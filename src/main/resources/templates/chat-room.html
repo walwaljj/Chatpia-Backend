@@ -347,6 +347,19 @@
       getRoomName();
 
       const socket = new WebSocket('ws://localhost:8080/chatting');
+      socket.onopen = function () {
+        var t = setInterval(function(){
+          if (ws.readyState != 1) {
+            clearInterval(t);
+            return;
+          }
+          socket.send('{type:"ping"}');
+        }, 55000);
+      };
+
+      socket.onclose = function() {
+        setTimeout(connect, 300); // 웹소켓을 재연결하는 코드 삽입
+      };
       stompClient = Stomp.over(socket);
       stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
