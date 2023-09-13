@@ -112,7 +112,7 @@ public class GameSessionManager {
         if (playerRedisRepository.existsByMemberName(memberName)) {
             throw new CustomException(ErrorCode.PLAYER_STILL_INGAME);
         }
-        playerRedisRepository.save(Player.of(member.getId(), roomId, memberName));
+        playerRedisRepository.save(Player.of(member.getId(), roomId, memberName, member.getMemberGameInfo().getNickname()));
         return findPlayersByRoomId(roomId);
     }
 

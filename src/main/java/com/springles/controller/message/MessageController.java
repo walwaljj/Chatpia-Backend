@@ -48,7 +48,7 @@ public class MessageController {
         if (player.getRole().equals(GameRole.OBSERVER)) {
             messageManager.sendMessage("/sub/chat/" + roomId + "/" + GameRole.OBSERVER, message,
                 roomId,
-                player.getMemberName());
+                player.getNickName());
             return;
         }
         // 밤 투표시간에는 마피아끼리만 채팅 가능
@@ -56,13 +56,13 @@ public class MessageController {
             if (player.getRole().equals(GameRole.MAFIA)) {
                 messageManager.sendMessage("/sub/chat/" + roomId + "/" + GameRole.MAFIA, message,
                     roomId,
-                    player.getMemberName());
+                    player.getNickName());
             }
             return;
         }
         // 위의 모든 조건이 아니라면 방에 참여한 모두에게 메시지 전송
         messageManager.sendMessage("/sub/chat/" + roomId, message, roomId,
-            player.getMemberName());
+            player.getNickName());
     }
 
     /*게임 생성*/
@@ -86,7 +86,7 @@ public class MessageController {
         // 게임 참여 메시지 전송
         messageManager.sendMessage(
             "/sub/chat/" + roomId,
-            memberName + "님이 입장했습니다.",
+            gameSessionManager.findPlayerByMemberName(memberName).getNickName() + "님이 입장했습니다.",
             roomId, "admin");
     }
 
