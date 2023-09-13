@@ -79,6 +79,11 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     @Override
+    public Map<Long, Long> getVotePossible(Long roomId) {
+        return voteRepository.getVote(roomId);
+    }
+
+    @Override
     public Map<Long, Player> getSuspectResult(GameSession gameSession, Map<Long, Long> vote) {
         log.info("GameSessionVoteService getSuspectResult 호출");
         Map<Long, Player> suspectResult = new HashMap<>();

@@ -111,6 +111,19 @@ public class VoteController {
                          @Payload GameSessionVoteRequestDto request) {
         String playerName = getMemberName(accessor);
         Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
+
+        Map<Long, Long> votePossible = gameSessionVoteService.getVotePossible(roomId);
+        log.info(votePossible.toString());
+
+        if (votePossible.get(playerId) != null) {
+            log.info("걸렸다");
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                     "이미 투표했습니다.",
+                    roomId, "admin"
+            );
+            return;
+        }
         log.info("Player {} vote {}", playerName, request.getVote());
         GameSession gameSession = gameSessionManager.findGameByRoomId(roomId);
 
@@ -175,17 +188,32 @@ public class VoteController {
                          @DestinationVariable Long roomId,
                          @Payload GameSessionVoteRequestDto request) {
         String playerName = getMemberName(accessor);
-        Long playerId = gameSessionManager.findMemberByMemberName(playerName).getId();
+        Player player = gameSessionManager.findPlayerByMemberName(playerName);
+        Long playerId = player.getMemberId();
+        GameRole role = player.getRole();
+
+        Map<Long, Long> votePossible = gameSessionVoteService.getVotePossible(roomId);
+        if (votePossible.get(playerId) != null) {
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    "이미 투표했습니다.",
+                    roomId, "admin"
+            );
+            return;
+        }
         log.info("Player {} vote {}", playerName, request.getVote());
         log.info("밤 투표 메시지 받기 완료");
         log.info("PlayerName: {}", playerName);
-        Player player = gameSessionManager.findPlayerByMemberName(playerName);
-        Long playerID = player.getMemberId();
-        GameRole role = player.getRole();
+
         log.info("Player {} GameRole: {}", playerName, role);
 
         if(role == GameRole.CIVILIAN || role == GameRole.OBSERVER || role == GameRole.NONE) {
-            throw new CustomException(ErrorCode.VOTE_NOT_VALID);
+            messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    "투표 권한이 없습니다.",
+                    roomId, "admin"
+            );
+            return;
         }
 
         if (request.getPhase() != GamePhase.NIGHT_VOTE) {
@@ -193,7 +221,7 @@ public class VoteController {
         }
 
         // 해당 롤의 투표
-        Map<Long, Long> voteResult = gameSessionVoteService.nightVote(roomId, playerID, request, role);
+        Map<Long, Long> voteResult = gameSessionVoteService.nightVote(roomId, playerId, request, role);
         // 관찰자들을 위한 투표 결과 반환
         Map<Long, Long> forObserver = gameSessionVoteService.getVoteResult(roomId, request);
 

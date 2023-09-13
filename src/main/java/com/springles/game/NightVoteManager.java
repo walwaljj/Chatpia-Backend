@@ -184,7 +184,7 @@ public class NightVoteManager {
                     }
 
                     messageManager.sendMessage(
-                            "/sub/chat/" + roomId,
+                            "/sub/chat/" + roomId + "/timer",
                             "end",
                             gameSession.getRoomId(), "admin"
                     );

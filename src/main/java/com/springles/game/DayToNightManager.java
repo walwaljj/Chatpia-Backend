@@ -81,11 +81,7 @@ public class DayToNightManager {
                 );
             }
 
-            messageManager.sendMessage(
-                    "/sub/chat/" + roomId,
-                    "end",
-                    gameSession.getRoomId(), "admin"
-            );
+
             log.info("game end");
             gameSessionManager.endGame(gameSession.getRoomId());
             messageManager.sendMessage(
