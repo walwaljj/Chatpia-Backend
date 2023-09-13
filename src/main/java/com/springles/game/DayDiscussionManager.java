@@ -45,7 +45,7 @@ public class DayDiscussionManager {
             log.info("Room {} suspicious List is Empty", roomId);
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
-                    "동점 투표자가 발생하여 아무도 지목되지 않았습니다.",
+                    "가장 많은 투표를 받은 플레이어가 존재하지 않습니다.",
                     roomId, "admin"
             );
 
@@ -59,7 +59,7 @@ public class DayDiscussionManager {
             log.info("{}가 마피아로 지목되었습니다.", deadPlayer.getNickName());
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
-                    deadPlayer.getNickName() + "님이 마피아로 지목되셨습니다.",
+                    deadPlayer.getNickName() + "님이 가장 많은 투표를 받으셨습니다.",
                     roomId, "admin"
             );
             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
@@ -68,7 +68,7 @@ public class DayDiscussionManager {
                 // 실행하고자 하는 코드를 여기에 작성합니다.
                 messageManager.sendMessage(
                         "/sub/chat/" + roomId,
-                        "60초 동안 최후 변론을 시작합니다.",
+                        "투표 대상의 변론을 진행합니다. 변론 시간은 30초 입니다.",
                         roomId, "admin"
                 );
             };
@@ -107,12 +107,12 @@ public class DayDiscussionManager {
                 log.info("변론 후 최종 투표를 시작합니다.");
                 messageManager.sendMessage(
                         "/sub/chat/" + roomId,
-                        "변론 후 최종 투표를 시작합니다.",
+                        "변론 시간이 종료되었습니다. 최종 투표를 진행합니다. 투표 시간은 30초 입니다.",
                         roomId, "admin"
                 );
             };
 
-            executor.schedule(eliminationTask, 60, TimeUnit.SECONDS);
+            executor.schedule(eliminationTask, 30, TimeUnit.SECONDS);
         }
     }
 

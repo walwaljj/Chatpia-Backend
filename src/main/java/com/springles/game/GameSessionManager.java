@@ -96,8 +96,6 @@ public class GameSessionManager {
 
         // MemberGameInfo 반영
 
-
-
         gameSession.end();
         gameSessionRedisRepository.save(gameSession);
         List<Player> players = findPlayersByRoomId(roomId);

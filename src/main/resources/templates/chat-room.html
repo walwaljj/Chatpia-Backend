@@ -583,7 +583,7 @@
 
         function gameStart() {
             stompClient.send(`/pub/gameStart/${roomId}`)
-            setTimeout(voteStart, 60000);
+            setTimeout(voteStart, 3000);
         }
 
         function voteStart() {
