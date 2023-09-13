@@ -61,22 +61,20 @@
                                 <!--                                    </div>-->
 
                                 <!-- 공유하기 -->
-                                <div class="row mb-3 mt-3">
-                                    <div class="col mx-auto">
-                                        <div class="sns">
-                                            <a href="#n" id="btnKakao"
+                                <div class="hr-sect mt-4">친구에게 공유하기</div>
+                                <div class="mb-3 mt-3">
+                                        <div class="sns center">
+                                            <button id="btnKakao"
                                                onclick="fn_sendFB('kakaotalk');return false;"
-                                               class="kakaotalk text-link" target="_self"
-                                               title="카카오톡 새창열림"><span class="skip">카카오톡</span></a>
-                                            <a href="#n" onclick="handleCopyClipBoard();return false;"
-                                               class="clipboard text-link" target="_self"
-                                               title="클립보드 복사"><span class="skip">복사하기</span></a>
+                                               class="kakaotalk text-link sns-btn" target="_self"
+                                               title="카카오톡 새창열림"><span class="skip">카카오톡<br>공유하기</span></button>
+                                            <button onclick="handleCopyClipBoard();return false;"
+                                               class="clipboard text-link sns-btn ml-2" target="_self"
+                                               title="클립보드 복사"><span class="skip">URL<br>복사하기</span></button>
                                             <!--<img id="preview"  alt="Preview" class="rounded-circle shadow" width="200px" height="200px">-->
                                         </div>
-                                    </div>
                                 </div>
-
-                                <div class="row mt-4 center">
+                                <div class="mt-4 center">
                                     <div>
                                         <button class="btn modal-btn-secondary" onclick="roomInfoClose()">닫기
                                         </button>
