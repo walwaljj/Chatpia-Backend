@@ -36,4 +36,6 @@ public interface MemberGameInfoJpaRepository extends JpaRepository<MemberGameInf
                     "WHERE member_id = ?"
             , nativeQuery = true)
     Long findByMemberRank(@Param("memberId") Long memberId);
+
+    Optional<MemberGameInfo> findByNickname(String nickname);
 }
