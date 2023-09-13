@@ -21,7 +21,6 @@ public class MemberProfileResponse {
     private Level level; // 유저 레벨
     private Long exp;   // 유저 경험치
     private GameRole inGameRole;  // 게임 내 직업
-    private boolean isObserver; // 게임 내 관찰자 여부
     private Long memberId;
 
     public static MemberProfileResponse of(MemberGameInfo memberGameInfo, Member member) {
