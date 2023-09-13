@@ -43,6 +43,8 @@ public class GameSession {
 
     private int day; // 진행된 밤의 수
 
+    private LocalDateTime startTime;
+
     private LocalDateTime timer; // 현재 진행 중인 단계 타이머
 
     public static GameSession of(ChatRoom chatRoom) {
@@ -64,6 +66,7 @@ public class GameSession {
         this.gamePhase = GamePhase.START;
         this.phaseCount = 0;
         this.day = 0;
+        this.startTime = LocalDateTime.now();
         return this;
     }
 

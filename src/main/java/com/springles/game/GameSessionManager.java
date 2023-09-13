@@ -3,16 +3,23 @@ package com.springles.game;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.entity.ChatRoom;
+import com.springles.domain.entity.GameRecord;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Member;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
 import com.springles.exception.constants.ErrorCode;
 import com.springles.repository.ChatRoomJpaRepository;
+import com.springles.repository.GameRecordJpaRepository;
 import com.springles.repository.GameSessionRedisRepository;
 import com.springles.repository.MemberJpaRepository;
 import com.springles.repository.PlayerRedisRepository;
+import com.springles.service.MemberService;
+import com.springles.service.impl.MemberServiceImpl;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -32,6 +39,8 @@ public class GameSessionManager {
     private final MemberJpaRepository memberJpaRepository;
     private final ChatRoomJpaRepository chatRoomJpaRepository;
     private final MessageManager messageManager;
+    private final GameRecordJpaRepository gameRecordJpaRepository;
+    private final MemberService memberService;
 
     /* 게임 세션 생성 */
     public void createGame(Long roomId) {
@@ -42,6 +51,7 @@ public class GameSessionManager {
     /* 게임 시작 */
     public List<Player> startGame(Long roomId, String memberName) {
         GameSession gameSession = findGameByRoomId(roomId);
+
         Player player = findPlayerByMemberName(memberName);
         if (!Objects.equals(gameSession.getHostId(), player.getMemberId())) {
             throw new CustomException(ErrorCode.NOT_AUTHORIZED_CONTENT);
@@ -58,6 +68,36 @@ public class GameSessionManager {
     /* 게임 종료 -> 준비 상태로 돌아가기 */
     public void endGame(Long roomId) {
         GameSession gameSession = findGameByRoomId(roomId);
+        ChatRoom chatRoom = chatRoomJpaRepository.findByIdCustom(roomId);
+        boolean winner = gameSession.getAliveMafia() == 0;
+        
+        // GameRecord 저장
+        GameRecord gameRecord = GameRecord.builder()
+            .title(chatRoom.getTitle())
+            .ownerId(gameSession.getHostId())
+            .capacity(chatRoom.getCapacity())
+            .head(chatRoom.getHead())
+            .open(chatRoom.getClose())
+            .winner(winner)
+            .duration(
+                (int) ChronoUnit.MINUTES.between(LocalDateTime.now(), gameSession.getStartTime()))
+            .build();
+
+        List<Member> memberList = new ArrayList<>();
+        for (Player player : findPlayersByRoomId(roomId)) {
+            memberList.add(findMemberByMemberName(player.getMemberName()));
+        }
+        for (Member member : memberList) {
+            gameRecord.addMember(member);
+            memberService.levelUp(member.getId());
+        }
+
+        gameRecordJpaRepository.save(gameRecord);
+
+        // MemberGameInfo 반영
+
+
+
         gameSession.end();
         gameSessionRedisRepository.save(gameSession);
         List<Player> players = findPlayersByRoomId(roomId);
