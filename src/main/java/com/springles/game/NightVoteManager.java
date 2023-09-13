@@ -3,7 +3,6 @@ package com.springles.game;
 import com.springles.domain.constants.GamePhase;
 import com.springles.domain.constants.GameRole;
 import com.springles.domain.dto.message.NightVoteMessage;
-import com.springles.domain.dto.message.RoleExplainMessage;
 import com.springles.domain.entity.GameSession;
 import com.springles.domain.entity.Player;
 import com.springles.exception.CustomException;
@@ -19,8 +18,6 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -58,7 +55,7 @@ public class NightVoteManager {
             throw new CustomException(ErrorCode.GAME_NOT_FOUND);
         }
 
-        boolean isEnd = setNightDay(gameSession, deadPlayerId);
+        boolean isEnd = setNightToDay(gameSession, deadPlayerId);
 
         if (!isEnd) {
             // 밤이 지나고 이제 낮이 시작
@@ -79,7 +76,7 @@ public class NightVoteManager {
                 log.info("Room {} NightVote suspectPlayer: {}", roomId, suspectPlayer.getMemberId());
                 messageManager.sendMessage(
                         "/sub/chat/" + roomId + '/' + GameRole.POLICE + '/' + policeName,
-                        suspectPlayer.getMemberName() + "님은 " + suspectPlayer.getRole() + "입니다.",
+                        suspectPlayer.getMemberName() + "님은 '" + suspectPlayer.getRole().getVal() + "'입니다.",
                         gameSession.getRoomId(), "admin"
                 );
             }
@@ -87,9 +84,11 @@ public class NightVoteManager {
             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
             Runnable task = () -> {
-                messageManager.sendMessage("/sub/chat/" + roomId,
-                        "토의를 시작해 주세요. 시간은 60 초입니다.",
-                        roomId, "admin");
+                messageManager.sendMessage(
+                    "/sub/chat/" + roomId,
+                    gameSession.getDay() + "번째 날 아침이 밝았습니다. 아침 시간은 60 초 입니다.",
+                    roomId, "admin"
+                );
             };
             executor.schedule(task, 1, TimeUnit.SECONDS);
 
@@ -101,7 +100,7 @@ public class NightVoteManager {
         }
     }
 
-    private boolean setNightDay(GameSession gameSession, Long deadPlayerId) {
+    private boolean setNightToDay(GameSession gameSession, Long deadPlayerId) {
         gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 7);
         Long roomId = gameSession.getRoomId();
         gameSessionManager.saveSession(gameSession);
@@ -120,7 +119,7 @@ public class NightVoteManager {
         if (deadPlayerId == null) {
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
-                    "아무도 죽지 않았습니다.",
+                    "밤 사이 아무일도 일어나지 않았습니다.",
                     gameSession.getRoomId(), "admin"
             );
         }
@@ -139,10 +138,11 @@ public class NightVoteManager {
                     gameSession.setAlivePolice(gameSession.getAlivePolice() - 1);
                 }
                 gameSessionManager.saveSession(gameSession);
+              
                 log.info("{} 님이 마피아에게 사망하셨습니다.", deadPlayer.getMemberName());
                 messageManager.sendMessage(
                         "/sub/chat/" + roomId,
-                        deadPlayer.getMemberName() + "님이 마피아에게 사망하셨습니다.",
+                        deadPlayer.getMemberName() + "님이 님이 마피아에게 살해 당했습니다.",
                         gameSession.getRoomId(), "admin"
                 );
                 // 죽임

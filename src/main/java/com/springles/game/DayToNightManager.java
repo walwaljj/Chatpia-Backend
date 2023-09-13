@@ -125,22 +125,28 @@ public class DayToNightManager {
 
         Runnable taskOne = () -> {
             messageManager.sendMessage(
-                    "/sub/chat/" + gameSession.getRoomId(),
-                    "마피아는 죽일 사람을, 의사는 살릴 사람을, 경찰은 조사할 사람을 선택해 주세요.",
+                    "/sub/chat/" + gameSession.getRoomId() +"/"+GameRole.MAFIA,
+                    "회의를 통해 제거하고 싶은 플레이어에게 투표해 주십시오. 투표 시간은 30초 입니다.",
                     gameSession.getRoomId(), "admin"
             );
-        };
-
-        Runnable taskTwo = () -> {
             messageManager.sendMessage(
-                    "/sub/chat/" + roomId,
-                    "투표는 30 초입니다.",
-                    roomId, "admin"
+                "/sub/chat/" + gameSession.getRoomId() +"/"+GameRole.POLICE,
+                "직업을 알아내고 싶은 플레이어에게 투표해 주십시오. 투표 시간은 30초 입니다.",
+                gameSession.getRoomId(), "admin"
+            );
+            messageManager.sendMessage(
+                "/sub/chat/" + gameSession.getRoomId() +"/"+GameRole.DOCTOR,
+                "밤 사이 살려내고 싶은 플레이어에게 투표해 주십시오. 투표 시간은 30초 입니다.",
+                gameSession.getRoomId(), "admin"
+            );
+            messageManager.sendMessage(
+                "/sub/chat/" + gameSession.getRoomId() +"/"+GameRole.CIVILIAN,
+                "시민은 밤에 역할이 제한 됩니다. 30초 간 대기합니다.",
+                gameSession.getRoomId(), "admin"
             );
         };
-        executor.schedule(taskOne, 1, TimeUnit.SECONDS);
-        executor.schedule(taskTwo, 1, TimeUnit.SECONDS);
 
+        executor.schedule(taskOne, 1, TimeUnit.SECONDS);
 
         messageManager.sendMessage(
                 "/sub/chat/" + roomId + "/voteInfo",

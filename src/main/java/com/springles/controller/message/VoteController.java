@@ -79,7 +79,7 @@ public class VoteController {
         // 투표 시작 메시지 전송
         messageManager.sendMessage(
                 "/sub/chat/" + roomId,
-                 day + "번째 날 아침이 밝았습니다. 투표를 시작합니다.",
+                 day + "번째 날 아침이 밝았습니다. 아침 대화 시간은 60 초 입니다.",
                 roomId, "admin"
         );
 
@@ -89,11 +89,11 @@ public class VoteController {
             log.info("마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오.");
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
-                    "마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오. 투표 시간은 30 초입니다.",
+                    " 투표를 시작합니다. 마피아로 의심되는 사람을 지목한 뒤 투표해 주십시오. 투표 시간은 20 초 입니다.",
                     roomId, "admin"
             );
         };
-        executor.schedule(task, 1, TimeUnit.SECONDS);
+        executor.schedule(task, 60, TimeUnit.SECONDS);
 
 
         Runnable endVoteTask = () -> {
@@ -101,7 +101,7 @@ public class VoteController {
             publishMessage(roomId, vote);
         };
 
-        executor.schedule(endVoteTask, 30, TimeUnit.SECONDS);
+        executor.schedule(endVoteTask, 80, TimeUnit.SECONDS);
     }
 
 
@@ -125,7 +125,7 @@ public class VoteController {
             log.info("{}가 투표되었습니다.", votedPlayerName);
             messageManager.sendMessage(
                     "/sub/chat/" + roomId,
-                    votedPlayerName + "가 투표되었습니다.",
+                    votedPlayerName + "가 투표 되었습니다.",
                     roomId, "admin"
             );
         }
@@ -167,7 +167,7 @@ public class VoteController {
             Map<Long, Long> vote = gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), gameSession.getGamePhase());
             publishMessage(roomId, vote);
         };
-        executor.schedule(task, 30, TimeUnit.SECONDS);
+        executor.schedule(task, 20, TimeUnit.SECONDS);
     }
 
     @MessageMapping("/chat/{roomId}/vote/night")

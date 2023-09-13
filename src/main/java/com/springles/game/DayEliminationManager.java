@@ -97,7 +97,10 @@ public class DayEliminationManager {
                         deadPlayer.getMemberName() + "님이 마피아로 지목되어 사망하셨습니다.",
                         gameSession.getRoomId(), "admin"
                 );
-                ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+                deadPlayer.setAlive(false);
+                deadPlayer.setRole(GameRole.OBSERVER);
+                playerRedisRepository.save(deadPlayer);
+                /*ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
                 Runnable task = () -> {
                     messageManager.sendMessage(
                             "/sub/chat/" + gameSession.getRoomId(),
@@ -109,7 +112,7 @@ public class DayEliminationManager {
                     deadPlayer.setRole(GameRole.OBSERVER);
                     playerRedisRepository.save(deadPlayer);
                 };
-                executor.schedule(task, 1, TimeUnit.SECONDS);
+                executor.schedule(task, 1, TimeUnit.SECONDS);*/
 
             }
         }
