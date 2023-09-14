@@ -75,7 +75,7 @@ public class NightVoteManager {
                 Player suspectPlayer = suspectVote.get(voter);
                 log.info("Room {} NightVote suspectPlayer: {}", roomId, suspectPlayer.getMemberId());
                 messageManager.sendMessage(
-                        "/sub/chat/" + roomId + '/' + GameRole.POLICE + '/' + policeName,
+                        "/sub/chat/" + gameSession.getRoomId() +"/"+GameRole.POLICE,
                         suspectPlayer.getMemberName() + "님은 '" + suspectPlayer.getRole().getVal() + "'입니다.",
                         gameSession.getRoomId(), "admin"
                 );
@@ -83,14 +83,14 @@ public class NightVoteManager {
 
             ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-            Runnable task = () -> {
-                messageManager.sendMessage(
-                    "/sub/chat/" + roomId,
-                    gameSession.getDay() + "번째 날 아침이 밝았습니다. 아침 시간은 60 초 입니다.",
-                    roomId, "admin"
-                );
-            };
-            executor.schedule(task, 1, TimeUnit.SECONDS);
+//            Runnable task = () -> {
+//                messageManager.sendMessage(
+//                    "/sub/chat/" + roomId,
+//                    gameSession.getDay() + "번째 날 아침이 밝았습니다. 아침 시간은 60 초 입니다.",
+//                    roomId, "admin"
+//                );
+//            };
+//            executor.schedule(task, 1, TimeUnit.SECONDS);
 
             messageManager.sendMessage(
                     "/sub/chat/" + roomId + "/timer",
@@ -139,7 +139,7 @@ public class NightVoteManager {
                 }
                 gameSessionManager.saveSession(gameSession);
               
-                log.info("{} 님이 마피아에게 사망하셨습니다.", deadPlayer.getMemberName());
+                log.info("{} 님이 마피아에게 사망하셨습니다.", deadPlayer.getNickName());
                 messageManager.sendMessage(
                         "/sub/chat/" + roomId,
                         deadPlayer.getMemberName() + "님이 님이 마피아에게 살해 당했습니다.",

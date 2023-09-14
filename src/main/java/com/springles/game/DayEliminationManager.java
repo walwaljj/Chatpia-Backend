@@ -88,11 +88,11 @@ public class DayEliminationManager {
                     gameSession.setAlivePolice(gameSession.getAlivePolice() - 1);
                 }
                 gameSessionManager.saveSession(gameSession);
-                log.info("{} 님이 마피아로 지목되어 사망하셨습니다.", deadPlayer.getMemberName());
+                log.info("{} 님이 마피아로 지목되어 사망하셨습니다.", deadPlayer.getNickName());
                 // 죽인 결과 전송
                 messageManager.sendMessage(
                         "/sub/chat/" + gameSession.getRoomId(),
-                        deadPlayer.getMemberName() + "님이 마피아로 지목되어 사망하셨습니다.",
+                        deadPlayer.getNickName() + "님이 마피아로 지목되어 사망하셨습니다.",
                         gameSession.getRoomId(), "admin"
                 );
                 deadPlayer.setAlive(false);

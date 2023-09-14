@@ -515,12 +515,18 @@
             const messageType = messageJson.message;
             console.log(messageType);
             if (messageType == "night") {
-                stompClient.send(`/pub/chat/${roomId}/nightStart`);
+                setTimeout(nightStart, 60000);
             } else if (messageType == "day") {
                 setTimeout(voteStart, 60000);
             } else if (messageType == "end") {
                 changeButton();
             }
+        }
+
+        function nightStart() {
+            stompClient.send(`/pub/chat/${roomId}/nightStart`, {
+                "Authorization": getCookie("accessToken")
+            });
         }
 
         function changeButton() {
