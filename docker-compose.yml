@@ -1,28 +1,9 @@
-version: '3.8'
+version: '3.5'
 services:
-  development:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - '8080:8080'
-  beanstalk:
-    image: "chatpiaspringles/springles"
+  chatpia:
+    container_name: chatpia
+    image: "chatpiaspringles/springles:latest"
+    expose:
+      - "8080"
     ports:
       - "8080:8080"
-
-  mysql-docker:
-    image: mysql
-    ports:
-      - "3306:3306"
-    container_name: "docker-mysql"
-
-  redis-docker:
-    image: redis
-    command: redis-server --port 6379
-    container_name: "docker-redis"
-    labels:
-      - "name=redis"
-      - "mode=standalone"
-    ports:
-      - 6379:6379
