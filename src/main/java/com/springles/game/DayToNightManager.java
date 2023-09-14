@@ -81,7 +81,6 @@ public class DayToNightManager {
                 );
             }
 
-
             log.info("game end");
             gameSessionManager.endGame(gameSession.getRoomId());
             messageManager.sendMessage(

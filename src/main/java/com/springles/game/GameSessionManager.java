@@ -89,7 +89,8 @@ public class GameSessionManager {
         }
         for (Member member : memberList) {
             gameRecord.addMember(member);
-            memberService.levelUp(member.getId());
+            member.addGameRecord(gameRecord);
+            memberService.levelUp(member.getId(),gameRecord);
         }
 
         gameRecordJpaRepository.save(gameRecord);

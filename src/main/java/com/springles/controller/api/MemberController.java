@@ -275,7 +275,7 @@ public class MemberController {
                         .build()
         );
     }
-
+/*
     // 레벨업
     @PatchMapping("/levelup")
     public ResponseEntity<ResResult> levelUp(
@@ -292,7 +292,7 @@ public class MemberController {
                         .data(memberService.levelUp(memberId))
                         .build()
         );
-    }
+    }*/
 
 
     // 멤버 게임 기록 조회

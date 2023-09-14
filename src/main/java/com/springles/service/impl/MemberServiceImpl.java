@@ -607,7 +607,7 @@ public class MemberServiceImpl implements MemberService {
      * 레벨(경험치) 업데이트
      */
     @Override
-    public MemberProfileResponse levelUp(Long memberId) {
+    public MemberProfileResponse levelUp(Long memberId, GameRecord gameRecord) {
 
         // 해당 회원의 게임정보 호출
         Optional<MemberGameInfo> optionalMemberGameInfo = memberGameInfoJpaRepository.findByMemberId(memberId);
@@ -615,8 +615,8 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.NOT_FOUND_GAME_INFO);
         }
 
-        // 가장 최근 게임기록
-        GameRecord gameRecord = gameRecordJpaRepository.findTOP1MemberIdOrderByIdDesc(memberId);
+/*        // 가장 최근 게임기록
+        GameRecord gameRecord = gameRecordJpaRepository.findTOP1MemberIdOrderByIdDesc(memberId);*/
 
         // 현재 레벨
         Level level = optionalMemberGameInfo.get().getLevel();

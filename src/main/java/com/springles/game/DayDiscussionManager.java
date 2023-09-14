@@ -107,7 +107,7 @@ public class DayDiscussionManager {
                 log.info("변론 후 최종 투표를 시작합니다.");
                 messageManager.sendMessage(
                         "/sub/chat/" + roomId,
-                        "변론 시간이 종료되었습니다. 최종 투표를 진행합니다. 투표 시간은 30초 입니다.",
+                        "변론 시간이 종료되었습니다. 최종 투표를 진행합니다. 투표 시간은 20초 입니다.",
                         roomId, "admin"
                 );
             };

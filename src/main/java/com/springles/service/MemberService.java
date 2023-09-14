@@ -52,7 +52,7 @@ public interface MemberService {
      * */
     Long existsUserProfile(String accessToken);
 
-    MemberProfileResponse levelUp(Long memberId);
+    MemberProfileResponse levelUp(Long memberId,GameRecord gameRecord);
 
     Level nextLevel(Level rawLevel);
 

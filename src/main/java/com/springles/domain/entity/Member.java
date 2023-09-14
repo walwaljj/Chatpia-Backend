@@ -60,4 +60,9 @@ public class Member {
                 + ", role : " + role
                 + ", isDeleted : " + isDeleted;
     }
+
+    public void addGameRecord(GameRecord gameRecord) {
+        gameRecordList.add(gameRecord);
+    }
+
 }
