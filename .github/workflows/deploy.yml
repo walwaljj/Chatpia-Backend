@@ -13,9 +13,8 @@ jobs:
   build:
     runs-on: ubuntu-latest # (3).OS환경
 
-    if: github.event.pull_request.merged == true && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'develop')
+    #    if: github.event.pull_request.merged == true && (github.event.pull_request.base.ref == 'main' || github.event.pull_request.base.ref == 'develop')
 
-    #  환경변수
     env:
       NAVER_MAIL_PASSWORD: ${{ secrets.NAVER_MAIL_PASSWORD }}
       NAVER_MAIL_USERNAME: ${{ secrets.NAVER_MAIL_USERNAME }}
@@ -24,9 +23,10 @@ jobs:
       KAKAO_SNS_APP_KEY: ${{ secrets.KAKAO_SNS_APP_KEY }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v2 # 코드 check out
 
@@ -35,6 +35,17 @@ jobs:
         with:
           java-version: 17 # 자바 설치
           distribution: 'adopt'
+
+      #  환경변수
+      - name: Set Yml
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ./src/main/resources/application-dev.yml
+        env:
+          spring.datasource.username: ${{secrets.MYSQL_ROOT_USER}}
+          spring.datasource.password: ${{secrets.MYSQL_ROOT_PASSWORD}}
+          spring.data.redis.host: ${{ secrets.REDIS_HOST }}
+          spring.data.redis.prot: ${{ secrets.REDIS_PORT }}
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
@@ -82,9 +93,9 @@ jobs:
       - name: Docker build
         run: |
           docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ env.DOCKERHUB_TOKEN }}
-          docker build -t springles .
-          docker tag springles chatpiaspringles/springles:latest
-          docker push chatpiaspringles/springles:latest
+          docker build -t chatpiaspringles/springles .
+          docker images
+          docker push chatpiaspringles/springles
       - name: Generate deployment package
         run: |
           mkdir -p deploy
@@ -93,16 +104,30 @@ jobs:
           cp -r .ebextensions deploy/.ebextensions
           cp -r .platform deploy/.platform
           cd deploy && zip -r deploy.zip .
-      - name: Beanstalk Deploy
-        uses: einaregilsson/beanstalk-deploy@v21
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        id: deploy
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: springles-dev
-          environment_name: Springles-dev-env
-          version_label: "the-simple-engineer-deployment-${{ steps.format-time.outputs.replaced }}"
-          region: ap-northeast-2
-          #          deployment_package: docker-compose.yml
-          deployment_package: deploy/deploy.zip
-          wait_for_environment_recovery: 60
-#          use_existing_version_if_available: true
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          envs: $GITHUB_SHA
+          port: 22
+          script: |
+            sudo docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ env.DOCKERHUB_PASSWORD }}
+            sudo docker rm -f $(sudo docker ps -qa)
+            sudo docker pull chatpiaspringles/springles:latest
+            sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+            sudo rm /usr/bin/docker-compose
+            sudo docker-compose up -d
+            sudo docker image prune -f
+            sudo docker run -d -p 8080:8080 chatpiaspringles/springles:latest --NAVER_MAIL_PASSWORD=${{secrets.NAVER_MAIL_PASSWORD}} --NAVER_MAIL_USERNAME=${{secrets.NAVER_MAIL_USERNAME}} --REDIS_PORT=${{secrets.REDIS_PORT}} --KAKAO_SNS_APP_KEY=${{secrets.KAKAO_SNS_APP_KEY}} --HOST:${{secrets.HOST}}
