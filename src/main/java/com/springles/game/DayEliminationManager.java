@@ -61,8 +61,6 @@ public class DayEliminationManager {
         // 죽어서 관찰만 하는 사람들
         List<Player> players = playerRedisRepository.findByRoomId(gameSession.getRoomId());
 
-
-
         for (Player player : players) {
             // 살아 있으면 패스
             if (player.isAlive()) {
