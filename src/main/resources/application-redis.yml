@@ -1,5 +1,5 @@
 spring:
   data:
     redis:
-      host: ${REDIS_HOST}
+      host: localhost
       port: ${REDIS_PORT}

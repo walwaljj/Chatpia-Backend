@@ -1,11 +1,11 @@
 spring:
   data:
     redis:
-      host: ${REDIS_HOST}
+      host: localhost
       port: ${REDIS_PORT}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DATASOURCE_URL_HOST}/springles
+    url: jdbc:mysql://localhost:3306/springles
     username: ${MYSQL_ROOT_USER}
     password: ${MYSQL_ROOT_PASSWORD}
   jpa:
